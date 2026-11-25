@@ -165,28 +165,28 @@ public class AuthService {
     }
 
     /**
-     * Creates an HttpOnly, SameSite=Lax cookie carrying the JWT.
+     * Creates an HttpOnly JWT cookie.
+     * Uses SameSite=None (+ Secure) in HTTPS production so cross-site Vercel <-> Render requests carry cookies,
+     * and SameSite=Lax on localhost HTTP during development.
      */
     public ResponseCookie createAuthCookie(String token) {
-        return ResponseCookie.from(jwtService.getCookieName(), token)
-                .httpOnly(true)
-                .secure(cookieSecure)
-                .path("/")
-                .maxAge(24 * 60 * 60) // 24 hours
-                .sameSite("Lax")
-                .build();
+        return buildJwtCookie(token, 24 * 60 * 60);
     }
 
     /**
      * Creates a clearing cookie to log the user out.
      */
     public ResponseCookie createLogoutCookie() {
-        return ResponseCookie.from(jwtService.getCookieName(), "")
+        return buildJwtCookie("", 0);
+    }
+
+    private ResponseCookie buildJwtCookie(String value, long maxAgeSeconds) {
+        return ResponseCookie.from(jwtService.getCookieName(), value)
                 .httpOnly(true)
                 .secure(cookieSecure)
                 .path("/")
-                .maxAge(0) // delete immediately
-                .sameSite("Lax")
+                .maxAge(maxAgeSeconds)
+                .sameSite(cookieSecure ? "None" : "Lax")
                 .build();
     }
 

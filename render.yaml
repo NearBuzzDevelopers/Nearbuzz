@@ -1,0 +1,39 @@
+services:
+  - type: web
+    name: nearbuzz-backend
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: DB_URL
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: FRONTEND_URL
+        sync: false
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_APP_PASSWORD
+        sync: false
+      - key: R2_ENDPOINT
+        sync: false
+      - key: R2_BUCKET
+        value: nearbuzz-media
+      - key: R2_ACCESS_KEY_ID
+        sync: false
+      - key: R2_SECRET_ACCESS_KEY
+        sync: false
+      - key: R2_PUBLIC_URL
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false

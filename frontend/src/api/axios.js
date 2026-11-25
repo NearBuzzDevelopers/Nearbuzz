@@ -12,8 +12,12 @@ import axios from 'axios';
  *                           http://localhost:8080/api/v1 (configured in vite.config.js).
  *                           In production, this will point to the Render backend URL.
  */
+const apiRoot = import.meta.env.VITE_API_URL
+  ? import.meta.env.VITE_API_URL.replace(/\/+$/, '')
+  : '';
+
 const api = axios.create({
-  baseURL: '/api/v1',
+  baseURL: `${apiRoot}/api/v1`,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',

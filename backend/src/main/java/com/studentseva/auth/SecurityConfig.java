@@ -18,6 +18,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -182,8 +183,12 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        // Only allow our frontend to call this API
-        config.setAllowedOrigins(List.of(frontendUrl));
+        // Support comma-separated allowed frontend origins (e.g. Vercel prod + localhost dev)
+        List<String> origins = Arrays.stream(frontendUrl.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .toList();
+        config.setAllowedOrigins(origins);
 
         // Allow the browser to send cookies (the JWT httpOnly cookie)
         config.setAllowCredentials(true);
