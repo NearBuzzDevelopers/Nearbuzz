@@ -92,3 +92,8 @@ app:
     access-key-id: ${R2_ACCESS_KEY_ID:}
     secret-access-key: ${R2_SECRET_ACCESS_KEY:}
     public-url: ${R2_PUBLIC_URL:}
+
+  # Google Gemini AI Natural-Language Search (falls back to rule-based parser if blank)
+  gemini:
+    api-key: ${GEMINI_API_KEY:}
+    model: ${GEMINI_MODEL:gemini-2.0-flash}
