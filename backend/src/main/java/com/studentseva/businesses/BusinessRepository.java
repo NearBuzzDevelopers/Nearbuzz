@@ -55,6 +55,7 @@ public interface BusinessRepository extends JpaRepository<Business, UUID> {
         FROM businesses b
         JOIN users u ON b.owner_id = u.id
         WHERE b.status = 'OPEN'
+          AND b.verification_status <> 'SUSPENDED'
           AND ST_DWithin(b.location, ST_SetSRID(ST_MakePoint(:lng, :lat), 4326)::geography, :radiusMeters)
         ORDER BY distanceMeters ASC
         LIMIT :limit
@@ -88,6 +89,7 @@ public interface BusinessRepository extends JpaRepository<Business, UUID> {
         FROM businesses b
         JOIN users u ON b.owner_id = u.id
         WHERE b.status = 'OPEN'
+          AND b.verification_status <> 'SUSPENDED'
           AND b.category = :category
           AND ST_DWithin(b.location, ST_SetSRID(ST_MakePoint(:lng, :lat), 4326)::geography, :radiusMeters)
         ORDER BY distanceMeters ASC
