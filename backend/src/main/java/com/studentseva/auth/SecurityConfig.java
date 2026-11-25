@@ -93,9 +93,10 @@ public class SecurityConfig {
                 // Public auth routes (send-otp, verify-otp, logout)
                 .requestMatchers("/api/v1/auth/**").permitAll()
 
-                // Business routes:
+                // Business & Offerings routes:
                 .requestMatchers("/api/v1/businesses/my").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/v1/businesses/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/offerings/**").permitAll()
 
                 // Admin-only routes — ROLE_ADMIN required
                 .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")

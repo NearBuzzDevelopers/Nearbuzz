@@ -3,6 +3,7 @@ package com.studentseva.common;
 import com.studentseva.common.exceptions.ForbiddenException;
 import com.studentseva.common.exceptions.NotFoundException;
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -108,6 +109,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<Map<String, Object>> handleIllegalState(IllegalStateException ex) {
         return buildResponse(HttpStatus.TOO_MANY_REQUESTS, "RATE_LIMIT_EXCEEDED", ex.getMessage());
+    }
+
+    // ── 409 Conflict (Optimistic Locking collision) ───────────────────────────
+
+    @ExceptionHandler(OptimisticLockingFailureException.class)
+    public ResponseEntity<Map<String, Object>> handleOptimisticLock(OptimisticLockingFailureException ex) {
+        return buildResponse(
+                HttpStatus.CONFLICT,
+                "CONFLICT",
+                "This item was modified by another request. Please refresh and try again."
+        );
     }
 
     // ── 500 Catch-All (unexpected errors) ─────────────────────────────────────
