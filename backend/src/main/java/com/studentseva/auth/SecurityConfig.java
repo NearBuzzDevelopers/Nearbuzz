@@ -84,6 +84,8 @@ public class SecurityConfig {
 
                 // Public routes — no login required
                 .requestMatchers("/api/v1/health/**").permitAll()
+                .requestMatchers("/api/v1/media/storage-status").permitAll()
+                .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
                 .requestMatchers("/actuator/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
 

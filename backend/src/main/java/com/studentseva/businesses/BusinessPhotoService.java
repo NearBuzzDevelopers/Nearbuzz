@@ -3,6 +3,7 @@ package com.studentseva.businesses;
 import com.studentseva.businesses.dto.AddBusinessPhotoRequest;
 import com.studentseva.businesses.dto.BusinessPhotoResponse;
 import com.studentseva.common.exceptions.NotFoundException;
+import com.studentseva.media.StorageService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,15 +21,29 @@ public class BusinessPhotoService {
     private final BusinessPhotoRepository photoRepository;
     private final BusinessRepository businessRepository;
     private final BusinessService businessService;
+    private final StorageService storageService;
 
     public BusinessPhotoService(
             BusinessPhotoRepository photoRepository,
             BusinessRepository businessRepository,
-            BusinessService businessService
+            BusinessService businessService,
+            StorageService storageService
     ) {
         this.photoRepository = photoRepository;
         this.businessRepository = businessRepository;
         this.businessService = businessService;
+        this.storageService = storageService;
+    }
+
+    /**
+     * Checks whether the business still has room under the gallery limit.
+     */
+    @Transactional(readOnly = true)
+    public void ensureWithinPhotoLimit(UUID businessId) {
+        if (photoRepository.countByBusinessId(businessId) >= MAX_PHOTOS_PER_BUSINESS) {
+            throw new IllegalArgumentException(
+                    "Maximum of " + MAX_PHOTOS_PER_BUSINESS + " photos allowed per business.");
+        }
     }
 
     /**
@@ -85,6 +100,7 @@ public class BusinessPhotoService {
         }
 
         photoRepository.delete(photo);
+        storageService.delete(photo.getStorageKey());
     }
 
     private BusinessPhotoResponse toPhotoResponse(BusinessPhoto p) {

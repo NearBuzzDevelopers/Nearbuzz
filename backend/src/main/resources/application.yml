@@ -34,6 +34,11 @@ spring:
     locations: classpath:db/migration
     baseline-on-migrate: true
 
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
+
   # Exclude only mail for now until we configure Gmail SMTP credentials in Day 4
   autoconfigure:
     exclude:
@@ -79,3 +84,11 @@ app:
   # Cookie Security (false in dev localhost HTTP, true in prod HTTPS)
   cookie:
     secure: ${COOKIE_SECURE:false}
+
+  # Cloudflare R2 Object Storage (falls back to ./uploads when blank in local dev)
+  r2:
+    endpoint: ${R2_ENDPOINT:}
+    bucket: ${R2_BUCKET:nearbuzz-media}
+    access-key-id: ${R2_ACCESS_KEY_ID:}
+    secret-access-key: ${R2_SECRET_ACCESS_KEY:}
+    public-url: ${R2_PUBLIC_URL:}
