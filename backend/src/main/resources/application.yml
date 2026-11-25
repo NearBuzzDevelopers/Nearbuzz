@@ -97,3 +97,9 @@ app:
   gemini:
     api-key: ${GEMINI_API_KEY:}
     model: ${GEMINI_MODEL:gemini-2.0-flash}
+
+  # Transactional Email via Brevo HTTPS API (works on Render free tier)
+  mail:
+    brevo-api-key: ${BREVO_API_KEY:}
+    sender-email: ${BREVO_SENDER_EMAIL:}
+    sender-name: ${BREVO_SENDER_NAME:NearBuzz}

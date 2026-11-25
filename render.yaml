@@ -25,6 +25,10 @@ services:
         sync: false
       - key: MAIL_APP_PASSWORD
         sync: false
+      - key: BREVO_API_KEY
+        sync: false
+      - key: BREVO_SENDER_EMAIL
+        sync: false
       - key: R2_ENDPOINT
         sync: false
       - key: R2_BUCKET
