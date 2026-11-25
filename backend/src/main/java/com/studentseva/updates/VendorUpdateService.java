@@ -8,6 +8,8 @@ import com.studentseva.offerings.Offering;
 import com.studentseva.offerings.OfferingRepository;
 import com.studentseva.updates.dto.CreateUpdateRequest;
 import com.studentseva.updates.dto.VendorUpdateResponse;
+import com.studentseva.users.User;
+import com.studentseva.users.UserRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,17 +31,20 @@ public class VendorUpdateService {
     private final BusinessRepository businessRepository;
     private final BusinessService businessService;
     private final OfferingRepository offeringRepository;
+    private final UserRepository userRepository;
 
     public VendorUpdateService(
             VendorUpdateRepository updateRepository,
             BusinessRepository businessRepository,
             BusinessService businessService,
-            OfferingRepository offeringRepository
+            OfferingRepository offeringRepository,
+            UserRepository userRepository
     ) {
         this.updateRepository = updateRepository;
         this.businessRepository = businessRepository;
         this.businessService = businessService;
         this.offeringRepository = offeringRepository;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -96,6 +101,21 @@ public class VendorUpdateService {
     public List<VendorUpdateResponse> getPublicFeed(int limit) {
         int clampedLimit = Math.min(Math.max(limit, 1), MAX_FEED_LIMIT);
         return updateRepository.findActiveFeed(Instant.now(), PageRequest.of(0, clampedLimit))
+                .stream()
+                .map(this::toUpdateResponse)
+                .toList();
+    }
+
+    /**
+     * Returns recent active updates only from businesses followed by the authenticated user.
+     */
+    @Transactional(readOnly = true)
+    public List<VendorUpdateResponse> getFollowingFeed(String userEmail, int limit) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new NotFoundException("User not found with email: " + userEmail));
+
+        int clampedLimit = Math.min(Math.max(limit, 1), MAX_FEED_LIMIT);
+        return updateRepository.findFollowingFeed(user.getId(), Instant.now(), PageRequest.of(0, clampedLimit))
                 .stream()
                 .map(this::toUpdateResponse)
                 .toList();

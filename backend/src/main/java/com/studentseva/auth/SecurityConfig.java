@@ -93,8 +93,11 @@ public class SecurityConfig {
                 // Public auth routes (send-otp, verify-otp, logout)
                 .requestMatchers("/api/v1/auth/**").permitAll()
 
-                // Business, Offerings & Updates routes:
+                // Business, Offerings, Updates & Follows routes:
+                // Specific authenticated GETs must precede the public GET wildcards below
                 .requestMatchers("/api/v1/businesses/my").authenticated()
+                .requestMatchers(HttpMethod.GET, "/api/v1/businesses/*/follow/status").authenticated()
+                .requestMatchers(HttpMethod.GET, "/api/v1/updates/following").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/v1/businesses/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/offerings/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/updates/**").permitAll()

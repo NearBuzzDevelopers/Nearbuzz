@@ -41,4 +41,23 @@ public interface VendorUpdateRepository extends JpaRepository<VendorUpdate, UUID
             ORDER BY u.createdAt DESC
             """)
     List<VendorUpdate> findActiveFeed(@Param("now") Instant now, Pageable pageable);
+
+    /**
+     * Fetches recent active updates strictly from businesses the specified user follows.
+     */
+    @Query("""
+            SELECT u FROM VendorUpdate u
+            JOIN FETCH u.business b
+            LEFT JOIN FETCH u.offering o
+            WHERE b.id IN (
+                SELECT f.business.id FROM Follow f WHERE f.user.id = :userId
+            )
+              AND (u.expiresAt IS NULL OR u.expiresAt > :now)
+            ORDER BY u.createdAt DESC
+            """)
+    List<VendorUpdate> findFollowingFeed(
+            @Param("userId") UUID userId,
+            @Param("now") Instant now,
+            Pageable pageable
+    );
 }

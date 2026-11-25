@@ -52,6 +52,15 @@ public class VendorUpdateController {
         return ResponseEntity.ok(updateService.getPublicFeed(limit));
     }
 
+    @GetMapping("/updates/following")
+    @Operation(summary = "Get recent active updates from businesses the user follows (authenticated)")
+    public ResponseEntity<List<VendorUpdateResponse>> getFollowingFeed(
+            @RequestParam(defaultValue = "20") int limit,
+            Authentication authentication
+    ) {
+        return ResponseEntity.ok(updateService.getFollowingFeed(authentication.getName(), limit));
+    }
+
     @DeleteMapping("/updates/{id}")
     @Operation(summary = "Delete an update post (owner only)")
     public ResponseEntity<Void> deleteUpdate(
