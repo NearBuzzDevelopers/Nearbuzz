@@ -21,6 +21,23 @@ export const CATEGORY_BADGE_COLORS = {
   LIBRARY: 'bg-rose-100 text-rose-700',
 };
 
+export const OFFERING_TYPES = [
+  { value: 'HOSTEL_ROOM', label: 'Hostel / PG Room' },
+  { value: 'MESS_TIFFIN', label: 'Mess / Tiffin Plan' },
+  { value: 'PRINT_SERVICE', label: 'Printing / Xerox Service' },
+  { value: 'PRODUCT_STOCK', label: 'Books / Stationery / Kirana Stock' },
+  { value: 'LIBRARY_SEAT', label: 'Library Seat / Cabin' },
+];
+
+export const OFFERING_STATUSES = [
+  'AVAILABLE',
+  'OCCUPIED',
+  'SOLD_OUT',
+  'OUT_OF_STOCK',
+  'UNAVAILABLE',
+  'UNCONFIRMED',
+];
+
 export const OFFERING_STATUS_COLORS = {
   AVAILABLE: 'bg-emerald-100 text-emerald-700',
   OCCUPIED: 'bg-amber-100 text-amber-800',
@@ -29,6 +46,16 @@ export const OFFERING_STATUS_COLORS = {
   UNAVAILABLE: 'bg-gray-200 text-gray-700',
   UNCONFIRMED: 'bg-orange-100 text-orange-700',
 };
+
+export const DAY_NAMES = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+];
 
 export const UPDATE_TYPE_LABELS = {
   MENU_UPDATE: 'Menu Update',
