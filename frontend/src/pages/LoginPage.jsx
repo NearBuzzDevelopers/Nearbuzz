@@ -1,21 +1,24 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 /**
  * LoginPage — two-step login form.
  *
  * Step 1: Enter email → click "Send OTP"
- * Step 2: Enter 6-digit OTP → click "Verify" → logged in → redirect to dashboard
+ * Step 2: Enter 6-digit OTP → click "Verify" → logged in → redirect back or home
  */
 export default function LoginPage() {
   const { sendOtp, verifyOtp, user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const redirectTarget = location.state?.from || '/';
 
-  // If already logged in, redirect to dashboard
-  if (user) {
-    navigate('/dashboard', { replace: true });
-  }
+  useEffect(() => {
+    if (user) {
+      navigate(redirectTarget, { replace: true });
+    }
+  }, [user, navigate, redirectTarget]);
 
   const [step, setStep] = useState(1); // 1 = email, 2 = otp
   const [email, setEmail] = useState('');
@@ -49,7 +52,7 @@ export default function LoginPage() {
 
     try {
       await verifyOtp(email, otp, name || undefined, 'STUDENT');
-      navigate('/dashboard', { replace: true });
+      navigate(redirectTarget, { replace: true });
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid OTP. Please try again.');
     } finally {
@@ -63,7 +66,9 @@ export default function LoginPage() {
 
         {/* Logo & Title */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-indigo-700 mb-2">StudentSeva</h1>
+          <Link to="/" className="inline-block">
+            <h1 className="text-4xl font-bold text-indigo-700 mb-2">NearBuzz</h1>
+          </Link>
           <p className="text-gray-500">Hyperlocal services for students</p>
         </div>
 
