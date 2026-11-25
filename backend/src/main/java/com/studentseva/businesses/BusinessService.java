@@ -4,6 +4,7 @@ import com.studentseva.businesses.dto.BusinessResponse;
 import com.studentseva.businesses.dto.CreateBusinessRequest;
 import com.studentseva.businesses.dto.NearbyBusinessProjection;
 import com.studentseva.businesses.dto.NearbyBusinessResponse;
+import com.studentseva.common.exceptions.ForbiddenException;
 import com.studentseva.common.exceptions.NotFoundException;
 import com.studentseva.users.User;
 import com.studentseva.users.UserRepository;
@@ -96,6 +97,20 @@ public class BusinessService {
                 .orElseThrow(() -> new NotFoundException("Business not found with ID: " + id));
 
         return toBusinessResponse(business);
+    }
+
+    /**
+     * Loads a business by ID and verifies that the authenticated user is its owner.
+     */
+    @Transactional(readOnly = true)
+    public Business getOwnedBusiness(UUID businessId, String userEmail) {
+        Business business = businessRepository.findById(businessId)
+                .orElseThrow(() -> new NotFoundException("Business not found with ID: " + businessId));
+
+        if (!business.getOwner().getEmail().equalsIgnoreCase(userEmail)) {
+            throw new ForbiddenException("You do not have permission to manage this business.");
+        }
+        return business;
     }
 
     /**
