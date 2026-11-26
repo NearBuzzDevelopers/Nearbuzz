@@ -32,6 +32,19 @@ public interface BusinessRepository extends JpaRepository<Business, UUID> {
     List<Business> findByCategory(Business.Category category);
 
     /**
+     * Admin query: loads all businesses with owner details eagerly fetched.
+     */
+    @Query("""
+            SELECT b FROM Business b
+            JOIN FETCH b.owner u
+            WHERE (:status IS NULL OR b.verificationStatus = :status)
+            ORDER BY b.createdAt DESC
+            """)
+    List<Business> findAllWithOwner(@Param("status") Business.VerificationStatus status);
+
+    long countByVerificationStatus(Business.VerificationStatus verificationStatus);
+
+    /**
      * PostGIS Spatial Query: Finds all OPEN businesses within a geodesic radius (meters)
      * of the given (latitude, longitude) coordinate.
      * Utilizes the GiST spatial index on b.location for high performance.

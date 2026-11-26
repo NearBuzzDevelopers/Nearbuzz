@@ -18,6 +18,8 @@ public interface ListingReportRepository extends JpaRepository<ListingReport, UU
     boolean existsByReporterIdAndBusinessIdAndStatus(
             UUID reporterId, UUID businessId, ListingReport.Status status);
 
+    long countByStatus(ListingReport.Status status);
+
     @Query("""
             SELECT r FROM ListingReport r
             JOIN FETCH r.reporter u

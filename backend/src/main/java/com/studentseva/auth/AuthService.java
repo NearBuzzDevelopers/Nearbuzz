@@ -18,6 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Service managing passwordless authentication via Email OTP and JWT cookies.
@@ -40,6 +43,9 @@ public class AuthService {
 
     @Value("${app.cookie.secure:false}")
     private boolean cookieSecure;
+
+    @Value("${app.admin.emails:}")
+    private String adminEmailsConfig;
 
     public AuthService(
             OtpRepository otpRepository,
@@ -118,6 +124,8 @@ public class AuthService {
         otpRequest.setUsed(true);
         otpRepository.save(otpRequest);
 
+        boolean isConfiguredAdmin = isConfiguredAdminEmail(email);
+
         // 5. Find existing user or onboard new user
         User user = userRepository.findByEmail(email).orElseGet(() -> {
             User newUser = new User();
@@ -127,7 +135,9 @@ public class AuthService {
             } else {
                 newUser.setName(email.substring(0, email.indexOf('@')));
             }
-            if ("VENDOR".equalsIgnoreCase(request.role())) {
+            if (isConfiguredAdmin) {
+                newUser.setRole(User.Role.ADMIN);
+            } else if ("VENDOR".equalsIgnoreCase(request.role())) {
                 newUser.setRole(User.Role.VENDOR);
             } else {
                 newUser.setRole(User.Role.STUDENT);
@@ -135,6 +145,12 @@ public class AuthService {
             newUser.setStatus(User.Status.ACTIVE);
             return userRepository.save(newUser);
         });
+
+        // Ensure an existing account listed in ADMIN_EMAILS receives ADMIN role after real OTP check
+        if (isConfiguredAdmin && user.getRole() != User.Role.ADMIN) {
+            user.setRole(User.Role.ADMIN);
+            user = userRepository.save(user);
+        }
 
         // 6. Check if account is suspended
         if (user.getStatus() == User.Status.SUSPENDED) {
@@ -203,6 +219,17 @@ public class AuthService {
                 user.getStatus().name(),
                 token
         );
+    }
+
+    private boolean isConfiguredAdminEmail(String email) {
+        if (adminEmailsConfig == null || adminEmailsConfig.isBlank()) {
+            return false;
+        }
+        Set<String> allowed = Arrays.stream(adminEmailsConfig.split(","))
+                .map(s -> s.trim().toLowerCase())
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toSet());
+        return allowed.contains(email);
     }
 
     /**

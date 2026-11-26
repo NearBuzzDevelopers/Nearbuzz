@@ -103,3 +103,7 @@ app:
     brevo-api-key: ${BREVO_API_KEY:}
     sender-email: ${BREVO_SENDER_EMAIL:}
     sender-name: ${BREVO_SENDER_NAME:NearBuzz}
+
+  # Comma-separated list of real admin emails granted ROLE_ADMIN after passing Email OTP
+  admin:
+    emails: ${ADMIN_EMAILS:pushprajsinghal193@gmail.com,vinnie24092004@gmail.com}

@@ -43,5 +43,11 @@ public interface UserRepository extends JpaRepository<User, UUID> {
      * Generated SQL: SELECT COUNT(*) > 0 FROM users WHERE email = ?
      */
     boolean existsByEmail(String email);
+
+    java.util.List<User> findAllByOrderByCreatedAtDesc();
+
+    java.util.List<User> findByRoleOrderByCreatedAtDesc(User.Role role);
+
+    long countByRole(User.Role role);
 }
 
