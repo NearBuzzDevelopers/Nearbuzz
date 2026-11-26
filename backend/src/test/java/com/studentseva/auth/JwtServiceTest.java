@@ -53,8 +53,10 @@ class JwtServiceTest {
         User user = buildUser("student@college.edu", User.Role.STUDENT);
 
         String token = jwtService.generateToken(user.getEmail(), "STUDENT", UUID.randomUUID());
-        char last = token.charAt(token.length() - 1);
-        String tampered = token.substring(0, token.length() - 1) + (last == 'a' ? 'b' : 'a');
+        // Flip a middle character of the signature (the final char can have unused base64url padding bits)
+        int sigIdx = token.length() - 6;
+        char targetChar = token.charAt(sigIdx);
+        String tampered = token.substring(0, sigIdx) + (targetChar == 'a' ? 'b' : 'a') + token.substring(sigIdx + 1);
 
         assertFalse(jwtService.isTokenValid(tampered, user));
     }

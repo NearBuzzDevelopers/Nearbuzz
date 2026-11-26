@@ -76,11 +76,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
 
-        // ── Step 1: Extract JWT from cookie ───────────────────────────────────
+        // ── Step 1: Extract JWT from Bearer header or HttpOnly cookie ─────────
 
-        String token = extractTokenFromCookie(request);
+        String cookieToken = extractTokenFromCookie(request);
+        String token = extractBearerToken(request);
+        boolean fromCookie = false;
+        if (token == null && cookieToken != null) {
+            token = cookieToken;
+            fromCookie = true;
+        }
 
-        // No cookie found → skip this filter, let the request continue.
+        // No token found → skip this filter, let the request continue.
         // Spring Security will decide whether to allow or block it
         // based on the route rules in SecurityConfig.
         if (token == null) {
@@ -95,8 +101,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             email = jwtService.extractEmail(token);
         } catch (JwtException e) {
             // Token is malformed, tampered, or has an invalid signature.
-            // Clear the cookie so the browser doesn't keep sending a bad token.
-            clearCookie(response);
+            if (fromCookie) {
+                clearCookie(response);
+            }
             filterChain.doFilter(request, response);
             return;
         }
@@ -116,7 +123,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             // User not found in DB (maybe deleted after the token was issued)
             if (userDetails == null) {
-                clearCookie(response);
+                if (fromCookie) {
+                    clearCookie(response);
+                }
                 filterChain.doFilter(request, response);
                 return;
             }
@@ -152,7 +161,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             } else {
                 // Token is expired or email mismatch — clear the bad cookie
-                clearCookie(response);
+                if (fromCookie) {
+                    clearCookie(response);
+                }
             }
         }
 
@@ -163,7 +174,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    // ── Helper: extract JWT string from cookies ───────────────────────────────
+    // ── Helpers: extract JWT string from Authorization header or cookie ───────
+
+    /**
+     * Extracts JWT from "Authorization: Bearer <token>" header if present.
+     * Supports installed PWAs / browsers that block cross-site cookies.
+     */
+    private String extractBearerToken(HttpServletRequest request) {
+        String header = request.getHeader("Authorization");
+        if (header != null && header.startsWith("Bearer ")) {
+            String token = header.substring(7).trim();
+            return token.isEmpty() ? null : token;
+        }
+        return null;
+    }
 
     /**
      * Searches the request's cookies for "nearbuzz_token" and returns its value.

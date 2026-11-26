@@ -71,8 +71,8 @@ app:
   jwt:
     # Secret key for signing tokens — MUST be set via JWT_SECRET env var in production
     secret: ${JWT_SECRET:super_secret_jwt_key_studentseva_2026_for_signing_http_only_cookie_tokens}
-    # Token validity: 86400000 ms = 24 hours
-    expiration-ms: 86400000
+    # Token validity: 604800000 ms = 7 days (safe for OTP-based passwordless auth)
+    expiration-ms: 604800000
     # Name of the httpOnly cookie that stores the JWT
     cookie-name: nearbuzz_token
 

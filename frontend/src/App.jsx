@@ -4,6 +4,8 @@ import BusinessDetailPage from './pages/BusinessDetailPage';
 import UpdatesFeedPage from './pages/UpdatesFeedPage';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
+import VendorPortalPage from './pages/VendorPortalPage';
+import AdminPage from './pages/AdminPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
 export default function App() {
@@ -15,12 +17,42 @@ export default function App() {
       <Route path="/feed" element={<UpdatesFeedPage />} />
       <Route path="/login" element={<LoginPage />} />
 
-      {/* Protected Routes (Requires Login) */}
+      {/* Student Dashboard */}
       <Route
         path="/dashboard"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['STUDENT']}>
             <DashboardPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Vendor Portal */}
+      <Route
+        path="/vendor"
+        element={
+          <ProtectedRoute allowedRoles={['VENDOR']}>
+            <VendorPortalPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Explicit Shop Registration for Students upgrading to Vendor */}
+      <Route
+        path="/register-shop"
+        element={
+          <ProtectedRoute allowedRoles={['STUDENT', 'VENDOR']}>
+            <VendorPortalPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Admin Panel */}
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute allowedRoles={['ADMIN']}>
+            <AdminPage />
           </ProtectedRoute>
         }
       />

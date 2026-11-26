@@ -1,38 +1,32 @@
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth, roleHomePath } from '../context/AuthContext';
 
 /**
- * ProtectedRoute — guards routes that require authentication.
- *
- * If user is not logged in → redirects to /login.
- * If user is logged in → renders the child component.
- *
- * Usage in App.jsx:
- *   <Route path="/dashboard" element={
- *     <ProtectedRoute><DashboardPage /></ProtectedRoute>
- *   } />
+ * ProtectedRoute — guards routes that require authentication and optional role access.
+ * If the user is logged in with a different role than allowed, redirects them
+ * automatically to their own role's portal so Students and Vendors never see the wrong UI.
  */
-export default function ProtectedRoute({ children }) {
+export default function ProtectedRoute({ children, allowedRoles }) {
   const { user, loading } = useAuth();
 
-  // While checking auth status, show a loading spinner
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-500">Loading...</p>
+          <div className="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-500 text-sm">Restoring your session...</p>
         </div>
       </div>
     );
   }
 
-  // Not authenticated → redirect to login page
   if (!user) {
     return <Navigate to="/login" replace />;
   }
 
-  // Authenticated → render the protected page
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
+    return <Navigate to={roleHomePath(user.role)} replace />;
+  }
+
   return children;
 }
-

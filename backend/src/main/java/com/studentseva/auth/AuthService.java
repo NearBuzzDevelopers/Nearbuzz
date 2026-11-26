@@ -170,7 +170,7 @@ public class AuthService {
      * and SameSite=Lax on localhost HTTP during development.
      */
     public ResponseCookie createAuthCookie(String token) {
-        return buildJwtCookie(token, 24 * 60 * 60);
+        return buildJwtCookie(token, 7 * 24 * 60 * 60); // 7 days — matches JWT expiration
     }
 
     /**
@@ -191,12 +191,17 @@ public class AuthService {
     }
 
     public AuthResponse toAuthResponse(User user) {
+        return toAuthResponse(user, null);
+    }
+
+    public AuthResponse toAuthResponse(User user, String token) {
         return new AuthResponse(
                 user.getId(),
                 user.getEmail(),
                 user.getName(),
                 user.getRole().name(),
-                user.getStatus().name()
+                user.getStatus().name(),
+                token
         );
     }
 
