@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth, roleHomePath } from '../context/AuthContext';
+import { useLocationContext } from '../context/LocationContext';
 
 /**
  * LoginPage — two-step passwordless email OTP login with unmistakable role selection.
@@ -10,6 +11,7 @@ import { useAuth, roleHomePath } from '../context/AuthContext';
  */
 export default function LoginPage() {
   const { sendOtp, verifyOtp, user } = useAuth();
+  const { detectGps } = useLocationContext();
   const navigate = useNavigate();
   const location = useLocation();
   const redirectTarget = location.state?.from || null;
@@ -55,6 +57,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const userData = await verifyOtp(email, otp, name || undefined, role);
+      detectGps();
       navigate(redirectTarget || roleHomePath(userData.role), { replace: true });
     } catch (err) {
       setError(err.response?.data?.message || 'That code did not match or expired. Please try again.');

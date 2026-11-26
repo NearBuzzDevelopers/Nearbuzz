@@ -2,13 +2,14 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
+import { useLocationContext } from '../context/LocationContext';
 import Navbar from '../components/Navbar';
 import NearbyMap from '../components/NearbyMap';
 import {
   CATEGORIES,
   CATEGORY_LABELS,
   CATEGORY_BADGE_COLORS,
-  DEFAULT_CAMPUS_COORDS,
+  CAMPUS_PRESETS,
   formatDistance,
   formatPrice,
 } from '../utils/constants';
@@ -21,11 +22,7 @@ const QUICK_SEARCH_EXAMPLES = [
 
 export default function ExplorePage() {
   const { user } = useAuth();
-  const [coords, setCoords] = useState({
-    lat: DEFAULT_CAMPUS_COORDS.lat,
-    lng: DEFAULT_CAMPUS_COORDS.lng,
-    label: DEFAULT_CAMPUS_COORDS.label,
-  });
+  const { coords, locating, gpsError, detectGps, selectPreset } = useLocationContext();
   const [radius, setRadius] = useState(2000);
   const [category, setCategory] = useState('');
   const [aiQuery, setAiQuery] = useState('');
@@ -33,7 +30,6 @@ export default function ExplorePage() {
   const [businesses, setBusinesses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [locating, setLocating] = useState(false);
   const [viewMode, setViewMode] = useState('list'); // 'list' | 'map'
 
   const fetchNearby = useCallback(async () => {
@@ -92,30 +88,6 @@ export default function ExplorePage() {
   function clearAiSearch() {
     setAiQuery('');
     setAiResult(null);
-  }
-
-  function handleUseGps() {
-    if (!navigator.geolocation) {
-      setError('Location access is not supported by your browser.');
-      return;
-    }
-    setLocating(true);
-    setError('');
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setCoords({
-          lat: Number(pos.coords.latitude.toFixed(6)),
-          lng: Number(pos.coords.longitude.toFixed(6)),
-          label: 'Your Current Location',
-        });
-        setLocating(false);
-      },
-      () => {
-        setError('Could not read GPS permission. Showing results near campus.');
-        setLocating(false);
-      },
-      { enableHighAccuracy: true, timeout: 8000 }
-    );
   }
 
   return (
@@ -192,20 +164,43 @@ export default function ExplorePage() {
               </div>
             )}
 
-            {/* Location + Radius Controls */}
-            <div className="mt-4 flex flex-wrap items-center gap-3 text-xs sm:text-sm text-indigo-100">
+            {/* Location + Campus Preset + Radius Controls */}
+            <div className="mt-4 flex flex-wrap items-center gap-2.5 text-xs sm:text-sm text-indigo-100">
               <span className="inline-flex items-center gap-1.5 bg-white/15 px-3 py-1.5 rounded-lg">
                 📍 Near: <strong className="text-white">{coords.label}</strong>
               </span>
 
               <button
                 type="button"
-                onClick={handleUseGps}
+                onClick={detectGps}
                 disabled={locating}
                 className="bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-lg font-medium transition cursor-pointer"
               >
-                {locating ? 'Finding location...' : 'Use My GPS'}
+                {locating ? 'Detecting GPS...' : 'Use My GPS'}
               </button>
+
+              <select
+                value={
+                  coords.source === 'gps'
+                    ? 'gps'
+                    : CAMPUS_PRESETS.find((p) => p.label === coords.label)?.id || 'indore'
+                }
+                onChange={(e) => {
+                  if (e.target.value === 'gps') detectGps();
+                  else selectPreset(e.target.value);
+                }}
+                aria-label="Campus preset"
+                className="bg-white/20 text-white px-3 py-1.5 rounded-lg font-medium outline-none cursor-pointer"
+              >
+                {coords.source === 'gps' && (
+                  <option value="gps" className="text-gray-900">Live GPS Location</option>
+                )}
+                {CAMPUS_PRESETS.map((p) => (
+                  <option key={p.id} value={p.id} className="text-gray-900">
+                    Campus: {p.label}
+                  </option>
+                ))}
+              </select>
 
               {!aiResult && (
                 <select
@@ -224,6 +219,9 @@ export default function ExplorePage() {
                 </select>
               )}
             </div>
+            {gpsError && (
+              <p className="mt-2 text-xs text-amber-200">{gpsError}</p>
+            )}
           </div>
         </div>
       </section>

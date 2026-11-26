@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/axios';
+import LocationPickerMap from './LocationPickerMap';
 import {
   CATEGORIES,
   OFFERING_TYPES,
@@ -58,9 +59,9 @@ export default function VendorStudio({ business, onBusinessUpdated }) {
   const [shopAddress, setShopAddress] = useState(business.address || '');
   const [shopPhone, setShopPhone] = useState(business.phone || business.whatsapp || '');
   const [shopDesc, setShopDesc] = useState(business.description || '');
-  const [shopLat, setShopLat] = useState(String(business.latitude ?? 28.475));
-  const [shopLng, setShopLng] = useState(String(business.longitude ?? 77.495));
-  const [gpsStatus, setGpsStatus] = useState('idle');
+  const [shopLat, setShopLat] = useState(String(business.latitude ?? 22.6847));
+  const [shopLng, setShopLng] = useState(String(business.longitude ?? 75.8639));
+  const [locationSource, setLocationSource] = useState('map');
   const [savingShop, setSavingShop] = useState(false);
 
   const [offerings, setOfferings] = useState([]);
@@ -296,23 +297,6 @@ export default function VendorStudio({ business, onBusinessUpdated }) {
     } catch (err) {
       setError(err.response?.data?.message || 'Could not delete notice.');
     }
-  }
-
-  function handleUpdateShopGps() {
-    if (!navigator.geolocation) {
-      setGpsStatus('error');
-      return;
-    }
-    setGpsStatus('detecting');
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setShopLat(pos.coords.latitude.toFixed(6));
-        setShopLng(pos.coords.longitude.toFixed(6));
-        setGpsStatus('detected');
-      },
-      () => setGpsStatus('error'),
-      { enableHighAccuracy: true, timeout: 8000 }
-    );
   }
 
   async function handleSaveShopInfo(e) {
@@ -831,53 +815,16 @@ export default function VendorStudio({ business, onBusinessUpdated }) {
             </div>
           </div>
 
-          <div className="bg-emerald-50/70 border border-emerald-200 rounded-xl p-4 space-y-3">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div>
-                <p className="text-sm font-semibold text-gray-900">Shop GPS Pin</p>
-                <p className="text-xs text-gray-600">
-                  {gpsStatus === 'detected'
-                    ? '✓ Updated to your current phone GPS — click Save below to apply!'
-                    : gpsStatus === 'error'
-                    ? 'Could not read GPS permission.'
-                    : `Current coordinates: ${shopLat}, ${shopLng}`}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={handleUpdateShopGps}
-                disabled={gpsStatus === 'detecting'}
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold cursor-pointer shrink-0"
-              >
-                {gpsStatus === 'detecting' ? 'Detecting...' : '📍 Update to My Current GPS'}
-              </button>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs text-gray-600 mb-1">Latitude</label>
-                <input
-                  type="number"
-                  step="any"
-                  value={shopLat}
-                  onChange={(e) => setShopLat(e.target.value)}
-                  required
-                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm"
-                />
-              </div>
-              <div>
-                <label className="block text-xs text-gray-600 mb-1">Longitude</label>
-                <input
-                  type="number"
-                  step="any"
-                  value={shopLng}
-                  onChange={(e) => setShopLng(e.target.value)}
-                  required
-                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm"
-                />
-              </div>
-            </div>
-          </div>
+          <LocationPickerMap
+            lat={shopLat}
+            lng={shopLng}
+            locationConfirmed={locationSource}
+            onConfirmSource={setLocationSource}
+            onChange={(nextLat, nextLng) => {
+              setShopLat(nextLat);
+              setShopLng(nextLng);
+            }}
+          />
 
           <button
             type="submit"
