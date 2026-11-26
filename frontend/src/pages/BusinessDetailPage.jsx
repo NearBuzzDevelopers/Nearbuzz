@@ -10,6 +10,8 @@ import {
   UPDATE_TYPE_LABELS,
   formatPrice,
   formatTimeAgo,
+  getGoogleMapsDirectionsUrl,
+  getOsmEmbedUrl,
 } from '../utils/constants';
 
 export default function BusinessDetailPage() {
@@ -130,6 +132,8 @@ export default function BusinessDetailPage() {
   }
 
   const badgeColor = CATEGORY_BADGE_COLORS[business.category] || 'bg-gray-100 text-gray-700';
+  const directionsUrl = getGoogleMapsDirectionsUrl(business.latitude, business.longitude);
+  const mapEmbedUrl = getOsmEmbedUrl(business.latitude, business.longitude);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -171,12 +175,22 @@ export default function BusinessDetailPage() {
               )}
 
               <div className="mt-4 flex flex-wrap gap-3 text-sm">
+                {directionsUrl && (
+                  <a
+                    href={directionsUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition shadow-sm"
+                  >
+                    📍 Get Directions
+                  </a>
+                )}
                 {business.phone && (
                   <a
                     href={`tel:${business.phone}`}
                     className="px-3.5 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium transition"
                   >
-                    Call: {business.phone}
+                    📞 Call: {business.phone}
                   </a>
                 )}
                 {business.whatsapp && (
@@ -186,7 +200,7 @@ export default function BusinessDetailPage() {
                     rel="noreferrer"
                     className="px-3.5 py-2 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-medium transition"
                   >
-                    WhatsApp Vendor
+                    💬 WhatsApp Owner
                   </a>
                 )}
               </div>
@@ -255,6 +269,36 @@ export default function BusinessDetailPage() {
             </form>
           )}
         </section>
+
+        {/* Embedded Shop Map & Directions */}
+        {mapEmbedUrl && (
+          <section className="bg-white rounded-2xl border border-gray-200 p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+              <div>
+                <h2 className="text-lg font-bold text-gray-900">Location & Directions</h2>
+                <p className="text-xs text-gray-500">{business.address}</p>
+              </div>
+              {directionsUrl && (
+                <a
+                  href={directionsUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center justify-center px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition self-start"
+                >
+                  🗺️ Open in Google Maps →
+                </a>
+              )}
+            </div>
+            <div className="rounded-xl overflow-hidden border border-gray-200 bg-gray-100">
+              <iframe
+                title={`Map of ${business.name}`}
+                src={mapEmbedUrl}
+                className="w-full h-64 sm:h-72 border-0"
+                loading="lazy"
+              />
+            </div>
+          </section>
+        )}
 
         {/* Gallery Photos */}
         {photos.length > 0 && (

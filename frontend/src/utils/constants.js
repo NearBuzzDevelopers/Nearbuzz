@@ -95,3 +95,17 @@ export function formatPrice(price, unit) {
   const cleanUnit = unit.replace(/^PER_/, '/ ').replaceAll('_', ' ').toLowerCase();
   return `₹${num} ${cleanUnit}`;
 }
+
+export function getGoogleMapsDirectionsUrl(lat, lng) {
+  if (lat == null || lng == null) return null;
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${lat},${lng}`)}`;
+}
+
+export function getOsmEmbedUrl(lat, lng, delta = 0.004) {
+  if (lat == null || lng == null) return null;
+  const minLng = (Number(lng) - delta).toFixed(6);
+  const minLat = (Number(lat) - delta).toFixed(6);
+  const maxLng = (Number(lng) + delta).toFixed(6);
+  const maxLat = (Number(lat) + delta).toFixed(6);
+  return `https://www.openstreetmap.org/export/embed.html?bbox=${minLng}%2C${minLat}%2C${maxLng}%2C${maxLat}&layer=mapnik&marker=${lat}%2C${lng}`;
+}

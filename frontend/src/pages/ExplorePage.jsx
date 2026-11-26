@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
+import NearbyMap from '../components/NearbyMap';
 import {
   CATEGORIES,
   CATEGORY_LABELS,
@@ -33,6 +34,7 @@ export default function ExplorePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [locating, setLocating] = useState(false);
+  const [viewMode, setViewMode] = useState('list'); // 'list' | 'map'
 
   const fetchNearby = useCallback(async () => {
     setLoading(true);
@@ -285,6 +287,39 @@ export default function ExplorePage() {
           </div>
         )}
 
+        {/* List / Map View Switcher */}
+        {!loading && (aiResult ? aiResult.results.length > 0 : businesses.length > 0) && (
+          <div className="flex items-center justify-between gap-3 mb-5">
+            <p className="text-sm text-gray-600 font-medium">
+              {aiResult ? aiResult.results.length : businesses.length} places found nearby
+            </p>
+            <div className="inline-flex rounded-xl bg-white border border-gray-200 p-1 shadow-sm">
+              <button
+                type="button"
+                onClick={() => setViewMode('list')}
+                className={`px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition cursor-pointer ${
+                  viewMode === 'list'
+                    ? 'bg-indigo-600 text-white'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                📋 List View
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode('map')}
+                className={`px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition cursor-pointer ${
+                  viewMode === 'map'
+                    ? 'bg-indigo-600 text-white'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                🗺️ Map View
+              </button>
+            </div>
+          </div>
+        )}
+
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {[1, 2, 3].map((i) => (
@@ -305,6 +340,12 @@ export default function ExplorePage() {
                 </button>
               }
             />
+          ) : viewMode === 'map' ? (
+            <NearbyMap
+              centerCoords={coords}
+              businesses={aiResult.results.map((r) => r.business)}
+              radiusMeters={aiResult.interpretedIntent.radiusMeters}
+            />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {aiResult.results.map(({ business, matchingOfferings }) => (
@@ -320,6 +361,12 @@ export default function ExplorePage() {
           <EmptyState
             title="No services found within this distance"
             subtitle="Try increasing the distance filter or selecting All Services."
+          />
+        ) : viewMode === 'map' ? (
+          <NearbyMap
+            centerCoords={coords}
+            businesses={businesses}
+            radiusMeters={radius}
           />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
