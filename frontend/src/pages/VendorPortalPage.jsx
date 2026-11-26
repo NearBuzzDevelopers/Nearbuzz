@@ -137,7 +137,7 @@ export default function VendorPortalPage() {
         {loadingBiz ? (
           <div className="h-44 bg-white rounded-2xl border border-emerald-100 animate-pulse" />
         ) : myBusiness ? (
-          <VendorStudio business={myBusiness} />
+          <VendorStudio business={myBusiness} onBusinessUpdated={setMyBusiness} />
         ) : (
           /* Simple 1-Page Shop Onboarding for Non-Tech Owners */
           <section className="bg-white rounded-2xl shadow-sm border border-emerald-200 p-6 sm:p-8">

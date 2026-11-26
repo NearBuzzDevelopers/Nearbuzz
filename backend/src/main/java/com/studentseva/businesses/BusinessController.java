@@ -46,6 +46,25 @@ public class BusinessController {
         return ResponseEntity.ok(businessService.getMyBusiness(userEmail));
     }
 
+    @PutMapping("/my")
+    @Operation(summary = "Update the business owned by the currently authenticated vendor")
+    public ResponseEntity<BusinessResponse> updateMyBusiness(
+            @Valid @RequestBody CreateBusinessRequest request,
+            Authentication authentication
+    ) {
+        return ResponseEntity.ok(businessService.updateMyBusiness(request, authentication.getName()));
+    }
+
+    @GetMapping
+    @Operation(summary = "List all open businesses across all areas ordered by distance (public)")
+    public ResponseEntity<List<NearbyBusinessResponse>> listAllOpenBusinesses(
+            @RequestParam(required = false) Double lat,
+            @RequestParam(required = false) Double lng,
+            @RequestParam(required = false) Business.Category category
+    ) {
+        return ResponseEntity.ok(businessService.listAllOpenBusinesses(lat, lng, category));
+    }
+
     @GetMapping("/nearby")
     @Operation(summary = "Search for nearby businesses by GPS coordinates (public)")
     public ResponseEntity<List<NearbyBusinessResponse>> getNearbyBusinesses(

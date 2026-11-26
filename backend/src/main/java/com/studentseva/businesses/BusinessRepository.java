@@ -115,4 +115,34 @@ public interface BusinessRepository extends JpaRepository<Business, UUID> {
             @Param("category") String category,
             @Param("limit") int limit
     );
+    @Query(value = """
+        SELECT b.id AS id,
+               b.owner_id AS ownerId,
+               u.name AS ownerName,
+               b.name AS name,
+               b.category AS category,
+               b.description AS description,
+               b.address AS address,
+               ST_Y(b.location::geometry) AS latitude,
+               ST_X(b.location::geometry) AS longitude,
+               b.phone AS phone,
+               b.whatsapp AS whatsapp,
+               b.status AS status,
+               b.verification_status AS verificationStatus,
+               ROUND(ST_Distance(b.location, ST_SetSRID(ST_MakePoint(:lng, :lat), 4326)::geography)::numeric, 1) AS distanceMeters,
+               b.created_at AS createdAt
+        FROM businesses b
+        JOIN users u ON b.owner_id = u.id
+        WHERE b.status = 'OPEN'
+          AND b.verification_status <> 'SUSPENDED'
+          AND (:category IS NULL OR b.category = :category)
+        ORDER BY distanceMeters ASC, b.created_at DESC
+        LIMIT :limit
+        """, nativeQuery = true)
+    List<NearbyBusinessProjection> findAllOpenOrderedByDistance(
+            @Param("lat") double lat,
+            @Param("lng") double lng,
+            @Param("category") String category,
+            @Param("limit") int limit
+    );
 }

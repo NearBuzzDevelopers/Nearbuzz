@@ -102,7 +102,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/businesses/my").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/v1/businesses/*/follow/status").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/v1/updates/following").authenticated()
-                .requestMatchers(HttpMethod.GET, "/api/v1/businesses/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/businesses", "/api/v1/businesses/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/offerings/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/updates/**").permitAll()
 

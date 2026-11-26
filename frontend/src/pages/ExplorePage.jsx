@@ -40,9 +40,11 @@ export default function ExplorePage() {
     setLoading(true);
     setError('');
     try {
-      const params = { lat: coords.lat, lng: coords.lng, radius };
+      const params = { lat: coords.lat, lng: coords.lng };
       if (category) params.category = category;
-      const res = await api.get('/businesses/nearby', { params });
+      const endpoint = radius === 0 ? '/businesses' : '/businesses/nearby';
+      if (radius !== 0) params.radius = radius;
+      const res = await api.get(endpoint, { params });
       setBusinesses(res.data);
     } catch (err) {
       setError(err.response?.data?.message || 'Unable to load nearby services.');
@@ -217,6 +219,8 @@ export default function ExplorePage() {
                   <option value={2000} className="text-gray-900">Within 2 km</option>
                   <option value={5000} className="text-gray-900">Within 5 km</option>
                   <option value={10000} className="text-gray-900">Within 10 km</option>
+                  <option value={50000} className="text-gray-900">Within 50 km</option>
+                  <option value={0} className="text-gray-900">All Areas (Everywhere)</option>
                 </select>
               )}
             </div>
@@ -360,13 +364,22 @@ export default function ExplorePage() {
         ) : businesses.length === 0 ? (
           <EmptyState
             title="No services found within this distance"
-            subtitle="Try increasing the distance filter or selecting All Services."
+            subtitle="The shop you are looking for might be in another area or not GPS-pinned nearby yet."
+            action={
+              <button
+                type="button"
+                onClick={() => setRadius(0)}
+                className="mt-4 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold cursor-pointer"
+              >
+                🌍 Show All Shops Everywhere →
+              </button>
+            }
           />
         ) : viewMode === 'map' ? (
           <NearbyMap
             centerCoords={coords}
             businesses={businesses}
-            radiusMeters={radius}
+            radiusMeters={radius > 0 ? radius : null}
           />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">

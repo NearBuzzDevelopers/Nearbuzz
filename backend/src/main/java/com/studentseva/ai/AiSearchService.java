@@ -55,6 +55,17 @@ public class AiSearchService {
                 .filter(match -> match != null)
                 .toList();
 
+        // Fallback: if nothing matched within the local radius (e.g. different city/campus or shop
+        // not yet GPS-updated), search all open shops so owners' newly added listings remain discoverable.
+        if (matches.isEmpty()) {
+            List<NearbyBusinessResponse> allBusinesses = businessService.listAllOpenBusinesses(
+                    lat, lng, intent.category());
+            matches = allBusinesses.stream()
+                    .map(biz -> matchBusinessAndOfferings(biz, intent))
+                    .filter(match -> match != null)
+                    .toList();
+        }
+
         return new AiSearchResponse(query.trim(), intent, matches.size(), matches);
     }
 

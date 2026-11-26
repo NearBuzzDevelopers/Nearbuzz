@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/axios';
 import {
+  CATEGORIES,
   OFFERING_TYPES,
   OFFERING_STATUSES,
   OFFERING_STATUS_COLORS,
@@ -46,10 +47,21 @@ const EXPIRY_OPTIONS = [
   { value: '0', label: 'Keep until I delete it' },
 ];
 
-export default function VendorStudio({ business }) {
+export default function VendorStudio({ business, onBusinessUpdated }) {
   const [activeTab, setActiveTab] = useState('offerings');
   const [feedback, setFeedback] = useState('');
   const [error, setError] = useState('');
+
+  // Edit Shop Details & GPS state
+  const [shopName, setShopName] = useState(business.name || '');
+  const [shopCategory, setShopCategory] = useState(business.category || 'HOSTEL_PG');
+  const [shopAddress, setShopAddress] = useState(business.address || '');
+  const [shopPhone, setShopPhone] = useState(business.phone || business.whatsapp || '');
+  const [shopDesc, setShopDesc] = useState(business.description || '');
+  const [shopLat, setShopLat] = useState(String(business.latitude ?? 28.475));
+  const [shopLng, setShopLng] = useState(String(business.longitude ?? 77.495));
+  const [gpsStatus, setGpsStatus] = useState('idle');
+  const [savingShop, setSavingShop] = useState(false);
 
   const [offerings, setOfferings] = useState([]);
   const [photos, setPhotos] = useState([]);
@@ -286,11 +298,53 @@ export default function VendorStudio({ business }) {
     }
   }
 
+  function handleUpdateShopGps() {
+    if (!navigator.geolocation) {
+      setGpsStatus('error');
+      return;
+    }
+    setGpsStatus('detecting');
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setShopLat(pos.coords.latitude.toFixed(6));
+        setShopLng(pos.coords.longitude.toFixed(6));
+        setGpsStatus('detected');
+      },
+      () => setGpsStatus('error'),
+      { enableHighAccuracy: true, timeout: 8000 }
+    );
+  }
+
+  async function handleSaveShopInfo(e) {
+    e.preventDefault();
+    setSavingShop(true);
+    setError('');
+    try {
+      const res = await api.put('/businesses/my', {
+        name: shopName,
+        category: shopCategory,
+        description: shopDesc,
+        address: shopAddress,
+        latitude: Number(shopLat),
+        longitude: Number(shopLng),
+        phone: shopPhone || undefined,
+        whatsapp: shopPhone || undefined,
+      });
+      if (onBusinessUpdated) onBusinessUpdated(res.data);
+      notifySuccess('Shop details & GPS location saved!');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Could not save shop details.');
+    } finally {
+      setSavingShop(false);
+    }
+  }
+
   const tabs = [
     { id: 'offerings', label: `🏷️ Items & Prices (${offerings.length})` },
     { id: 'hours', label: '⏰ Opening Hours' },
     { id: 'photos', label: `📸 Photos (${photos.length})` },
     { id: 'updates', label: `📢 Post Notice (${updates.length})` },
+    { id: 'info', label: '⚙️ Shop Info & GPS' },
   ];
 
   return (
@@ -708,6 +762,131 @@ export default function VendorStudio({ business }) {
             ))}
           </div>
         </div>
+      )}
+
+      {/* TAB 5: SHOP INFO & GPS */}
+      {activeTab === 'info' && (
+        <form onSubmit={handleSaveShopInfo} className="space-y-4 max-w-2xl">
+          <div>
+            <h3 className="text-base font-bold text-gray-900">Edit Shop Details & Map Location</h3>
+            <p className="text-xs text-gray-600">
+              Make sure your GPS location matches your real shop so nearby students can find you.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 mb-1">Shop Name *</label>
+              <input
+                type="text"
+                value={shopName}
+                onChange={(e) => setShopName(e.target.value)}
+                required
+                className="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 mb-1">Category *</label>
+              <select
+                value={shopCategory}
+                onChange={(e) => setShopCategory(e.target.value)}
+                className="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm bg-white"
+              >
+                {CATEGORIES.filter((c) => c.value).map((c) => (
+                  <option key={c.value} value={c.value}>{c.label}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-gray-700 mb-1">Full Address *</label>
+            <input
+              type="text"
+              value={shopAddress}
+              onChange={(e) => setShopAddress(e.target.value)}
+              required
+              className="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 mb-1">Phone / WhatsApp</label>
+              <input
+                type="tel"
+                value={shopPhone}
+                onChange={(e) => setShopPhone(e.target.value)}
+                className="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 mb-1">Short Description</label>
+              <input
+                type="text"
+                value={shopDesc}
+                onChange={(e) => setShopDesc(e.target.value)}
+                className="w-full px-3.5 py-2.5 border border-gray-300 rounded-xl text-sm"
+              />
+            </div>
+          </div>
+
+          <div className="bg-emerald-50/70 border border-emerald-200 rounded-xl p-4 space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-semibold text-gray-900">Shop GPS Pin</p>
+                <p className="text-xs text-gray-600">
+                  {gpsStatus === 'detected'
+                    ? '✓ Updated to your current phone GPS — click Save below to apply!'
+                    : gpsStatus === 'error'
+                    ? 'Could not read GPS permission.'
+                    : `Current coordinates: ${shopLat}, ${shopLng}`}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleUpdateShopGps}
+                disabled={gpsStatus === 'detecting'}
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold cursor-pointer shrink-0"
+              >
+                {gpsStatus === 'detecting' ? 'Detecting...' : '📍 Update to My Current GPS'}
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs text-gray-600 mb-1">Latitude</label>
+                <input
+                  type="number"
+                  step="any"
+                  value={shopLat}
+                  onChange={(e) => setShopLat(e.target.value)}
+                  required
+                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-600 mb-1">Longitude</label>
+                <input
+                  type="number"
+                  step="any"
+                  value={shopLng}
+                  onChange={(e) => setShopLng(e.target.value)}
+                  required
+                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm"
+                />
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={savingShop}
+            className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold cursor-pointer disabled:opacity-50"
+          >
+            {savingShop ? 'Saving...' : 'Save Shop Details & Location'}
+          </button>
+        </form>
       )}
     </section>
   );

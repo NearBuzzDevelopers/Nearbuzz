@@ -75,6 +75,49 @@ public class BusinessService {
     }
 
     /**
+     * Updates the authenticated owner's shop profile, address, contact info, and GPS coordinates.
+     */
+    @Transactional
+    public BusinessResponse updateMyBusiness(CreateBusinessRequest request, String ownerEmail) {
+        User owner = userRepository.findByEmail(ownerEmail)
+                .orElseThrow(() -> new NotFoundException("Owner user not found with email: " + ownerEmail));
+
+        Business business = businessRepository.findByOwnerId(owner.getId())
+                .orElseThrow(() -> new NotFoundException("No business listing found for your account."));
+
+        Point location = geometryFactory.createPoint(new Coordinate(request.longitude(), request.latitude()));
+        business.setName(request.name().trim());
+        business.setCategory(request.category());
+        business.setDescription(request.description() != null ? request.description().trim() : null);
+        business.setAddress(request.address().trim());
+        business.setLocation(location);
+        business.setPhone(request.phone() != null ? request.phone().trim() : null);
+        business.setWhatsapp(request.whatsapp() != null ? request.whatsapp().trim() : null);
+
+        Business saved = businessRepository.saveAndFlush(business);
+        return toBusinessResponse(saved);
+    }
+
+    /**
+     * Lists all OPEN, non-suspended businesses across all locations, ordered by distance from (lat, lng).
+     */
+    @Transactional(readOnly = true)
+    public List<NearbyBusinessResponse> listAllOpenBusinesses(
+            Double lat,
+            Double lng,
+            Business.Category category
+    ) {
+        double refLat = (lat != null && lat >= -90.0 && lat <= 90.0) ? lat : 28.475;
+        double refLng = (lng != null && lng >= -180.0 && lng <= 180.0) ? lng : 77.495;
+        String categoryName = category != null ? category.name() : null;
+
+        return businessRepository.findAllOpenOrderedByDistance(refLat, refLng, categoryName, 100)
+                .stream()
+                .map(this::toNearbyResponse)
+                .toList();
+    }
+
+    /**
      * Retrieves the business belonging to the currently authenticated user.
      */
     @Transactional(readOnly = true)
@@ -138,24 +181,28 @@ public class BusinessService {
                 : businessRepository.findNearby(lat, lng, radius, limit);
 
         return projections.stream()
-                .map(p -> new NearbyBusinessResponse(
-                        p.getId(),
-                        p.getOwnerId(),
-                        p.getOwnerName(),
-                        p.getName(),
-                        p.getCategory(),
-                        p.getDescription(),
-                        p.getAddress(),
-                        p.getLatitude(),
-                        p.getLongitude(),
-                        p.getPhone(),
-                        p.getWhatsapp(),
-                        p.getStatus(),
-                        p.getVerificationStatus(),
-                        p.getDistanceMeters(),
-                        p.getCreatedAt()
-                ))
+                .map(this::toNearbyResponse)
                 .toList();
+    }
+
+    private NearbyBusinessResponse toNearbyResponse(NearbyBusinessProjection p) {
+        return new NearbyBusinessResponse(
+                p.getId(),
+                p.getOwnerId(),
+                p.getOwnerName(),
+                p.getName(),
+                p.getCategory(),
+                p.getDescription(),
+                p.getAddress(),
+                p.getLatitude(),
+                p.getLongitude(),
+                p.getPhone(),
+                p.getWhatsapp(),
+                p.getStatus(),
+                p.getVerificationStatus(),
+                p.getDistanceMeters(),
+                p.getCreatedAt()
+        );
     }
 
     /**
