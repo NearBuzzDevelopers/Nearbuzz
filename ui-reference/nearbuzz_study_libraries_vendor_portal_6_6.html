@@ -1,0 +1,2312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NearBuzz — Study Libraries Vendor Portal (6/6)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: #F8FAFC;
+      color: #0F172A;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .campus-map-bg {
+      background-color: #E8F5EE;
+      background-image:
+        linear-gradient(to right, rgba(5, 150, 105, 0.09) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(5, 150, 105, 0.09) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+    .fade-in {
+      animation: fadeIn 0.2s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .mic-pulse {
+      animation: micPulse 1.2s infinite;
+    }
+    @keyframes micPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.45); }
+      50% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-emerald-200 selection:text-emerald-950">
+
+  <!-- ==================== STICKY TOP NAVIGATION BAR ==================== -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-emerald-100 shadow-xs">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+      <!-- Brand Badge + Portal Title -->
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="w-11 h-11 rounded-2xl bg-[#059669] text-white font-extrabold text-base flex items-center justify-center shadow-sm shrink-0">
+          NB
+        </div>
+        <div class="min-w-0">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-base sm:text-lg font-extrabold tracking-tight text-[#0F172A]">NB NearBuzz</span>
+            <span class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-[#ECFDF5] text-[#047857] border border-emerald-200">
+              📖 Study Library Portal (6/6)
+            </span>
+          </div>
+          <p id="navLibraryName" class="text-xs font-semibold text-slate-600 truncate mt-0.5">
+            Saraswati 24x7 Study Library
+          </p>
+        </div>
+      </div>
+
+      <!-- Live Status Pill + Prominent Indigo Student Preview Button -->
+      <div class="flex items-center gap-2 sm:gap-2.5 flex-wrap">
+        <div
+          id="topStatusPill"
+          class="min-h-[44px] px-3.5 py-2 rounded-2xl text-xs sm:text-sm font-extrabold border-2 flex items-center gap-2"
+        >
+          <!-- Populated dynamically -->
+        </div>
+
+        <button
+          onclick="openStudentPreview()"
+          class="min-h-[46px] px-4 sm:px-5 py-2 rounded-2xl bg-[#4F46E5] hover:bg-indigo-700 active:scale-[0.99] text-white font-bold text-xs sm:text-sm shadow-sm transition flex items-center gap-2 cursor-pointer"
+        >
+          <span class="text-base">👀</span>
+          <span class="hidden sm:inline">Preview What Students See</span>
+          <span class="sm:hidden">Preview</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN WORKSPACE ==================== -->
+  <main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-5 sm:py-7 space-y-6">
+
+    <!-- ==================== 5 BIG ICON-LABELED NAVIGATION TABS ==================== -->
+    <nav class="bg-white rounded-2xl border border-emerald-100 shadow-xs p-2 overflow-x-auto no-scrollbar" aria-label="Study library dashboard tabs">
+      <div id="tabsBar" class="flex items-center gap-2 min-w-max lg:min-w-0 lg:grid lg:grid-cols-5">
+        <!-- Populated dynamically -->
+      </div>
+    </nav>
+
+    <!-- ==================== ACTIVE TAB PANEL ==================== -->
+    <section id="tabContent" class="fade-in">
+      <!-- Populated dynamically -->
+    </section>
+
+  </main>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="mt-auto border-t border-emerald-100 bg-white py-5">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
+      <span><strong>NearBuzz Study Libraries Portal (6/6)</strong> — Bholaram Ustad Marg, Near Campus Gate 2, Indore</span>
+      <span class="text-[#047857] font-semibold">Owner Helpdesk (WhatsApp): +91 98260 00112</span>
+    </div>
+  </footer>
+
+  <!-- ==================== QUICK ADD COMMON BOOKS MODAL ==================== -->
+  <div id="quickAddModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 backdrop-blur-xs p-3 sm:p-6 overflow-y-auto">
+    <div class="bg-white w-full max-w-xl rounded-2xl shadow-2xl border border-emerald-100 overflow-hidden my-auto max-h-[90vh] flex flex-col fade-in">
+      <div class="bg-[#059669] text-white px-5 py-4 flex items-center justify-between gap-3">
+        <div>
+          <span class="text-[11px] font-bold uppercase tracking-wider bg-white/20 px-2.5 py-0.5 rounded-full">1-Tap Starter Shelf</span>
+          <h2 class="text-lg sm:text-xl font-extrabold mt-1">⚡ Quick Add Common Books</h2>
+        </div>
+        <button
+          onclick="closeQuickAddModal()"
+          aria-label="Close quick add books modal"
+          class="w-10 h-10 rounded-xl bg-white/15 hover:bg-white/25 text-white font-bold text-lg flex items-center justify-center cursor-pointer"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div id="quickAddBody" class="p-4 sm:p-5 overflow-y-auto space-y-2.5 bg-slate-50">
+        <!-- Populated dynamically -->
+      </div>
+
+      <div class="px-5 py-4 bg-white border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <span id="quickAddCountLabel" class="text-xs sm:text-sm font-bold text-slate-600">0 books selected</span>
+        <div class="flex items-center gap-2.5 w-full sm:w-auto">
+          <button
+            type="button"
+            onclick="closeQuickAddModal()"
+            class="flex-1 sm:flex-none min-h-[46px] px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm cursor-pointer"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onclick="confirmQuickAddBooks()"
+            class="flex-1 sm:flex-none min-h-[46px] px-6 py-2 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-extrabold text-sm shadow-sm cursor-pointer"
+          >
+            + Add Selected Books
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== LIVE STUDENT PREVIEW MODAL (INDIGO & BLUE #4F46E5) ==================== -->
+  <div id="studentPreviewModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/65 backdrop-blur-xs p-3 sm:p-6 overflow-y-auto">
+    <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl border border-indigo-100 overflow-hidden my-auto max-h-[92vh] flex flex-col fade-in">
+      <!-- Indigo Student App Header -->
+      <div class="bg-gradient-to-r from-[#4F46E5] to-blue-600 text-white px-5 py-4 flex items-center justify-between gap-3">
+        <div>
+          <span class="inline-block text-[11px] font-bold uppercase tracking-wider bg-white/20 px-2.5 py-0.5 rounded-full">
+            Student App View
+          </span>
+          <h2 class="text-lg sm:text-xl font-extrabold mt-1">How Students See Your Study Library</h2>
+        </div>
+        <button
+          onclick="closeStudentPreview()"
+          aria-label="Close student preview"
+          class="w-11 h-11 rounded-xl bg-white/15 hover:bg-white/25 text-white font-bold text-lg flex items-center justify-center cursor-pointer"
+        >
+          ✕
+        </button>
+      </div>
+
+      <!-- Dynamic Student Preview Content -->
+      <div id="studentPreviewBody" class="p-4 sm:p-6 overflow-y-auto space-y-5 bg-slate-50">
+        <!-- Populated dynamically -->
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-5 py-3.5 bg-white border-t border-slate-200 flex items-center justify-between gap-3">
+        <span class="text-xs text-slate-500">Every vacant seat, book, facility &amp; photo edit updates live here.</span>
+        <button
+          onclick="closeStudentPreview()"
+          class="min-h-[46px] px-5 py-2.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-sm cursor-pointer"
+        >
+          Back to Owner Portal
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== FLOATING TOAST CONTAINER ==================== -->
+  <div id="toastContainer" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none flex flex-col gap-2 items-center w-[92%] max-w-md"></div>
+
+  <!-- ==================== APPLICATION SCRIPT ==================== -->
+  <script>
+    /* =========================================================================
+       1. CONSTANTS, AVAILABILITY STATES, BOOK CATEGORIES & CAMPUS LANDMARKS
+       ========================================================================= */
+    const AVAILABILITY_MODES = {
+      available: {
+        key: 'available',
+        label: 'Still Seats Available Today',
+        shortNav: 'Seats Open',
+        icon: '🟢',
+        desc: 'Students see green badge & can walk in for admission',
+        pillClass: 'bg-[#ECFDF5] border-[#059669] text-[#047857]',
+        cardActiveClass: 'bg-[#ECFDF5] border-[#059669] ring-2 ring-emerald-200 text-[#047857]'
+      },
+      limited: {
+        key: 'limited',
+        label: 'Limited Seats Left',
+        shortNav: 'Limited Seats',
+        icon: '🟡',
+        desc: 'Alerts students to book quickly before seats fill up',
+        pillClass: 'bg-amber-50 border-amber-400 text-amber-900',
+        cardActiveClass: 'bg-amber-50 border-amber-500 ring-2 ring-amber-200 text-amber-950'
+      },
+      full: {
+        key: 'full',
+        label: 'Library Full Right Now',
+        shortNav: 'Full',
+        icon: '🔴',
+        desc: 'Students know shifts are currently full (waitlist only)',
+        pillClass: 'bg-red-50 border-red-400 text-red-800',
+        cardActiveClass: 'bg-red-50 border-red-500 ring-2 ring-red-200 text-red-900'
+      }
+    };
+
+    const SEAT_TYPES = ['Reserved (Fixed Desk)', 'Unreserved (Any Seat)'];
+
+    const BOOK_CATEGORIES = [
+      'GATE / Engineering',
+      'UPSC / SSC / CAT',
+      'B.Tech Reference',
+      'Magazines & Newspapers'
+    ];
+
+    const QUICK_ADD_BOOKS = [
+      { id: 'qb1', title: 'GATE CS Made Easy Notes (Complete Set)', category: 'GATE / Engineering', copies: 3, checked: false },
+      { id: 'qb2', title: 'R.S. Aggarwal Quantitative Aptitude', category: 'UPSC / SSC / CAT', copies: 4, checked: false },
+      { id: 'qb3', title: 'CLRS Introduction to Algorithms', category: 'B.Tech Reference', copies: 2, checked: false },
+      { id: 'qb4', title: 'The Hindu Daily Newspaper', category: 'Magazines & Newspapers', copies: 3, checked: false },
+      { id: 'qb5', title: 'Pratiyogita Darpan Monthly Magazine', category: 'Magazines & Newspapers', copies: 2, checked: false },
+      { id: 'qb6', title: 'Lucent General Knowledge (Latest Edition)', category: 'UPSC / SSC / CAT', copies: 5, checked: false },
+      { id: 'qb7', title: 'SSC CGL Previous Year Solved Papers', category: 'UPSC / SSC / CAT', copies: 3, checked: false },
+      { id: 'qb8', title: 'B.Tech Engineering Mathematics (B.S. Grewal)', category: 'B.Tech Reference', copies: 4, checked: false }
+    ];
+
+    const ALL_FACILITIES = [
+      { name: 'Full AC', icon: '❄️' },
+      { name: 'High-Speed Wi-Fi', icon: '📶' },
+      { name: 'Individual Charging Socket', icon: '🔌' },
+      { name: 'Personal Locker', icon: '🔐' },
+      { name: 'RO Cold Water', icon: '💧' },
+      { name: 'Newspapers & Magazines', icon: '📰' },
+      { name: 'Separate Girls Section', icon: '👩' },
+      { name: 'CCTV Security', icon: '📹' },
+      { name: 'Two-Wheeler Parking', icon: '🛵' },
+      { name: 'Silent Study Zone', icon: '🤫' }
+    ];
+
+    const NOTICE_TEMPLATES = [
+      '5 new AC reserved seats opened for Exam Season!',
+      'Library open 24x7 with power backup during Semester Exams.',
+      'New GATE 2027, SSC & B.Tech reference books added to shelf.'
+    ];
+
+    const TIME_SLOTS = [
+      '12:00 AM', '05:00 AM', '06:00 AM', '07:00 AM', '08:00 AM', '09:00 AM', '10:00 AM',
+      '06:00 PM', '08:00 PM', '09:00 PM', '10:00 PM', '11:00 PM', '11:59 PM'
+    ];
+
+    const DAYS_LIST = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+    const CAMPUS_LANDMARKS = [
+      { name: 'Campus Gate 1', x: 30, y: 46, lat: 22.6922, lng: 75.8655 },
+      { name: 'Campus Gate 2', x: 64, y: 40, lat: 22.6904, lng: 75.8703 },
+      { name: 'Bholaram Square', x: 48, y: 68, lat: 22.6916, lng: 75.8678 }
+    ];
+
+    /* =========================================================================
+       2. APPLICATION STATE (PRE-LOADED WITH SARASWATI 24x7 STUDY LIBRARY)
+       ========================================================================= */
+    const state = {
+      activeTab: 'seats', // 'seats' | 'books' | 'facilities' | 'hours' | 'info'
+      addShiftExpanded: false,
+      addBookExpanded: false,
+      bookSearch: '',
+      bookCategoryFilter: 'All',
+      allIssuedOnly: false,
+      studentBookSearch: '',
+      listeningField: null, // 'shiftName' | 'bookTitle' | 'noticeText' | null
+
+      library: {
+        name: 'Saraswati 24x7 Study Library',
+        ownerName: 'Vinod Tiwari',
+        phone: '98268 90341',
+        address: '2nd Floor, Above SBI ATM, Bholaram Ustad Marg, Near Campus Gate 2, Indore',
+        availability: 'available', // 'available' | 'limited' | 'full'
+        mapPin: {
+          x: 64,
+          y: 40,
+          lat: 22.6904,
+          lng: 75.8703,
+          landmark: 'Near Campus Gate 2'
+        }
+      },
+
+      shifts: [
+        {
+          id: 'sh_1',
+          name: 'Full Day Reserved Seat',
+          timing: '24x7 Access',
+          fee: 1400,
+          seatType: 'Reserved (Fixed Desk)',
+          vacantSeats: 4,
+          note: 'Fixed personal cabin with LED lamp, charging socket & locker',
+          active: true
+        },
+        {
+          id: 'sh_2',
+          name: 'Morning Shift',
+          timing: '6:00 AM – 2:00 PM',
+          fee: 800,
+          seatType: 'Unreserved (Any Seat)',
+          vacantSeats: 7,
+          note: 'Quiet AC reading hall with morning newspapers & RO water',
+          active: true
+        },
+        {
+          id: 'sh_3',
+          name: 'Evening Shift',
+          timing: '2:00 PM – 10:00 PM',
+          fee: 800,
+          seatType: 'Unreserved (Any Seat)',
+          vacantSeats: 3,
+          note: 'Ideal for post-college study & online mock tests on Wi-Fi',
+          active: true
+        },
+        {
+          id: 'sh_4',
+          name: 'Night Owl Shift',
+          timing: '9:00 PM – 6:00 AM',
+          fee: 700,
+          seatType: 'Reserved (Fixed Desk)',
+          vacantSeats: 5,
+          note: 'Pin-drop silence, full power backup & CCTV monitored hall',
+          active: true
+        }
+      ],
+
+      newShift: {
+        name: '',
+        timing: '',
+        fee: '',
+        seatType: 'Reserved (Fixed Desk)',
+        vacantSeats: 2,
+        note: ''
+      },
+
+      books: [
+        {
+          id: 'lb_1',
+          title: 'GATE CS Made Easy Handbook & Solved Papers',
+          category: 'GATE / Engineering',
+          copies: 4,
+          status: 'Available'
+        },
+        {
+          id: 'lb_2',
+          title: 'Indian Polity by M. Laxmikanth (7th Edition)',
+          category: 'UPSC / SSC / CAT',
+          copies: 3,
+          status: 'Available'
+        },
+        {
+          id: 'lb_3',
+          title: 'Operating System Concepts (Galvin) — B.Tech Reference',
+          category: 'B.Tech Reference',
+          copies: 2,
+          status: 'Available'
+        },
+        {
+          id: 'lb_4',
+          title: 'The Hindu & Indian Express Daily Newspapers',
+          category: 'Magazines & Newspapers',
+          copies: 3,
+          status: 'Available'
+        },
+        {
+          id: 'lb_5',
+          title: 'Arun Sharma Quantitative Aptitude for CAT',
+          category: 'UPSC / SSC / CAT',
+          copies: 0,
+          status: 'All Issued'
+        }
+      ],
+
+      newBook: {
+        title: '',
+        category: 'GATE / Engineering',
+        copies: 2,
+        status: 'Available'
+      },
+
+      quickAddBooks: JSON.parse(JSON.stringify(QUICK_ADD_BOOKS)),
+
+      rules: {
+        timingType: 'Open 24x7',
+        freeTrial: 'Yes (1 Day Free)',
+        regFeeType: 'No Fee (₹0)', // 'No Fee (₹0)' | '₹100 One-Time' | '₹200 One-Time' | 'Custom ₹'
+        regFeeCustom: '',
+        lockerFacility: 'Free Included',
+        facilities: [
+          'Full AC',
+          'High-Speed Wi-Fi',
+          'Individual Charging Socket',
+          'Personal Locker',
+          'RO Cold Water',
+          'Newspapers & Magazines',
+          'Separate Girls Section',
+          'CCTV Security',
+          'Two-Wheeler Parking',
+          'Silent Study Zone'
+        ]
+      },
+
+      open24x7AllWeek: true,
+      hours: DAYS_LIST.map((day) => ({
+        day,
+        open: true,
+        from: '06:00 AM',
+        to: '11:00 PM'
+      })),
+
+      notices: [
+        {
+          id: 'not_1',
+          text: '5 new AC reserved seats opened for Exam Season!',
+          time: 'Today, 9:30 AM'
+        }
+      ],
+      noticeDraft: '',
+
+      photos: [
+        { id: 'ph_1', label: 'Silent AC Study Hall Desks', url: 'https://placehold.co/600x400/ECFDF5/047857?text=AC+Study+Hall+Desks' },
+        { id: 'ph_2', label: 'Reserved Cabin & Charging Point', url: 'https://placehold.co/600x400/D1FAE5/065F46?text=Reserved+Desk+%26+Locker' },
+        { id: 'ph_3', label: 'Library Paper Fee Chart', url: 'https://placehold.co/600x400/F1F5F9/0F172A?text=Saraswati+Library+Fee+Chart' }
+      ]
+    };
+
+    /* =========================================================================
+       3. UTILITIES (ESCAPE, TIME FORMAT, TOASTS — NO alert() OR confirm())
+       ========================================================================= */
+    function escapeHtml(str) {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function getCurrentTimeLabel() {
+      return new Date().toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true });
+    }
+
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const el = document.createElement('div');
+      const palette =
+        type === 'error'
+          ? 'bg-red-700 text-white border-red-800'
+          : type === 'info'
+          ? 'bg-slate-900 text-white border-slate-700'
+          : 'bg-[#047857] text-white border-emerald-900';
+
+      el.className = `pointer-events-auto px-4 py-3 rounded-2xl shadow-lg border text-sm font-semibold flex items-center gap-2.5 fade-in ${palette}`;
+      el.innerHTML = `<span>${type === 'error' ? '⚠️' : type === 'info' ? 'ℹ️' : '✅'}</span><span>${escapeHtml(message)}</span>`;
+      container.appendChild(el);
+
+      setTimeout(() => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(8px)';
+        el.style.transition = 'all 0.25s ease';
+        setTimeout(() => el.remove(), 260);
+      }, 2800);
+    }
+
+    /* =========================================================================
+       4. WEB SPEECH API — VOICE TO TEXT (WITH GRACEFUL FALLBACK TOAST)
+       ========================================================================= */
+    function startVoiceInput(targetField) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        showToast('Voice typing is not supported in this browser. Please type normally.', 'info');
+        return;
+      }
+
+      try {
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'en-IN';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        state.listeningField = targetField;
+        renderTabContent();
+        showToast('Listening... Speak clearly now', 'info');
+
+        recognition.onresult = (event) => {
+          const spoken = event.results[0][0].transcript;
+          if (targetField === 'shiftName') {
+            state.newShift.name = state.newShift.name ? `${state.newShift.name} ${spoken}` : spoken;
+          } else if (targetField === 'bookTitle') {
+            state.newBook.title = state.newBook.title ? `${state.newBook.title} ${spoken}` : spoken;
+          } else if (targetField === 'noticeText') {
+            state.noticeDraft = state.noticeDraft ? `${state.noticeDraft} ${spoken}` : spoken;
+          }
+          state.listeningField = null;
+          renderTabContent();
+          showToast('Voice text added!');
+        };
+
+        recognition.onerror = () => {
+          state.listeningField = null;
+          renderTabContent();
+          showToast('Could not hear clearly. Tap mic again or type normally.', 'error');
+        };
+
+        recognition.onend = () => {
+          if (state.listeningField === targetField) {
+            state.listeningField = null;
+            renderTabContent();
+          }
+        };
+
+        recognition.start();
+      } catch (err) {
+        state.listeningField = null;
+        renderTabContent();
+        showToast('Microphone unavailable. Please type instead.', 'info');
+      }
+    }
+
+    /* =========================================================================
+       5. MASTER RENDER FUNCTIONS
+       ========================================================================= */
+    function renderAll() {
+      document.getElementById('navLibraryName').textContent = state.library.name;
+      renderTopStatusPill();
+      renderTabsBar();
+      renderTabContent();
+    }
+
+    function renderTopStatusPill() {
+      const av = AVAILABILITY_MODES[state.library.availability];
+      const pill = document.getElementById('topStatusPill');
+      pill.className = `min-h-[44px] px-3.5 py-2 rounded-2xl text-xs sm:text-sm font-extrabold border-2 flex items-center gap-2 ${av.pillClass}`;
+      pill.innerHTML = `<span>${av.icon}</span><span>${av.shortNav}</span>`;
+    }
+
+    function renderTabsBar() {
+      const tabs = [
+        { id: 'seats', icon: '🪑', label: 'Seats & Shift Plans' },
+        { id: 'books', icon: '📚', label: 'Available Books & Magazines' },
+        { id: 'facilities', icon: '✨', label: 'Facilities & Rules' },
+        { id: 'hours', icon: '🕒', label: 'Hours & Notices' },
+        { id: 'info', icon: '📍', label: 'Shop Info, Photos & GPS' }
+      ];
+
+      document.getElementById('tabsBar').innerHTML = tabs
+        .map((t) => {
+          const active = state.activeTab === t.id;
+          return `
+            <button
+              onclick="switchTab('${t.id}')"
+              class="min-h-[52px] px-3.5 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap ${
+                active
+                  ? 'bg-[#059669] text-white shadow-sm'
+                  : 'bg-white text-slate-700 hover:bg-[#ECFDF5] hover:text-[#047857]'
+              }"
+            >
+              <span class="text-base">${t.icon}</span>
+              <span>${t.label}</span>
+            </button>
+          `;
+        })
+        .join('');
+    }
+
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+      renderTabsBar();
+      renderTabContent();
+    }
+
+    function renderTabContent() {
+      const container = document.getElementById('tabContent');
+      if (state.activeTab === 'seats') {
+        container.innerHTML = renderSeatsTab();
+      } else if (state.activeTab === 'books') {
+        container.innerHTML = renderBooksTab();
+      } else if (state.activeTab === 'facilities') {
+        container.innerHTML = renderFacilitiesTab();
+      } else if (state.activeTab === 'hours') {
+        container.innerHTML = renderHoursAndNoticesTab();
+      } else if (state.activeTab === 'info') {
+        container.innerHTML = renderInfoAndGpsTab();
+        attachMapInteractions();
+      }
+    }
+
+    /* =========================================================================
+       6. TAB 1 — SEATS & SHIFT PLANS (DEFAULT TAB)
+       ========================================================================= */
+    function renderSeatsTab() {
+      const totalVacant = state.shifts
+        .filter((s) => s.active)
+        .reduce((sum, s) => sum + (Number(s.vacantSeats) || 0), 0);
+      const activePlans = state.shifts.filter((s) => s.active).length;
+      const av = AVAILABILITY_MODES[state.library.availability];
+      const ns = state.newShift;
+      const isMicActive = state.listeningField === 'shiftName';
+
+      return `
+        <div class="space-y-6">
+          <!-- Top 3 Summary Stat Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+            <div class="bg-[#ECFDF5] rounded-2xl border border-emerald-200 shadow-xs p-4 text-center">
+              <div class="text-3xl font-extrabold text-[#047857]">${totalVacant}</div>
+              <div class="text-xs sm:text-sm font-bold text-[#047857] mt-0.5">Total Vacant Seats (Live)</div>
+            </div>
+            <div class="bg-white rounded-2xl border border-emerald-100 shadow-xs p-4 text-center">
+              <div class="text-3xl font-extrabold text-[#0F172A]">${activePlans}</div>
+              <div class="text-xs sm:text-sm font-bold text-slate-600 mt-0.5">Active Shift Plans</div>
+            </div>
+            <div class="rounded-2xl border-2 shadow-xs p-4 text-center flex flex-col justify-center ${av.pillClass}">
+              <div class="text-lg font-extrabold">${av.icon} ${av.shortNav}</div>
+              <div class="text-xs font-bold opacity-85 mt-0.5">Today's Seat Status</div>
+            </div>
+          </div>
+
+          <!-- 1-Tap Live Availability Bar -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-6 space-y-4">
+            <div>
+              <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">⚡ 1-Tap Today's Seat Availability</h2>
+              <p class="text-sm text-slate-600 mt-0.5">Tap one button to tell students whether seats are available right now.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              ${Object.values(AVAILABILITY_MODES)
+                .map((m) => {
+                  const active = state.library.availability === m.key;
+                  return `
+                    <button
+                      type="button"
+                      onclick="setLibraryAvailability('${m.key}')"
+                      class="text-left p-4 rounded-2xl border-2 transition cursor-pointer min-h-[82px] flex flex-col justify-center ${
+                        active
+                          ? m.cardActiveClass + ' shadow-sm'
+                          : 'bg-white border-slate-200 hover:border-emerald-300 text-slate-800'
+                      }"
+                    >
+                      <div class="flex items-center justify-between gap-2">
+                        <span class="font-extrabold text-sm sm:text-base">${m.icon} ${m.label}</span>
+                        ${active ? `<span class="text-xs font-extrabold px-2 py-0.5 rounded-full bg-white/80">Active</span>` : ''}
+                      </div>
+                      <p class="text-xs opacity-85 mt-1">${m.desc}</p>
+                    </button>
+                  `;
+                })
+                .join('')}
+            </div>
+          </div>
+
+          <!-- Expandable "+ Add New Shift / Seat Plan" Card -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm overflow-hidden">
+            <button
+              type="button"
+              onclick="state.addShiftExpanded = !state.addShiftExpanded; renderTabContent();"
+              class="w-full px-5 sm:px-6 py-4 bg-[#ECFDF5]/80 hover:bg-[#ECFDF5] flex items-center justify-between gap-3 text-left cursor-pointer border-b border-emerald-100"
+            >
+              <div>
+                <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">➕ Add New Shift / Seat Plan</h2>
+                <p class="text-xs sm:text-sm text-slate-600">Add a morning, evening, night, or 24x7 reserved desk plan</p>
+              </div>
+              <span class="min-h-[42px] px-3.5 rounded-xl bg-white border border-emerald-200 text-[#047857] font-bold text-sm flex items-center">
+                ${state.addShiftExpanded ? 'Hide ▲' : 'Open ▼'}
+              </span>
+            </button>
+
+            ${
+              state.addShiftExpanded
+                ? `
+                  <div class="p-5 sm:p-6 space-y-5">
+                    <!-- Shift / Plan Name + Voice Mic -->
+                    <div class="space-y-2">
+                      <label class="block text-sm sm:text-base font-bold text-[#0F172A]">1. Shift / Plan Name</label>
+                      <div class="flex items-center gap-2.5">
+                        <input
+                          type="text"
+                          value="${escapeHtml(ns.name)}"
+                          placeholder="e.g. Afternoon Shift or Exam Special 24x7"
+                          oninput="state.newShift.name = this.value"
+                          class="flex-1 min-h-[52px] px-4 py-3 rounded-xl bg-white border-2 border-slate-200 font-bold text-sm sm:text-base focus:outline-none focus:border-[#059669]"
+                        />
+                        <button
+                          type="button"
+                          onclick="startVoiceInput('shiftName')"
+                          aria-label="Speak shift name"
+                          class="min-w-[54px] h-[52px] px-3.5 rounded-xl border-2 font-bold text-sm flex items-center justify-center gap-1.5 cursor-pointer transition ${
+                            isMicActive
+                              ? 'bg-red-600 border-red-600 text-white mic-pulse'
+                              : 'bg-[#ECFDF5] hover:bg-emerald-100 border-emerald-300 text-[#047857]'
+                          }"
+                        >
+                          <span class="text-lg">🎙️</span>
+                          <span class="hidden sm:inline">${isMicActive ? 'Listening' : 'Speak'}</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Timing + Monthly Fee -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div class="space-y-1.5">
+                        <label class="block text-sm sm:text-base font-bold text-[#0F172A]">2. Shift Timing</label>
+                        <input
+                          type="text"
+                          value="${escapeHtml(ns.timing)}"
+                          placeholder="e.g. 6:00 AM – 2:00 PM or 24x7 Access"
+                          oninput="state.newShift.timing = this.value"
+                          class="w-full min-h-[52px] px-4 py-3 rounded-xl bg-white border-2 border-slate-200 font-semibold text-sm sm:text-base focus:outline-none focus:border-[#059669]"
+                        />
+                      </div>
+
+                      <div class="space-y-1.5">
+                        <label class="block text-sm sm:text-base font-bold text-[#0F172A]">3. Monthly Fee (₹)</label>
+                        <div class="flex items-center">
+                          <span class="min-h-[52px] px-4 flex items-center rounded-l-xl bg-slate-100 border-2 border-r-0 border-slate-200 font-extrabold text-lg text-slate-700">₹</span>
+                          <input
+                            type="number"
+                            min="0"
+                            value="${escapeHtml(ns.fee)}"
+                            placeholder="e.g. 900"
+                            oninput="state.newShift.fee = this.value"
+                            class="w-full min-h-[52px] px-4 py-3 rounded-r-xl bg-white border-2 border-slate-200 text-lg font-extrabold focus:outline-none focus:border-[#059669]"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Seat Type Pills + Vacant Seats Stepper -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                      <div class="space-y-2">
+                        <label class="block text-sm sm:text-base font-bold text-[#0F172A]">4. Seat Type</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                          ${SEAT_TYPES.map((st) => {
+                            const active = ns.seatType === st;
+                            return `
+                              <button
+                                type="button"
+                                onclick="state.newShift.seatType = '${st}'; renderTabContent();"
+                                class="min-h-[52px] px-3.5 py-2.5 rounded-xl border-2 font-bold text-xs sm:text-sm transition cursor-pointer ${
+                                  active
+                                    ? 'bg-[#059669] border-[#059669] text-white shadow-xs'
+                                    : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-400'
+                                }"
+                              >
+                                ${active ? '✓ ' : ''}${st}
+                              </button>
+                            `;
+                          }).join('')}
+                        </div>
+                      </div>
+
+                      <div class="space-y-2">
+                        <label class="block text-sm sm:text-base font-bold text-[#0F172A]">5. Vacant Seats Right Now</label>
+                        <div class="flex items-center gap-3">
+                          <button
+                            type="button"
+                            onclick="state.newShift.vacantSeats = Math.max(0, state.newShift.vacantSeats - 1); renderTabContent();"
+                            aria-label="Decrease vacant seats"
+                            class="w-14 h-[52px] rounded-xl bg-slate-100 hover:bg-slate-200 border-2 border-slate-200 text-2xl font-extrabold cursor-pointer"
+                          >−</button>
+                          <div class="flex-1 h-[52px] rounded-xl bg-[#ECFDF5] border-2 border-emerald-200 flex items-center justify-center text-2xl font-extrabold text-[#047857]">
+                            ${ns.vacantSeats}
+                          </div>
+                          <button
+                            type="button"
+                            onclick="state.newShift.vacantSeats += 1; renderTabContent();"
+                            aria-label="Increase vacant seats"
+                            class="w-14 h-[52px] rounded-xl bg-emerald-100 hover:bg-emerald-200 border-2 border-emerald-300 text-2xl font-extrabold text-[#047857] cursor-pointer"
+                          >+</button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Optional Short Note -->
+                    <div class="space-y-1.5">
+                      <label class="block text-sm sm:text-base font-bold text-[#0F172A]">6. Optional Short Note</label>
+                      <input
+                        type="text"
+                        value="${escapeHtml(ns.note)}"
+                        placeholder="e.g. Includes personal locker & charging point"
+                        oninput="state.newShift.note = this.value"
+                        class="w-full min-h-[50px] px-4 py-2.5 rounded-xl bg-white border-2 border-slate-200 text-sm sm:text-base font-medium focus:outline-none focus:border-[#059669]"
+                      />
+                    </div>
+
+                    <button
+                      type="button"
+                      onclick="addNewShift()"
+                      class="w-full sm:w-auto min-h-[54px] px-8 py-3.5 rounded-2xl bg-[#059669] hover:bg-[#047857] text-white font-extrabold text-base shadow-sm cursor-pointer"
+                    >
+                      + Add Shift Plan
+                    </button>
+                  </div>
+                `
+                : ''
+            }
+          </div>
+
+          <!-- Shift Plans List -->
+          <div class="space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2 px-1">
+              <h3 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">Your Shift Plans (${state.shifts.length})</h3>
+              <span class="text-xs sm:text-sm text-slate-500">Tap − / + anytime to update vacant seats live</span>
+            </div>
+
+            ${state.shifts
+              .map((sh) => {
+                const isReserved = sh.seatType.startsWith('Reserved');
+                const isZero = sh.vacantSeats <= 0;
+                return `
+                  <div class="bg-white rounded-2xl border-2 ${
+                    !sh.active
+                      ? 'border-slate-200 bg-slate-50/70'
+                      : isZero
+                      ? 'border-amber-200'
+                      : 'border-emerald-100'
+                  } shadow-sm p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <!-- Left Info -->
+                    <div class="space-y-2 flex-1 min-w-0">
+                      <div class="flex flex-wrap items-center gap-2">
+                        <h4 class="text-lg font-extrabold text-[#0F172A]">${escapeHtml(sh.name)}</h4>
+                        <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold ${
+                          isReserved
+                            ? 'bg-emerald-100 text-[#047857]'
+                            : 'bg-sky-100 text-sky-800'
+                        }">
+                          ${isReserved ? '🔒 Reserved Desk' : '🪑 Unreserved'}
+                        </span>
+                        <span class="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-xs font-bold">
+                          🕒 ${escapeHtml(sh.timing)}
+                        </span>
+                        ${
+                          !sh.active
+                            ? `<span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 text-xs font-extrabold">⏸ Paused</span>`
+                            : ''
+                        }
+                      </div>
+
+                      <div class="text-2xl font-extrabold text-[#047857]">
+                        ₹${Number(sh.fee).toLocaleString('en-IN')}
+                        <span class="text-xs font-semibold text-slate-500">/ month</span>
+                      </div>
+
+                      ${sh.note ? `<p class="text-sm text-slate-600">${escapeHtml(sh.note)}</p>` : ''}
+                    </div>
+
+                    <!-- Right Controls: Live Vacant Seats Stepper + Active/Paused + Copy + Delete -->
+                    <div class="flex flex-wrap items-center gap-2.5 shrink-0">
+                      <div class="flex items-center gap-1.5 bg-slate-50 border-2 border-slate-200 rounded-2xl p-1.5">
+                        <button
+                          type="button"
+                          onclick="adjustShiftSeats('${sh.id}', -1)"
+                          aria-label="Decrease vacant seats"
+                          class="w-11 h-11 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-xl font-extrabold cursor-pointer"
+                        >−</button>
+                        <div class="px-2 text-center min-w-[74px]">
+                          <div class="text-lg font-extrabold ${isZero ? 'text-red-600' : 'text-[#047857]'} leading-none">${sh.vacantSeats}</div>
+                          <div class="text-[10px] font-bold text-slate-500 mt-0.5">Vacant Seats</div>
+                        </div>
+                        <button
+                          type="button"
+                          onclick="adjustShiftSeats('${sh.id}', 1)"
+                          aria-label="Increase vacant seats"
+                          class="w-11 h-11 rounded-xl bg-[#ECFDF5] hover:bg-emerald-200 border border-emerald-300 text-xl font-extrabold text-[#047857] cursor-pointer"
+                        >+</button>
+                      </div>
+
+                      <button
+                        type="button"
+                        onclick="toggleShiftActive('${sh.id}')"
+                        class="min-h-[48px] px-4 py-2 rounded-xl border-2 font-bold text-sm transition cursor-pointer ${
+                          sh.active
+                            ? 'bg-[#059669] hover:bg-[#047857] border-[#059669] text-white'
+                            : 'bg-amber-100 hover:bg-amber-200 border-amber-400 text-amber-900'
+                        }"
+                      >
+                        ${sh.active ? '✓ Active' : '⏸ Paused'}
+                      </button>
+
+                      <button
+                        type="button"
+                        onclick="copyShift('${sh.id}')"
+                        class="min-h-[48px] px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-emerald-50 hover:text-[#047857] text-slate-700 font-bold text-sm cursor-pointer"
+                      >
+                        📋 Copy
+                      </button>
+
+                      <button
+                        type="button"
+                        onclick="deleteShift('${sh.id}')"
+                        aria-label="Delete shift plan"
+                        class="min-h-[48px] px-3.5 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 font-bold text-sm cursor-pointer"
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  </div>
+                `;
+              })
+              .join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function setLibraryAvailability(key) {
+      state.library.availability = key;
+      renderTopStatusPill();
+      renderTabContent();
+      showToast(`Status updated: ${AVAILABILITY_MODES[key].label}`);
+    }
+
+    function addNewShift() {
+      const ns = state.newShift;
+      const feeNum = parseFloat(ns.fee);
+      if (!ns.name.trim()) {
+        showToast('Please enter a Shift / Plan Name', 'error');
+        return;
+      }
+      if (!ns.timing.trim()) {
+        showToast('Please enter Shift Timing (e.g. 6:00 AM – 2:00 PM)', 'error');
+        return;
+      }
+      if (isNaN(feeNum) || feeNum <= 0) {
+        showToast('Please enter a valid Monthly Fee in ₹', 'error');
+        return;
+      }
+
+      state.shifts.unshift({
+        id: 'sh_' + Date.now(),
+        name: ns.name.trim(),
+        timing: ns.timing.trim(),
+        fee: feeNum,
+        seatType: ns.seatType,
+        vacantSeats: ns.vacantSeats,
+        note: ns.note.trim(),
+        active: true
+      });
+
+      state.newShift = {
+        name: '',
+        timing: '',
+        fee: '',
+        seatType: 'Reserved (Fixed Desk)',
+        vacantSeats: 2,
+        note: ''
+      };
+      state.addShiftExpanded = false;
+      renderTabContent();
+      showToast('New shift plan added!');
+    }
+
+    function adjustShiftSeats(id, delta) {
+      const sh = state.shifts.find((s) => s.id === id);
+      if (!sh) return;
+      sh.vacantSeats = Math.max(0, sh.vacantSeats + delta);
+      renderTabContent();
+    }
+
+    function toggleShiftActive(id) {
+      const sh = state.shifts.find((s) => s.id === id);
+      if (!sh) return;
+      sh.active = !sh.active;
+      renderTabContent();
+      showToast(sh.active ? 'Shift Plan Active' : 'Shift Plan Paused', 'info');
+    }
+
+    function copyShift(id) {
+      const sh = state.shifts.find((s) => s.id === id);
+      if (!sh) return;
+      state.shifts.unshift({
+        ...sh,
+        id: 'sh_' + Date.now(),
+        name: sh.name + ' (Copy)'
+      });
+      renderTabContent();
+      showToast('Shift plan copied!');
+    }
+
+    function deleteShift(id) {
+      state.shifts = state.shifts.filter((s) => s.id !== id);
+      renderTabContent();
+      showToast('Shift plan deleted', 'info');
+    }
+
+    /* =========================================================================
+       7. TAB 2 — AVAILABLE BOOKS & MAGAZINES
+       ========================================================================= */
+    function renderBooksTab() {
+      const totalBooks = state.books.length;
+      const availableBooks = state.books.filter((b) => b.status === 'Available' && b.copies > 0).length;
+      const issuedBooks = totalBooks - availableBooks;
+
+      const nb = state.newBook;
+      const isMicActive = state.listeningField === 'bookTitle';
+
+      const q = state.bookSearch.trim().toLowerCase();
+      const filteredBooks = state.books.filter((b) => {
+        const matchesQ = !q || b.title.toLowerCase().includes(q) || b.category.toLowerCase().includes(q);
+        const matchesCat = state.bookCategoryFilter === 'All' || b.category === state.bookCategoryFilter;
+        const matchesIssued = !state.allIssuedOnly || b.status === 'All Issued' || b.copies <= 0;
+        return matchesQ && matchesCat && matchesIssued;
+      });
+
+      return `
+        <div class="space-y-6">
+          <!-- Top 3 Stat Cards -->
+          <div class="grid grid-cols-3 gap-3 sm:gap-4">
+            <div class="bg-white rounded-2xl border border-emerald-100 shadow-xs p-4 text-center">
+              <div class="text-2xl sm:text-3xl font-extrabold text-[#0F172A]">${totalBooks}</div>
+              <div class="text-xs sm:text-sm font-bold text-slate-600 mt-0.5">Total Books Listed</div>
+            </div>
+            <div class="bg-[#ECFDF5] rounded-2xl border border-emerald-200 shadow-xs p-4 text-center">
+              <div class="text-2xl sm:text-3xl font-extrabold text-[#047857]">${availableBooks}</div>
+              <div class="text-xs sm:text-sm font-bold text-[#047857] mt-0.5">Available to Read</div>
+            </div>
+            <div class="bg-amber-50 rounded-2xl border border-amber-200 shadow-xs p-4 text-center">
+              <div class="text-2xl sm:text-3xl font-extrabold text-amber-900">${issuedBooks}</div>
+              <div class="text-xs sm:text-sm font-bold text-amber-800 mt-0.5">All Issued</div>
+            </div>
+          </div>
+
+          <!-- Search Bar + Category Filter Pills + All Issued Toggle -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-4 sm:p-5 space-y-3.5">
+            <input
+              type="text"
+              value="${escapeHtml(state.bookSearch)}"
+              placeholder="🔍 Search book title, exam guide, or newspaper..."
+              oninput="state.bookSearch = this.value; renderTabContent();"
+              class="w-full min-h-[50px] px-4 py-2.5 rounded-xl bg-slate-50 border-2 border-slate-200 text-sm sm:text-base font-medium focus:outline-none focus:border-[#059669]"
+            />
+
+            <div class="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onclick="state.bookCategoryFilter = 'All'; renderTabContent();"
+                class="min-h-[44px] px-4 py-2 rounded-full border-2 font-bold text-xs sm:text-sm transition cursor-pointer ${
+                  state.bookCategoryFilter === 'All'
+                    ? 'bg-[#059669] border-[#059669] text-white'
+                    : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-400'
+                }"
+              >
+                All
+              </button>
+
+              ${BOOK_CATEGORIES.map((cat) => {
+                const active = state.bookCategoryFilter === cat;
+                return `
+                  <button
+                    type="button"
+                    onclick="state.bookCategoryFilter = '${cat}'; renderTabContent();"
+                    class="min-h-[44px] px-4 py-2 rounded-full border-2 font-bold text-xs sm:text-sm transition cursor-pointer ${
+                      active
+                        ? 'bg-[#059669] border-[#059669] text-white'
+                        : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-400'
+                    }"
+                  >
+                    ${cat}
+                  </button>
+                `;
+              }).join('')}
+
+              <button
+                type="button"
+                onclick="state.allIssuedOnly = !state.allIssuedOnly; renderTabContent();"
+                class="min-h-[44px] px-4 py-2 rounded-full border-2 font-bold text-xs sm:text-sm transition cursor-pointer ${
+                  state.allIssuedOnly
+                    ? 'bg-amber-600 border-amber-600 text-white'
+                    : 'bg-amber-50 border-amber-200 text-amber-900 hover:border-amber-400'
+                }"
+              >
+                ${state.allIssuedOnly ? '✓ All Issued Only' : 'All Issued Only'}
+              </button>
+            </div>
+          </div>
+
+          <!-- Action Buttons: Add Book + Quick Add Common Books -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <button
+              type="button"
+              onclick="state.addBookExpanded = !state.addBookExpanded; renderTabContent();"
+              class="min-h-[54px] px-6 py-3 rounded-2xl bg-[#059669] hover:bg-[#047857] text-white font-extrabold text-base shadow-sm cursor-pointer flex items-center justify-center gap-2"
+            >
+              <span>${state.addBookExpanded ? '▲' : '➕'}</span>
+              <span>${state.addBookExpanded ? 'Hide Add Book Form' : '+ Add Book or Magazine'}</span>
+            </button>
+
+            <button
+              type="button"
+              onclick="openQuickAddModal()"
+              class="min-h-[54px] px-6 py-3 rounded-2xl bg-[#ECFDF5] hover:bg-emerald-100 border-2 border-[#059669] text-[#047857] font-extrabold text-base shadow-xs cursor-pointer flex items-center justify-center gap-2"
+            >
+              <span>⚡</span>
+              <span>Quick Add Common Books</span>
+            </button>
+          </div>
+
+          <!-- Expandable "+ Add Book or Magazine" Card -->
+          ${
+            state.addBookExpanded
+              ? `
+                <div class="bg-white rounded-2xl border-2 border-[#059669]/40 shadow-sm p-5 sm:p-6 space-y-5 fade-in">
+                  <div class="border-b border-slate-100 pb-3">
+                    <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">➕ Add Book or Magazine to Shelf</h2>
+                    <p class="text-xs sm:text-sm text-slate-600">Let students see which exam books and newspapers are free to read in your library.</p>
+                  </div>
+
+                  <!-- Book Title + Voice Mic -->
+                  <div class="space-y-2">
+                    <label class="block text-sm font-bold text-[#0F172A]">1. Book / Magazine Title</label>
+                    <div class="flex items-center gap-2.5">
+                      <input
+                        type="text"
+                        value="${escapeHtml(nb.title)}"
+                        placeholder="e.g. GATE CS Made Easy Notes or The Hindu Newspaper"
+                        oninput="state.newBook.title = this.value"
+                        class="flex-1 min-h-[52px] px-4 py-3 rounded-xl bg-white border-2 border-slate-200 font-bold text-sm sm:text-base focus:outline-none focus:border-[#059669]"
+                      />
+                      <button
+                        type="button"
+                        onclick="startVoiceInput('bookTitle')"
+                        aria-label="Speak book title"
+                        class="min-w-[54px] h-[52px] px-3.5 rounded-xl border-2 font-bold text-sm flex items-center justify-center gap-1.5 cursor-pointer transition ${
+                          isMicActive
+                            ? 'bg-red-600 border-red-600 text-white mic-pulse'
+                            : 'bg-[#ECFDF5] hover:bg-emerald-100 border-emerald-300 text-[#047857]'
+                        }"
+                      >
+                        <span class="text-lg">🎙️</span>
+                        <span class="hidden sm:inline">${isMicActive ? 'Listening' : 'Speak'}</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Category Tappable Pills -->
+                  <div class="space-y-2">
+                    <label class="block text-sm font-bold text-[#0F172A]">2. Category</label>
+                    <div class="flex flex-wrap gap-2">
+                      ${BOOK_CATEGORIES.map((cat) => {
+                        const active = nb.category === cat;
+                        return `
+                          <button
+                            type="button"
+                            onclick="state.newBook.category = '${cat}'; renderTabContent();"
+                            class="min-h-[46px] px-4 py-2 rounded-xl border-2 font-bold text-xs sm:text-sm transition cursor-pointer ${
+                              active
+                                ? 'bg-[#059669] border-[#059669] text-white'
+                                : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-400'
+                            }"
+                          >
+                            ${active ? '✓ ' : ''}${cat}
+                          </button>
+                        `;
+                      }).join('')}
+                    </div>
+                  </div>
+
+                  <!-- Copies Stepper + Status Buttons -->
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div class="space-y-2">
+                      <label class="block text-sm font-bold text-[#0F172A]">3. Copies Available</label>
+                      <div class="flex items-center gap-2.5">
+                        <button
+                          type="button"
+                          onclick="state.newBook.copies = Math.max(0, state.newBook.copies - 1); renderTabContent();"
+                          class="w-14 h-[50px] rounded-xl bg-slate-100 hover:bg-slate-200 border-2 border-slate-200 text-2xl font-extrabold cursor-pointer"
+                        >−</button>
+                        <div class="flex-1 h-[50px] rounded-xl bg-[#ECFDF5] border-2 border-emerald-200 flex items-center justify-center text-xl font-extrabold text-[#047857]">
+                          ${nb.copies}
+                        </div>
+                        <button
+                          type="button"
+                          onclick="state.newBook.copies += 1; renderTabContent();"
+                          class="w-14 h-[50px] rounded-xl bg-emerald-100 hover:bg-emerald-200 border-2 border-emerald-300 text-2xl font-extrabold text-[#047857] cursor-pointer"
+                        >+</button>
+                      </div>
+                    </div>
+
+                    <div class="space-y-2">
+                      <label class="block text-sm font-bold text-[#0F172A]">4. Reading Status</label>
+                      <div class="grid grid-cols-2 gap-2.5">
+                        ${['Available', 'All Issued']
+                          .map((st) => {
+                            const active = nb.status === st;
+                            return `
+                              <button
+                                type="button"
+                                onclick="state.newBook.status = '${st}'; renderTabContent();"
+                                class="min-h-[50px] px-3 py-2 rounded-xl border-2 font-bold text-sm transition cursor-pointer ${
+                                  active
+                                    ? st === 'Available'
+                                      ? 'bg-[#059669] border-[#059669] text-white'
+                                      : 'bg-amber-600 border-amber-600 text-white'
+                                    : 'bg-white border-slate-200 text-slate-700'
+                                }"
+                              >
+                                ${active ? '✓ ' : ''}${st}
+                              </button>
+                            `;
+                          })
+                          .join('')}
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onclick="addNewLibraryBook()"
+                    class="w-full sm:w-auto min-h-[52px] px-8 py-3 rounded-2xl bg-[#059669] hover:bg-[#047857] text-white font-extrabold text-base shadow-sm cursor-pointer"
+                  >
+                    + Add to Library Shelf
+                  </button>
+                </div>
+              `
+              : ''
+          }
+
+          <!-- Books & Magazines List -->
+          <div class="space-y-3.5">
+            <h3 class="text-lg font-extrabold text-[#0F172A] px-1">Shelf Books &amp; Magazines (${filteredBooks.length})</h3>
+            ${
+              filteredBooks.length === 0
+                ? `
+                  <div class="bg-white rounded-2xl border border-dashed border-emerald-300 p-10 text-center">
+                    <p class="text-3xl mb-2">📚</p>
+                    <p class="font-bold text-slate-800">No books match your filter</p>
+                    <p class="text-sm text-slate-500 mt-1">Clear the search box or tap "All" above.</p>
+                  </div>
+                `
+                : filteredBooks
+                    .map((b) => {
+                      const isAvail = b.status === 'Available' && b.copies > 0;
+                      return `
+                        <div class="bg-white rounded-2xl border-2 ${
+                          isAvail ? 'border-emerald-100' : 'border-amber-200 bg-amber-50/20'
+                        } shadow-xs p-4 sm:p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                          <div class="space-y-1.5 flex-1 min-w-0">
+                            <span class="inline-block px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-xs font-extrabold">
+                              ${escapeHtml(b.category)}
+                            </span>
+                            <h4 class="text-base sm:text-lg font-extrabold text-[#0F172A]">${escapeHtml(b.title)}</h4>
+                          </div>
+
+                          <div class="flex flex-wrap items-center gap-2.5 shrink-0">
+                            <div class="flex items-center gap-1.5 bg-slate-50 border-2 border-slate-200 rounded-xl p-1">
+                              <button
+                                type="button"
+                                onclick="adjustBookCopies('${b.id}', -1)"
+                                aria-label="Decrease copies"
+                                class="w-10 h-10 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-xl font-extrabold cursor-pointer"
+                              >−</button>
+                              <div class="px-2 text-center min-w-[56px]">
+                                <div class="text-base font-extrabold text-[#0F172A] leading-none">${b.copies}</div>
+                                <div class="text-[10px] font-bold text-slate-500 mt-0.5">Copies</div>
+                              </div>
+                              <button
+                                type="button"
+                                onclick="adjustBookCopies('${b.id}', 1)"
+                                aria-label="Increase copies"
+                                class="w-10 h-10 rounded-lg bg-[#ECFDF5] hover:bg-emerald-200 border border-emerald-300 text-xl font-extrabold text-[#047857] cursor-pointer"
+                              >+</button>
+                            </div>
+
+                            <button
+                              type="button"
+                              onclick="toggleBookStatus('${b.id}')"
+                              class="min-h-[46px] px-4 py-2 rounded-xl border-2 font-bold text-sm transition cursor-pointer ${
+                                isAvail
+                                  ? 'bg-[#059669] hover:bg-[#047857] border-[#059669] text-white'
+                                  : 'bg-amber-100 hover:bg-amber-200 border-amber-400 text-amber-900'
+                              }"
+                            >
+                              ${isAvail ? '✓ Available' : '⏳ All Issued'}
+                            </button>
+
+                            <button
+                              type="button"
+                              onclick="copyLibraryBook('${b.id}')"
+                              class="min-h-[46px] px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-emerald-50 hover:text-[#047857] text-slate-700 font-bold text-sm cursor-pointer"
+                            >
+                              📋 Copy
+                            </button>
+
+                            <button
+                              type="button"
+                              onclick="deleteLibraryBook('${b.id}')"
+                              aria-label="Delete book"
+                              class="min-h-[46px] px-3.5 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 font-bold text-sm cursor-pointer"
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                        </div>
+                      `;
+                    })
+                    .join('')
+            }
+          </div>
+        </div>
+      `;
+    }
+
+    function addNewLibraryBook() {
+      const nb = state.newBook;
+      if (!nb.title.trim()) {
+        showToast('Please enter the Book or Magazine Title', 'error');
+        return;
+      }
+      state.books.unshift({
+        id: 'lb_' + Date.now(),
+        title: nb.title.trim(),
+        category: nb.category,
+        copies: nb.status === 'All Issued' ? 0 : Math.max(1, nb.copies),
+        status: nb.status
+      });
+      state.newBook = { title: '', category: 'GATE / Engineering', copies: 2, status: 'Available' };
+      state.addBookExpanded = false;
+      renderTabContent();
+      showToast('Book added to your library shelf!');
+    }
+
+    function adjustBookCopies(id, delta) {
+      const b = state.books.find((x) => x.id === id);
+      if (!b) return;
+      b.copies = Math.max(0, b.copies + delta);
+      b.status = b.copies > 0 ? 'Available' : 'All Issued';
+      renderTabContent();
+    }
+
+    function toggleBookStatus(id) {
+      const b = state.books.find((x) => x.id === id);
+      if (!b) return;
+      if (b.status === 'Available' && b.copies > 0) {
+        b.status = 'All Issued';
+        b.copies = 0;
+      } else {
+        b.status = 'Available';
+        b.copies = Math.max(1, b.copies);
+      }
+      renderTabContent();
+      showToast(`"${b.title}" marked ${b.status}`, 'info');
+    }
+
+    function copyLibraryBook(id) {
+      const b = state.books.find((x) => x.id === id);
+      if (!b) return;
+      state.books.unshift({ ...b, id: 'lb_' + Date.now(), title: b.title + ' (Copy)' });
+      renderTabContent();
+      showToast('Book copied!');
+    }
+
+    function deleteLibraryBook(id) {
+      state.books = state.books.filter((x) => x.id !== id);
+      renderTabContent();
+      showToast('Book removed from shelf', 'info');
+    }
+
+    /* ---------- QUICK ADD COMMON BOOKS MODAL ---------- */
+    function openQuickAddModal() {
+      renderQuickAddModalBody();
+      const modal = document.getElementById('quickAddModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeQuickAddModal() {
+      const modal = document.getElementById('quickAddModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function renderQuickAddModalBody() {
+      const selectedCount = state.quickAddBooks.filter((b) => b.checked).length;
+      document.getElementById('quickAddCountLabel').textContent = `${selectedCount} book${selectedCount === 1 ? '' : 's'} selected`;
+
+      document.getElementById('quickAddBody').innerHTML = state.quickAddBooks
+        .map(
+          (qb, idx) => `
+            <div class="p-3.5 rounded-2xl border-2 ${
+              qb.checked ? 'border-[#059669] bg-[#ECFDF5]/60' : 'border-slate-200 bg-white'
+            } flex items-center justify-between gap-3">
+              <label class="flex items-center gap-3 flex-1 cursor-pointer min-w-0">
+                <input
+                  type="checkbox"
+                  ${qb.checked ? 'checked' : ''}
+                  onchange="state.quickAddBooks[${idx}].checked = this.checked; renderQuickAddModalBody();"
+                  class="w-5 h-5 accent-[#059669] rounded cursor-pointer shrink-0"
+                />
+                <div class="min-w-0">
+                  <div class="font-bold text-sm text-[#0F172A] truncate">${escapeHtml(qb.title)}</div>
+                  <div class="text-xs text-slate-500">${escapeHtml(qb.category)}</div>
+                </div>
+              </label>
+
+              <div class="flex items-center gap-1 shrink-0">
+                <button
+                  type="button"
+                  onclick="state.quickAddBooks[${idx}].copies = Math.max(1, state.quickAddBooks[${idx}].copies - 1); renderQuickAddModalBody();"
+                  class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 font-extrabold text-sm cursor-pointer"
+                >−</button>
+                <span class="w-8 text-center font-extrabold text-sm text-[#047857]">${qb.copies}</span>
+                <button
+                  type="button"
+                  onclick="state.quickAddBooks[${idx}].copies += 1; renderQuickAddModalBody();"
+                  class="w-8 h-8 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-[#047857] font-extrabold text-sm cursor-pointer"
+                >+</button>
+              </div>
+            </div>
+          `
+        )
+        .join('');
+    }
+
+    function confirmQuickAddBooks() {
+      const chosen = state.quickAddBooks.filter((b) => b.checked);
+      if (!chosen.length) {
+        showToast('Please tick at least 1 book first', 'error');
+        return;
+      }
+      chosen.forEach((c) => {
+        state.books.unshift({
+          id: 'lb_' + Date.now() + Math.random().toString(36).slice(2, 5),
+          title: c.title,
+          category: c.category,
+          copies: c.copies,
+          status: 'Available'
+        });
+        c.checked = false;
+      });
+      closeQuickAddModal();
+      renderTabContent();
+      showToast(`Added ${chosen.length} book${chosen.length === 1 ? '' : 's'} to your shelf!`);
+    }
+
+    /* =========================================================================
+       8. TAB 3 — FACILITIES & RULES
+       ========================================================================= */
+    function renderFacilitiesTab() {
+      const r = state.rules;
+
+      const renderOptionGroup = (label, options, currentVal, fnName) => `
+        <div class="space-y-2.5">
+          <label class="block text-sm sm:text-base font-bold text-[#0F172A]">${label}</label>
+          <div class="flex flex-wrap gap-2.5">
+            ${options
+              .map((opt) => {
+                const active = currentVal === opt;
+                return `
+                  <button
+                    type="button"
+                    onclick="${fnName}('${escapeHtml(opt)}')"
+                    class="min-h-[48px] px-4 py-2.5 rounded-xl border-2 font-bold text-sm sm:text-base transition cursor-pointer ${
+                      active
+                        ? 'bg-[#059669] border-[#059669] text-white shadow-xs'
+                        : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-400 hover:bg-[#ECFDF5]/60'
+                    }"
+                  >
+                    ${active ? '✓ ' : ''}${opt}
+                  </button>
+                `;
+              })
+              .join('')}
+          </div>
+        </div>
+      `;
+
+      return `
+        <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-7 space-y-7">
+          <div>
+            <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">✨ Library Facilities &amp; Rules</h2>
+            <p class="text-sm text-slate-600 mt-0.5">Tap the options that match your reading room. Zero technical forms.</p>
+          </div>
+
+          ${renderOptionGroup('1. Timing Type', ['Open 24x7', 'Fixed Shifts Only'], r.timingType, 'setRuleTimingType')}
+          ${renderOptionGroup('2. Free Demo / Trial Day?', ['Yes (1 Day Free)', 'No'], r.freeTrial, 'setRuleFreeTrial')}
+
+          <!-- Registration Fee -->
+          <div class="space-y-3">
+            ${renderOptionGroup('3. Registration Fee', ['No Fee (₹0)', '₹100 One-Time', '₹200 One-Time', 'Custom ₹'], r.regFeeType, 'setRuleRegFee')}
+            ${
+              r.regFeeType === 'Custom ₹'
+                ? `
+                  <div class="sm:max-w-xs flex items-center pt-1">
+                    <span class="min-h-[48px] px-4 flex items-center rounded-l-xl bg-slate-100 border-2 border-r-0 border-slate-200 font-bold text-slate-700">₹</span>
+                    <input
+                      type="number"
+                      value="${escapeHtml(r.regFeeCustom)}"
+                      placeholder="e.g. 150"
+                      oninput="state.rules.regFeeCustom = this.value"
+                      class="w-full min-h-[48px] px-4 py-2 rounded-r-xl bg-white border-2 border-slate-200 font-bold text-base focus:outline-none focus:border-[#059669]"
+                    />
+                  </div>
+                `
+                : ''
+            }
+          </div>
+
+          ${renderOptionGroup('4. Locker Facility', ['Free Included', 'Extra ₹100/mo', 'Not Available'], r.lockerFacility, 'setRuleLocker')}
+
+          <!-- Tap-to-Select Facility Chips -->
+          <div class="space-y-3 pt-3 border-t border-slate-100">
+            <label class="block text-sm sm:text-base font-bold text-[#0F172A]">5. Tap Study Facilities Available in Your Library</label>
+            <div class="flex flex-wrap gap-2.5">
+              ${ALL_FACILITIES.map((f) => {
+                const selected = r.facilities.includes(f.name);
+                return `
+                  <button
+                    type="button"
+                    onclick="toggleFacility('${escapeHtml(f.name)}')"
+                    class="min-h-[48px] px-4 py-2.5 rounded-full border-2 font-bold text-sm transition cursor-pointer flex items-center gap-2 ${
+                      selected
+                        ? 'bg-[#ECFDF5] border-[#059669] text-[#047857]'
+                        : 'bg-white border-slate-200 text-slate-600 hover:border-emerald-300'
+                    }"
+                  >
+                    <span>${f.icon}</span>
+                    <span>${f.name}</span>
+                    <span class="text-xs font-extrabold">${selected ? '✓' : '+'}</span>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-slate-100">
+            <button
+              type="button"
+              onclick="showToast('Facilities & Rules saved!')"
+              class="w-full sm:w-auto min-h-[52px] px-8 py-3 rounded-2xl bg-[#059669] hover:bg-[#047857] text-white font-extrabold text-base shadow-sm cursor-pointer"
+            >
+              ✓ Save Facilities &amp; Rules
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function setRuleTimingType(v) { state.rules.timingType = v; renderTabContent(); }
+    function setRuleFreeTrial(v) { state.rules.freeTrial = v; renderTabContent(); }
+    function setRuleRegFee(v) { state.rules.regFeeType = v; renderTabContent(); }
+    function setRuleLocker(v) { state.rules.lockerFacility = v; renderTabContent(); }
+
+    function toggleFacility(name) {
+      const idx = state.rules.facilities.indexOf(name);
+      if (idx >= 0) state.rules.facilities.splice(idx, 1);
+      else state.rules.facilities.push(name);
+      renderTabContent();
+    }
+
+    /* =========================================================================
+       9. TAB 4 — HOURS & NOTICES
+       ========================================================================= */
+    function renderHoursAndNoticesTab() {
+      const isMicActive = state.listeningField === 'noticeText';
+
+      return `
+        <div class="space-y-6">
+          <!-- Weekly Opening Hours -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-6 space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">🕒 Weekly Opening Hours</h2>
+                <p class="text-sm text-slate-600 mt-0.5">Turn on 24x7 All Week or set custom timings per day.</p>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onclick="toggle24x7AllWeek()"
+                  class="min-h-[46px] px-4 py-2 rounded-xl border-2 font-extrabold text-sm transition cursor-pointer ${
+                    state.open24x7AllWeek
+                      ? 'bg-[#059669] border-[#059669] text-white shadow-sm'
+                      : 'bg-white border-emerald-300 text-[#047857] hover:bg-[#ECFDF5]'
+                  }"
+                >
+                  ${state.open24x7AllWeek ? '✓ Open 24x7 All Week (ON)' : 'Open 24x7 All Week (OFF)'}
+                </button>
+                ${
+                  !state.open24x7AllWeek
+                    ? `
+                      <button
+                        type="button"
+                        onclick="copyMondayHoursToAll()"
+                        class="min-h-[46px] px-4 py-2 rounded-xl bg-[#ECFDF5] hover:bg-emerald-100 text-[#047857] border border-emerald-200 font-bold text-sm cursor-pointer"
+                      >
+                        📋 Copy Monday to All Days
+                      </button>
+                    `
+                    : ''
+                }
+              </div>
+            </div>
+
+            ${
+              state.open24x7AllWeek
+                ? `
+                  <div class="p-5 rounded-2xl bg-[#ECFDF5] border-2 border-emerald-200 flex items-center gap-3.5">
+                    <span class="text-3xl">🌙</span>
+                    <div>
+                      <p class="font-extrabold text-[#047857] text-base">Open 24 Hours, All 7 Days (Mon – Sun)</p>
+                      <p class="text-xs sm:text-sm text-slate-600 mt-0.5">Students see a "24x7 Open" badge on your library page. Tap the button above if you want to set specific daily open/close times.</p>
+                    </div>
+                  </div>
+                `
+                : `
+                  <div class="space-y-2.5">
+                    ${state.hours
+                      .map(
+                        (h, idx) => `
+                          <div class="p-3.5 sm:p-4 rounded-2xl border-2 ${
+                            h.open ? 'border-emerald-100 bg-white' : 'border-slate-200 bg-slate-50'
+                          } flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div class="flex items-center justify-between sm:justify-start gap-4 min-w-[190px]">
+                              <span class="font-extrabold text-base text-[#0F172A] w-28">${h.day}</span>
+                              <button
+                                type="button"
+                                onclick="toggleDayOpen(${idx})"
+                                class="min-h-[42px] px-4 py-1.5 rounded-full font-bold text-xs sm:text-sm cursor-pointer ${
+                                  h.open ? 'bg-[#059669] text-white' : 'bg-slate-200 text-slate-700'
+                                }"
+                              >
+                                ${h.open ? '✓ Open' : 'Closed'}
+                              </button>
+                            </div>
+
+                            ${
+                              h.open
+                                ? `
+                                  <div class="flex items-center gap-2.5 flex-wrap">
+                                    <select
+                                      onchange="state.hours[${idx}].from = this.value; showToast('Hours updated');"
+                                      class="min-h-[44px] px-3 py-2 rounded-xl bg-slate-50 border border-slate-300 font-bold text-sm"
+                                    >
+                                      ${TIME_SLOTS.map((t) => `<option value="${t}" ${h.from === t ? 'selected' : ''}>${t}</option>`).join('')}
+                                    </select>
+                                    <span class="text-sm font-bold text-slate-400">to</span>
+                                    <select
+                                      onchange="state.hours[${idx}].to = this.value; showToast('Hours updated');"
+                                      class="min-h-[44px] px-3 py-2 rounded-xl bg-slate-50 border border-slate-300 font-bold text-sm"
+                                    >
+                                      ${TIME_SLOTS.map((t) => `<option value="${t}" ${h.to === t ? 'selected' : ''}>${t}</option>`).join('')}
+                                    </select>
+                                  </div>
+                                `
+                                : `<span class="text-sm font-semibold text-slate-400">Closed on ${h.day}</span>`
+                            }
+                          </div>
+                        `
+                      )
+                      .join('')}
+                  </div>
+                `
+            }
+          </div>
+
+          <!-- Post Notice to Students -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-6 space-y-5">
+            <div>
+              <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">📢 Post Notice to Students</h2>
+              <p class="text-sm text-slate-600 mt-0.5">Tap a ready-made message or speak using the microphone button.</p>
+            </div>
+
+            <div class="space-y-2">
+              <p class="text-xs font-extrabold uppercase tracking-wider text-[#047857]">⚡ 1-Tap Ready Templates:</p>
+              <div class="grid grid-cols-1 gap-2.5">
+                ${NOTICE_TEMPLATES.map(
+                  (tpl, idx) => `
+                    <button
+                      type="button"
+                      onclick="applyNoticeTemplate(${idx})"
+                      class="text-left p-3.5 rounded-xl bg-[#ECFDF5]/80 hover:bg-emerald-100 border border-emerald-200 text-sm font-bold text-[#0F172A] flex items-center justify-between gap-3 cursor-pointer"
+                    >
+                      <span>"${tpl}"</span>
+                      <span class="px-2.5 py-1 rounded-lg bg-white text-[#047857] text-xs font-extrabold border border-emerald-200 shrink-0">Tap to Use</span>
+                    </button>
+                  `
+                ).join('')}
+              </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-2.5">
+              <textarea
+                rows="3"
+                placeholder="Type or speak your announcement..."
+                oninput="state.noticeDraft = this.value"
+                class="flex-1 p-4 rounded-xl bg-white border-2 border-slate-200 text-base text-[#0F172A] focus:outline-none focus:border-[#059669]"
+              >${escapeHtml(state.noticeDraft)}</textarea>
+              <button
+                type="button"
+                onclick="startVoiceInput('noticeText')"
+                class="min-h-[52px] sm:w-28 rounded-xl border-2 font-bold text-sm flex items-center justify-center gap-1.5 cursor-pointer transition ${
+                  isMicActive
+                    ? 'bg-red-600 border-red-600 text-white mic-pulse'
+                    : 'bg-[#ECFDF5] hover:bg-emerald-100 border-emerald-300 text-[#047857]'
+                }"
+              >
+                <span class="text-lg">🎙️</span>
+                <span>${isMicActive ? 'Listening' : 'Speak'}</span>
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onclick="postNotice()"
+              class="w-full sm:w-auto min-h-[52px] px-7 py-3 rounded-2xl bg-[#059669] hover:bg-[#047857] text-white font-extrabold text-base shadow-sm cursor-pointer"
+            >
+              📢 Post Notice Now
+            </button>
+
+            <div class="pt-4 border-t border-slate-100 space-y-3">
+              <h3 class="text-sm font-extrabold uppercase tracking-wider text-slate-500">Posted Notices (${state.notices.length})</h3>
+              ${
+                state.notices.length === 0
+                  ? `<p class="text-sm text-slate-500">No notices posted yet.</p>`
+                  : state.notices
+                      .map(
+                        (n) => `
+                          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-start justify-between gap-3">
+                            <div>
+                              <p class="text-sm sm:text-base font-bold text-[#0F172A]">${escapeHtml(n.text)}</p>
+                              <p class="text-xs text-slate-500 mt-1">🕒 ${escapeHtml(n.time)}</p>
+                            </div>
+                            <button
+                              type="button"
+                              onclick="deleteNotice('${n.id}')"
+                              class="min-h-[42px] px-3 py-1.5 rounded-xl bg-white hover:bg-red-50 hover:text-red-700 border border-slate-200 text-xs font-bold text-slate-600 cursor-pointer shrink-0"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        `
+                      )
+                      .join('')
+              }
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function toggle24x7AllWeek() {
+      state.open24x7AllWeek = !state.open24x7AllWeek;
+      renderTabContent();
+      showToast(state.open24x7AllWeek ? 'Set to Open 24x7 All Week!' : 'Custom daily hours unlocked', 'info');
+    }
+
+    function toggleDayOpen(idx) {
+      state.hours[idx].open = !state.hours[idx].open;
+      renderTabContent();
+    }
+
+    function copyMondayHoursToAll() {
+      const mon = state.hours[0];
+      state.hours = state.hours.map((d) => ({ ...d, open: mon.open, from: mon.from, to: mon.to }));
+      renderTabContent();
+      showToast('Monday timings copied to all 7 days!');
+    }
+
+    function applyNoticeTemplate(idx) {
+      state.noticeDraft = NOTICE_TEMPLATES[idx];
+      renderTabContent();
+      showToast('Template filled! Tap "Post Notice Now" to publish.', 'info');
+    }
+
+    function postNotice() {
+      const text = state.noticeDraft.trim();
+      if (!text) {
+        showToast('Please tap a template or type a notice first', 'error');
+        return;
+      }
+      state.notices.unshift({
+        id: 'not_' + Date.now(),
+        text,
+        time: `Today, ${getCurrentTimeLabel()}`
+      });
+      state.noticeDraft = '';
+      renderTabContent();
+      showToast('Notice posted to nearby students!');
+    }
+
+    function deleteNotice(id) {
+      state.notices = state.notices.filter((n) => n.id !== id);
+      renderTabContent();
+      showToast('Notice deleted', 'info');
+    }
+
+    /* =========================================================================
+       10. TAB 5 — SHOP INFO, PHOTOS & INTERACTIVE GPS MAP
+       ========================================================================= */
+    function renderInfoAndGpsTab() {
+      const lib = state.library;
+      const pin = lib.mapPin;
+
+      return `
+        <div class="space-y-6">
+          <!-- Library Details -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-7 space-y-5">
+            <div>
+              <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">Library Details &amp; Contact</h2>
+              <p class="text-sm text-slate-600 mt-0.5">Keep your phone/WhatsApp and address accurate for campus students.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="space-y-1.5">
+                <label class="block text-sm font-bold text-[#0F172A]">Library Name</label>
+                <input
+                  type="text"
+                  value="${escapeHtml(lib.name)}"
+                  oninput="state.library.name = this.value; document.getElementById('navLibraryName').textContent = this.value;"
+                  class="w-full min-h-[50px] px-4 py-2.5 rounded-xl bg-white border-2 border-slate-200 font-bold text-base focus:outline-none focus:border-[#059669]"
+                />
+              </div>
+              <div class="space-y-1.5">
+                <label class="block text-sm font-bold text-[#0F172A]">Owner Name</label>
+                <input
+                  type="text"
+                  value="${escapeHtml(lib.ownerName)}"
+                  oninput="state.library.ownerName = this.value"
+                  class="w-full min-h-[50px] px-4 py-2.5 rounded-xl bg-white border-2 border-slate-200 font-bold text-base focus:outline-none focus:border-[#059669]"
+                />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="space-y-1.5">
+                <label class="block text-sm font-bold text-[#0F172A]">Phone &amp; WhatsApp Number</label>
+                <div class="flex items-center">
+                  <span class="min-h-[50px] px-3.5 flex items-center rounded-l-xl bg-slate-100 border-2 border-r-0 border-slate-200 font-extrabold text-slate-600">+91</span>
+                  <input
+                    type="tel"
+                    value="${escapeHtml(lib.phone)}"
+                    oninput="state.library.phone = this.value"
+                    class="w-full min-h-[50px] px-4 py-2.5 rounded-r-xl bg-white border-2 border-slate-200 font-bold text-base focus:outline-none focus:border-[#059669]"
+                  />
+                </div>
+              </div>
+              <div class="space-y-1.5">
+                <label class="block text-sm font-bold text-[#0F172A]">Address &amp; Landmark</label>
+                <input
+                  type="text"
+                  value="${escapeHtml(lib.address)}"
+                  oninput="state.library.address = this.value"
+                  class="w-full min-h-[50px] px-4 py-2.5 rounded-xl bg-white border-2 border-slate-200 font-bold text-base focus:outline-none focus:border-[#059669]"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Study Hall, AC Cabin & Paper Fee Chart Photos -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-7 space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">📷 Study Hall, AC Cabin &amp; Paper Fee Chart Photos</h2>
+                <p class="text-sm text-slate-600 mt-0.5">Clear photos of your desks, chairs, lockers, and printed fee board bring more student visits.</p>
+              </div>
+              <label class="min-h-[48px] px-5 py-2.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-sm shadow-sm cursor-pointer inline-flex items-center justify-center gap-2 shrink-0">
+                <span>+ Upload Photos</span>
+                <input type="file" accept="image/*" multiple class="hidden" onchange="handlePhotoUpload(event)" />
+              </label>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              ${state.photos
+                .map(
+                  (p) => `
+                    <div class="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-2xs">
+                      <img
+                        src="${p.url}"
+                        alt="${escapeHtml(p.label)}"
+                        onerror="this.src='https://placehold.co/600x400/ECFDF5/047857?text=Study+Library'"
+                        class="w-full h-44 object-cover bg-emerald-50"
+                      />
+                      <div class="p-3 flex items-center justify-between gap-2">
+                        <span class="text-sm font-bold text-slate-800 truncate">${escapeHtml(p.label)}</span>
+                        <button
+                          type="button"
+                          onclick="deletePhoto('${p.id}')"
+                          class="min-h-[38px] px-3 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 font-bold text-xs cursor-pointer"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  `
+                )
+                .join('')}
+            </div>
+          </div>
+
+          <!-- Interactive Draggable GPS Map Pin Picker -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-7 space-y-5">
+            <div>
+              <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">📍 Library GPS Location</h2>
+              <p class="text-sm text-slate-600 mt-0.5">Tap GPS, pick a campus landmark, or drag the emerald pin onto your exact building.</p>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2.5">
+              <button
+                type="button"
+                onclick="useCurrentGps()"
+                class="min-h-[48px] px-5 py-2.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-sm shadow-sm inline-flex items-center gap-2 cursor-pointer"
+              >
+                <span>🎯</span>
+                <span>Use My Current GPS Location</span>
+              </button>
+
+              ${CAMPUS_LANDMARKS.map(
+                (lm, i) => `
+                  <button
+                    type="button"
+                    onclick="jumpToLandmark(${i})"
+                    class="min-h-[48px] px-4 py-2 rounded-xl bg-[#ECFDF5] hover:bg-emerald-100 border border-emerald-200 text-[#047857] text-xs sm:text-sm font-bold cursor-pointer"
+                  >
+                    📍 ${lm.name}
+                  </button>
+                `
+              ).join('')}
+            </div>
+
+            <div class="rounded-2xl border-2 border-emerald-200 overflow-hidden bg-white">
+              <div class="px-4 py-2.5 bg-[#ECFDF5] border-b border-emerald-100 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
+                <span class="font-bold text-[#047857]">🗺️ Bholaram Ustad Marg, Indore</span>
+                <span id="mapCoordsLabel" class="font-mono text-xs font-bold text-[#047857]">${pin.lat.toFixed(4)}° N, ${pin.lng.toFixed(4)}° E</span>
+              </div>
+
+              <div id="libraryMapCanvas" class="relative w-full h-72 sm:h-80 campus-map-bg select-none touch-none overflow-hidden cursor-crosshair">
+                <svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 800 360" preserveAspectRatio="none">
+                  <path d="M 0 175 Q 250 155 460 172 T 800 142" stroke="#FFFFFF" stroke-width="26" fill="none" />
+                  <path d="M 0 175 Q 250 155 460 172 T 800 142" stroke="#CBD5E1" stroke-width="2" stroke-dasharray="8 8" fill="none" />
+                  <path d="M 190 0 L 235 360" stroke="#FFFFFF" stroke-width="20" fill="none" />
+                  <path d="M 540 158 L 570 360" stroke="#FFFFFF" stroke-width="14" fill="none" />
+                  <path d="M 620 0 L 605 155" stroke="#FFFFFF" stroke-width="16" fill="none" />
+                  <rect x="640" y="22" width="135" height="90" rx="18" fill="#BBF7D0" opacity="0.65" />
+                </svg>
+
+                ${CAMPUS_LANDMARKS.map(
+                  (lm) => `
+                    <div class="absolute -translate-x-1/2 -translate-y-1/2 pointer-events-none flex flex-col items-center" style="left: ${lm.x}%; top: ${lm.y}%;">
+                      <span class="w-2.5 h-2.5 rounded-full bg-slate-500/80 ring-2 ring-white"></span>
+                      <span class="mt-1 px-2.5 py-0.5 rounded-md bg-white/95 text-[11px] font-bold text-slate-700 shadow-2xs whitespace-nowrap border border-slate-200">${lm.name}</span>
+                    </div>
+                  `
+                ).join('')}
+
+                <div id="libraryMapPin" class="absolute z-20 -translate-x-1/2 -translate-y-full cursor-grab active:cursor-grabbing" style="left: ${pin.x}%; top: ${pin.y}%;">
+                  <div class="flex flex-col items-center">
+                    <div class="px-3 py-1 rounded-xl bg-[#047857] text-white text-xs font-extrabold shadow-lg whitespace-nowrap border-2 border-white">
+                      📖 Saraswati Library
+                    </div>
+                    <div class="w-3.5 h-3.5 bg-[#047857] rotate-45 -mt-2 border-r-2 border-b-2 border-white"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="px-4 py-3 bg-slate-50 border-t border-emerald-100 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
+                <span id="mapLandmarkLabel" class="font-semibold text-slate-700">📍 ${escapeHtml(pin.landmark)}</span>
+                <button
+                  type="button"
+                  onclick="showToast('Library Info & GPS Pin saved!')"
+                  class="min-h-[44px] px-5 py-2 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs sm:text-sm cursor-pointer"
+                >
+                  ✓ Save Info &amp; GPS
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function handlePhotoUpload(event) {
+      const files = Array.from(event.target.files || []);
+      files.forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          state.photos.unshift({
+            id: 'ph_' + Date.now() + Math.random().toString(36).slice(2, 5),
+            label: file.name.replace(/\.[^/.]+$/, '').slice(0, 28) || 'Library Photo',
+            url: e.target.result
+          });
+          renderTabContent();
+          showToast('Photo uploaded!');
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function deletePhoto(id) {
+      state.photos = state.photos.filter((p) => p.id !== id);
+      renderTabContent();
+      showToast('Photo removed', 'info');
+    }
+
+    function attachMapInteractions() {
+      const canvas = document.getElementById('libraryMapCanvas');
+      const pinEl = document.getElementById('libraryMapPin');
+      if (!canvas || !pinEl) return;
+
+      let dragging = false;
+
+      const movePin = (clientX, clientY) => {
+        const rect = canvas.getBoundingClientRect();
+        const xPct = Math.max(8, Math.min(92, ((clientX - rect.left) / rect.width) * 100));
+        const yPct = Math.max(14, Math.min(92, ((clientY - rect.top) / rect.height) * 100));
+
+        const lat = 22.6975 - (yPct / 100) * 0.012;
+        const lng = 75.8590 + (xPct / 100) * 0.018;
+
+        let nearest = CAMPUS_LANDMARKS[0];
+        let minDist = Infinity;
+        CAMPUS_LANDMARKS.forEach((lm) => {
+          const d = Math.hypot(lm.x - xPct, lm.y - yPct);
+          if (d < minDist) { minDist = d; nearest = lm; }
+        });
+
+        state.library.mapPin = {
+          x: Math.round(xPct),
+          y: Math.round(yPct),
+          lat,
+          lng,
+          landmark: `Near ${nearest.name}`
+        };
+
+        pinEl.style.left = state.library.mapPin.x + '%';
+        pinEl.style.top = state.library.mapPin.y + '%';
+
+        const coordsEl = document.getElementById('mapCoordsLabel');
+        if (coordsEl) coordsEl.textContent = `${lat.toFixed(4)}° N, ${lng.toFixed(4)}° E`;
+        const lmEl = document.getElementById('mapLandmarkLabel');
+        if (lmEl) lmEl.textContent = `📍 ${state.library.mapPin.landmark}`;
+      };
+
+      canvas.addEventListener('pointerdown', (e) => {
+        dragging = true;
+        canvas.setPointerCapture(e.pointerId);
+        movePin(e.clientX, e.clientY);
+      });
+      canvas.addEventListener('pointermove', (e) => {
+        if (dragging) movePin(e.clientX, e.clientY);
+      });
+      canvas.addEventListener('pointerup', () => { dragging = false; });
+      canvas.addEventListener('pointercancel', () => { dragging = false; });
+    }
+
+    function useCurrentGps() {
+      state.library.mapPin = {
+        x: 64,
+        y: 40,
+        lat: 22.6904,
+        lng: 75.8703,
+        landmark: 'Near Campus Gate 2, Bholaram Ustad Marg (GPS Locked)'
+      };
+      renderTabContent();
+      showToast('GPS location locked near Campus Gate 2, Indore!', 'info');
+    }
+
+    function jumpToLandmark(idx) {
+      const lm = CAMPUS_LANDMARKS[idx];
+      if (!lm) return;
+      state.library.mapPin = {
+        x: lm.x,
+        y: lm.y,
+        lat: lm.lat,
+        lng: lm.lng,
+        landmark: `Near ${lm.name}`
+      };
+      renderTabContent();
+      showToast(`Pin moved to ${lm.name}`, 'info');
+    }
+
+    /* =========================================================================
+       11. LIVE STUDENT PREVIEW MODAL (INDIGO & BLUE #4F46E5)
+       ========================================================================= */
+    function openStudentPreview() {
+      renderStudentPreviewContent();
+      const modal = document.getElementById('studentPreviewModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeStudentPreview() {
+      const modal = document.getElementById('studentPreviewModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function renderStudentPreviewContent() {
+      const lib = state.library;
+      const r = state.rules;
+      const av = AVAILABILITY_MODES[lib.availability];
+      const activeShifts = state.shifts.filter((s) => s.active);
+      const q = state.studentBookSearch.trim().toLowerCase();
+      const filteredBooks = state.books.filter(
+        (b) => !q || b.title.toLowerCase().includes(q) || b.category.toLowerCase().includes(q)
+      );
+
+      const regFeeDisplay =
+        r.regFeeType === 'Custom ₹' && r.regFeeCustom
+          ? `₹${r.regFeeCustom} Registration`
+          : r.regFeeType === 'No Fee (₹0)'
+          ? 'Zero Registration Fee'
+          : `${r.regFeeType} Reg. Fee`;
+
+      document.getElementById('studentPreviewBody').innerHTML = `
+        <!-- Library Header Card -->
+        <div class="bg-white rounded-2xl border border-indigo-100 shadow-sm p-5 space-y-4">
+          <div class="flex items-start gap-3.5">
+            <div class="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-3xl shrink-0">
+              📖
+            </div>
+            <div class="min-w-0">
+              <div class="flex flex-wrap items-center gap-1.5">
+                <span class="px-2.5 py-0.5 rounded-full bg-indigo-50 text-[#4F46E5] text-xs font-extrabold">Study Libraries</span>
+                <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-extrabold">✓ Verified</span>
+                <span class="text-xs font-semibold text-slate-500">• 210 m away</span>
+              </div>
+              <h3 class="text-xl font-extrabold text-slate-900 mt-1">${escapeHtml(lib.name)}</h3>
+              <p class="text-sm text-slate-600">📍 ${escapeHtml(lib.address)}</p>
+            </div>
+          </div>
+
+          <!-- Status + Free Trial + 24x7 Badges -->
+          <div class="flex flex-wrap gap-2 pt-2 border-t border-slate-100">
+            <span class="px-3 py-1 rounded-xl text-xs font-extrabold border ${av.pillClass}">
+              ${av.icon} ${av.label}
+            </span>
+            ${
+              r.timingType === 'Open 24x7' || state.open24x7AllWeek
+                ? `<span class="px-3 py-1 rounded-xl bg-indigo-50 text-[#4F46E5] border border-indigo-200 text-xs font-extrabold">🌙 Open 24x7</span>`
+                : ''
+            }
+            ${
+              r.freeTrial.startsWith('Yes')
+                ? `<span class="px-3 py-1 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-extrabold">🎁 1-Day Free Trial</span>`
+                : ''
+            }
+            <span class="px-3 py-1 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold">
+              ${escapeHtml(regFeeDisplay)} • Locker: ${escapeHtml(r.lockerFacility)}
+            </span>
+          </div>
+
+          <!-- Call / WhatsApp / Get Directions -->
+          <div class="grid grid-cols-3 gap-2.5">
+            <div class="min-h-[46px] rounded-xl bg-[#4F46E5] text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5">
+              📞 Call
+            </div>
+            <div class="min-h-[46px] rounded-xl bg-emerald-600 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5">
+              💬 WhatsApp
+            </div>
+            <div class="min-h-[46px] rounded-xl bg-blue-50 text-blue-800 border border-blue-200 font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5">
+              🗺️ Directions
+            </div>
+          </div>
+
+          <!-- Active Facilities Chips -->
+          <div class="flex flex-wrap gap-1.5">
+            ${r.facilities
+              .map((f) => `<span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold">✓ ${escapeHtml(f)}</span>`)
+              .join('')}
+          </div>
+        </div>
+
+        <!-- Active Notice -->
+        ${
+          state.notices.length
+            ? `
+              <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 space-y-1">
+                <span class="text-[11px] font-extrabold uppercase tracking-wider text-amber-800">📢 Library Announcement</span>
+                <p class="text-sm font-bold text-slate-900">${escapeHtml(state.notices[0].text)}</p>
+              </div>
+            `
+            : ''
+        }
+
+        <!-- Live Shift Plans with Exact Vacant Seat Counts -->
+        <div class="bg-white rounded-2xl border border-indigo-100 p-4 space-y-3">
+          <h4 class="font-extrabold text-slate-900 text-base">🪑 Shift Plans &amp; Live Seat Availability</h4>
+          <div class="divide-y divide-slate-100">
+            ${activeShifts
+              .map(
+                (sh) => `
+                  <div class="py-3 first:pt-0 last:pb-0 flex items-start justify-between gap-3">
+                    <div>
+                      <div class="flex flex-wrap items-center gap-1.5">
+                        <span class="font-bold text-slate-900 text-sm">${escapeHtml(sh.name)}</span>
+                        <span class="px-2 py-0.5 rounded-full bg-indigo-50 text-[#4F46E5] text-[10px] font-extrabold">${escapeHtml(sh.seatType)}</span>
+                      </div>
+                      <p class="text-xs text-slate-500 mt-0.5">🕒 ${escapeHtml(sh.timing)}</p>
+                      ${sh.note ? `<p class="text-xs text-slate-600 mt-0.5">${escapeHtml(sh.note)}</p>` : ''}
+                    </div>
+                    <div class="text-right shrink-0">
+                      <span class="text-base font-extrabold text-[#4F46E5]">₹${Number(sh.fee).toLocaleString('en-IN')}<span class="text-[11px] font-normal text-slate-500">/mo</span></span>
+                      <span class="block text-[11px] font-extrabold mt-0.5 ${sh.vacantSeats > 0 ? 'text-emerald-700' : 'text-red-600'}">
+                        ${sh.vacantSeats > 0 ? `🟢 ${sh.vacantSeats} Seats Vacant` : '🔴 Shift Full'}
+                      </span>
+                    </div>
+                  </div>
+                `
+              )
+              .join('')}
+          </div>
+        </div>
+
+        <!-- Searchable Books & Magazines Available Here -->
+        <div class="bg-white rounded-2xl border border-indigo-100 p-4 space-y-3">
+          <h4 class="font-extrabold text-slate-900 text-base">📚 Books &amp; Magazines Available Here (${filteredBooks.length})</h4>
+          <input
+            type="text"
+            value="${escapeHtml(state.studentBookSearch)}"
+            placeholder="🔍 Search GATE, UPSC, B.Tech books or newspapers..."
+            oninput="state.studentBookSearch = this.value; renderStudentPreviewContent();"
+            class="w-full min-h-[44px] px-3.5 py-2 rounded-xl bg-slate-50 border-2 border-indigo-100 text-sm font-medium focus:outline-none focus:border-[#4F46E5]"
+          />
+          <div class="divide-y divide-slate-100">
+            ${
+              filteredBooks.length === 0
+                ? `<p class="text-xs text-slate-500 py-2">No matching books found on shelf.</p>`
+                : filteredBooks
+                    .map((b) => {
+                      const avail = b.status === 'Available' && b.copies > 0;
+                      return `
+                        <div class="py-2.5 first:pt-0 last:pb-0 flex items-center justify-between gap-3 ${avail ? '' : 'opacity-65'}">
+                          <div>
+                            <p class="font-bold text-slate-900 text-sm">${escapeHtml(b.title)}</p>
+                            <p class="text-xs text-slate-500">${escapeHtml(b.category)}</p>
+                          </div>
+                          <span class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold shrink-0 ${
+                            avail ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-900'
+                          }">
+                            ${avail ? `Available (${b.copies})` : 'All Issued'}
+                          </span>
+                        </div>
+                      `;
+                    })
+                    .join('')
+            }
+          </div>
+        </div>
+
+        <!-- Uploaded Photos Strip -->
+        ${
+          state.photos.length
+            ? `
+              <div class="bg-white rounded-2xl border border-indigo-100 p-4 space-y-2.5">
+                <h4 class="font-extrabold text-slate-900 text-sm">📷 Study Hall Photos</h4>
+                <div class="grid grid-cols-3 gap-2.5">
+                  ${state.photos
+                    .map(
+                      (p) => `
+                        <img
+                          src="${p.url}"
+                          alt="${escapeHtml(p.label)}"
+                          class="w-full h-24 object-cover rounded-xl border border-slate-200"
+                        />
+                      `
+                    )
+                    .join('')}
+                </div>
+              </div>
+            `
+            : ''
+        }
+      `;
+    }
+
+    /* =========================================================================
+       12. INITIALIZE
+       ========================================================================= */
+    renderAll();
+  </script>
+</body>
+</html>

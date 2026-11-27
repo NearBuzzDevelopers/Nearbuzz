@@ -7,16 +7,21 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.util.Map;
+
 /**
- * Request payload to create or register a business listing.
+ * Request payload to create or update a business listing.
+ * Accepts either {@code category} (enum) or {@code businessType} ("hostel", "mess", etc.),
+ * plus optional category-specific JSONB {@code metadata}.
  */
 public record CreateBusinessRequest(
         @NotBlank(message = "Business name is required")
         @Size(max = 300, message = "Business name cannot exceed 300 characters")
         String name,
 
-        @NotNull(message = "Category is required")
         Business.Category category,
+
+        String businessType,
 
         String description,
 
@@ -35,7 +40,8 @@ public record CreateBusinessRequest(
 
         String phone,
 
-        String whatsapp
+        String whatsapp,
+
+        Map<String, Object> metadata
 ) {
 }
-

@@ -1,0 +1,3507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NearBuzz — Student Discovery &amp; Map Interface</title>
+  <style>
+    /* =========================================================================
+       DESIGN TOKENS & BASE RESET (INDIGO & BLUE STUDENT THEME)
+       ========================================================================= */
+    :root {
+      --indigo: #4f46e5;
+      --indigo-dark: #4338ca;
+      --indigo-soft: #eef2ff;
+      --indigo-border: #c7d2fe;
+      --blue: #2563eb;
+      --blue-soft: #eff6ff;
+      --emerald: #059669;
+      --emerald-soft: #ecfdf5;
+      --emerald-border: #a7f3d0;
+      --amber: #d97706;
+      --amber-soft: #fffbeb;
+      --amber-border: #fde68a;
+      --red: #dc2626;
+      --red-soft: #fef2f2;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --text-subtle: #64748b;
+      --border: #e2e8f0;
+      --radius: 16px;
+      --radius-sm: 12px;
+      --radius-pill: 999px;
+      --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.05);
+      --shadow-sm: 0 4px 12px rgba(15, 23, 42, 0.06);
+      --shadow-md: 0 10px 28px rgba(15, 23, 42, 0.10);
+      --shadow-lg: 0 20px 44px rgba(15, 23, 42, 0.18);
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 76px;
+    }
+
+    @media (min-width: 768px) {
+      body {
+        padding-bottom: 0;
+      }
+    }
+
+    button, input, select, textarea {
+      font-family: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    @media (min-width: 640px) {
+      .container {
+        padding: 0 24px;
+      }
+    }
+
+    /* =========================================================================
+       STICKY TOP NAVBAR
+       ========================================================================= */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .navbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      height: 66px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    .brand-badge {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--indigo), var(--blue));
+      color: #fff;
+      font-weight: 800;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      letter-spacing: -0.02em;
+      box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25);
+      flex-shrink: 0;
+    }
+
+    .brand-text-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .brand-name {
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--text);
+    }
+
+    .campus-pill {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--indigo);
+      background: var(--indigo-soft);
+      border: 1px solid var(--indigo-border);
+      padding: 3px 9px;
+      border-radius: var(--radius-pill);
+      white-space: nowrap;
+    }
+
+    .nav-tabs {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      background: #f1f5f9;
+      padding: 4px;
+      border-radius: 14px;
+    }
+
+    @media (min-width: 768px) {
+      .nav-tabs {
+        display: flex;
+      }
+    }
+
+    .nav-tab {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 700;
+      padding: 9px 16px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.16s ease;
+    }
+
+    .nav-tab:hover {
+      color: var(--indigo);
+      background: rgba(255, 255, 255, 0.65);
+    }
+
+    .nav-tab.active {
+      background: #fff;
+      color: var(--indigo);
+      box-shadow: var(--shadow-xs);
+    }
+
+    .nav-badge {
+      font-size: 11px;
+      font-weight: 800;
+      min-width: 20px;
+      height: 20px;
+      padding: 0 6px;
+      border-radius: var(--radius-pill);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-badge.unread {
+      background: #ef4444;
+      color: #fff;
+    }
+
+    .nav-badge.saved {
+      background: var(--indigo-soft);
+      color: var(--indigo);
+    }
+
+    .student-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 13px;
+      border-radius: var(--radius-pill);
+      background: var(--indigo-soft);
+      color: var(--indigo-dark);
+      border: 1px solid var(--indigo-border);
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    /* =========================================================================
+       MOBILE BOTTOM NAVIGATION BAR
+       ========================================================================= */
+    .mobile-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 45;
+      background: rgba(255, 255, 255, 0.97);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+      box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.06);
+    }
+
+    @media (min-width: 768px) {
+      .mobile-nav {
+        display: none;
+      }
+    }
+
+    .mobile-nav-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-subtle);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      padding: 6px 4px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      position: relative;
+    }
+
+    .mobile-nav-btn.active {
+      color: var(--indigo);
+      background: var(--indigo-soft);
+    }
+
+    .mobile-nav-badge {
+      position: absolute;
+      top: 3px;
+      right: calc(50% - 22px);
+      font-size: 10px;
+      font-weight: 800;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* =========================================================================
+       HERO NATURAL-LANGUAGE SEARCH BANNER
+       ========================================================================= */
+    .hero-wrap {
+      padding-top: 20px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #4f46e5 0%, #3b5bdb 50%, #2563eb 100%);
+      color: #fff;
+      border-radius: 20px;
+      padding: 26px 20px;
+      box-shadow: 0 12px 30px rgba(79, 70, 229, 0.22);
+      position: relative;
+      overflow: hidden;
+    }
+
+    @media (min-width: 768px) {
+      .hero {
+        padding: 36px 36px 30px;
+      }
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.14) 0%, transparent 70%);
+      top: -90px;
+      right: -70px;
+      pointer-events: none;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.2;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      max-width: 720px;
+    }
+
+    @media (min-width: 768px) {
+      .hero h1 {
+        font-size: 32px;
+      }
+    }
+
+    .hero-sub {
+      margin: 8px 0 20px;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.9);
+      max-width: 650px;
+    }
+
+    @media (min-width: 768px) {
+      .hero-sub {
+        font-size: 15px;
+      }
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border-radius: 14px;
+      padding: 6px;
+      gap: 6px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.16);
+      max-width: 780px;
+    }
+
+    .search-input-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-left: 10px;
+      min-width: 0;
+    }
+
+    .search-input {
+      width: 100%;
+      border: none;
+      outline: none;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text);
+      background: transparent;
+      min-height: 40px;
+    }
+
+    .search-input::placeholder {
+      color: #94a3b8;
+    }
+
+    .search-clear-btn {
+      border: none;
+      background: #f1f5f9;
+      color: var(--text-muted);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      font-size: 13px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .search-submit-btn {
+      border: none;
+      background: var(--indigo);
+      color: #fff;
+      font-weight: 700;
+      font-size: 14px;
+      padding: 11px 20px;
+      border-radius: 10px;
+      transition: background 0.15s ease;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .search-submit-btn:hover {
+      background: var(--indigo-dark);
+    }
+
+    .quick-tags {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 13px;
+    }
+
+    .quick-tags-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .quick-tag {
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.14);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: var(--radius-pill);
+      transition: all 0.15s ease;
+    }
+
+    .quick-tag:hover {
+      background: rgba(255, 255, 255, 0.26);
+      transform: translateY(-1px);
+    }
+
+    .location-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    .gps-btn {
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      background: rgba(255, 255, 255, 0.18);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 9px 14px;
+      border-radius: 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.15s ease;
+    }
+
+    .gps-btn:hover {
+      background: rgba(255, 255, 255, 0.28);
+    }
+
+    .hero-select {
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      background: rgba(15, 23, 42, 0.22);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 9px 12px;
+      border-radius: 11px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .hero-select option {
+      color: var(--text);
+      background: #fff;
+    }
+
+    /* =========================================================================
+       CATEGORY PILLS & TOOLBAR
+       ========================================================================= */
+    .category-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 18px 0 6px;
+      scrollbar-width: none;
+    }
+
+    .category-bar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .cat-pill {
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 9px 15px;
+      border-radius: var(--radius-pill);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+      box-shadow: var(--shadow-xs);
+    }
+
+    .cat-pill:hover {
+      border-color: var(--indigo-border);
+      color: var(--indigo);
+    }
+
+    .cat-pill.active {
+      background: var(--indigo);
+      border-color: var(--indigo);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 0 18px;
+    }
+
+    .toolbar-left {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .results-count {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+      margin-right: 4px;
+    }
+
+    .filter-chip {
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 7px 12px;
+      border-radius: var(--radius-pill);
+      transition: all 0.15s ease;
+    }
+
+    .filter-chip.active {
+      background: var(--indigo-soft);
+      border-color: var(--indigo);
+      color: var(--indigo);
+    }
+
+    .sort-select {
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 7px 12px;
+      border-radius: var(--radius-pill);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .view-toggle {
+      display: inline-flex;
+      background: #e2e8f0;
+      padding: 3px;
+      border-radius: 12px;
+    }
+
+    .view-toggle-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 7px 14px;
+      border-radius: 9px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .view-toggle-btn.active {
+      background: #fff;
+      color: var(--indigo);
+      box-shadow: var(--shadow-xs);
+    }
+
+    /* =========================================================================
+       SHOP CARDS GRID
+       ========================================================================= */
+    .shops-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      padding-bottom: 40px;
+    }
+
+    @media (min-width: 640px) {
+      .shops-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .shops-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .shop-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+    }
+
+    .shop-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--indigo-border);
+    }
+
+    .card-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .card-meta-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .cat-badge {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--indigo);
+      background: var(--indigo-soft);
+      padding: 4px 9px;
+      border-radius: var(--radius-pill);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .dist-badge {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      background: #f1f5f9;
+      padding: 4px 9px;
+      border-radius: var(--radius-pill);
+    }
+
+    .save-icon-btn {
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text-subtle);
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+    }
+
+    .save-icon-btn:hover {
+      border-color: var(--indigo);
+      color: var(--indigo);
+    }
+
+    .save-icon-btn.saved {
+      background: var(--indigo-soft);
+      border-color: var(--indigo);
+      color: var(--indigo);
+    }
+
+    .shop-title-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .shop-title {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .verified-icon {
+      color: var(--blue);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 10px;
+      width: fit-content;
+    }
+
+    .status-pill.green {
+      background: var(--emerald-soft);
+      color: #047857;
+      border: 1px solid var(--emerald-border);
+    }
+
+    .status-pill.amber {
+      background: var(--amber-soft);
+      color: #b45309;
+      border: 1px solid var(--amber-border);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag-chip {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      padding: 4px 9px;
+      border-radius: 8px;
+    }
+
+    .card-footer {
+      padding-top: 12px;
+      border-top: 1px solid #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .price-block {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .price-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-subtle);
+    }
+
+    .price-value {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .btn-primary {
+      border: none;
+      background: var(--indigo);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 10px 14px;
+      border-radius: 11px;
+      transition: background 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn-primary:hover {
+      background: var(--indigo-dark);
+    }
+
+    .btn-secondary {
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 9px 13px;
+      border-radius: 11px;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--indigo-border);
+      color: var(--indigo);
+      background: var(--indigo-soft);
+    }
+
+    .compare-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 8px;
+    }
+
+    .compare-check {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-subtle);
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+    }
+
+    .compare-check.checked {
+      background: var(--indigo-soft);
+      border-color: var(--indigo);
+      color: var(--indigo);
+    }
+
+    .compare-check input {
+      accent-color: var(--indigo);
+      margin: 0;
+      cursor: pointer;
+    }
+
+    /* =========================================================================
+       INTERACTIVE CAMPUS MAP VIEW
+       ========================================================================= */
+    .map-shell {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 40px;
+    }
+
+    .map-header {
+      padding: 12px 16px;
+      background: var(--indigo-soft);
+      border-bottom: 1px solid var(--indigo-border);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--indigo-dark);
+    }
+
+    .map-canvas {
+      position: relative;
+      width: 100%;
+      height: 480px;
+      background-color: #eef4ff;
+      background-image:
+        linear-gradient(to right, rgba(79, 70, 229, 0.06) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(79, 70, 229, 0.06) 1px, transparent 1px);
+      background-size: 32px 32px;
+      overflow: hidden;
+    }
+
+    @media (min-width: 768px) {
+      .map-canvas {
+        height: 540px;
+      }
+    }
+
+    .map-landmark {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 5;
+    }
+
+    .map-landmark-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #64748b;
+      border: 2px solid #fff;
+    }
+
+    .map-landmark-label {
+      margin-top: 3px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid #cbd5e1;
+      color: #334155;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+      box-shadow: var(--shadow-xs);
+    }
+
+    .map-pin {
+      position: absolute;
+      transform: translate(-50%, -100%);
+      z-index: 15;
+      border: 2px solid #fff;
+      background: #fff;
+      border-radius: 14px;
+      padding: 5px 9px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.18);
+      transition: transform 0.16s ease, background 0.16s ease;
+    }
+
+    .map-pin:hover, .map-pin.selected {
+      transform: translate(-50%, -110%) scale(1.08);
+      z-index: 25;
+      background: var(--indigo);
+      color: #fff;
+      border-color: #fff;
+    }
+
+    .map-pin-price {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--indigo-dark);
+      white-space: nowrap;
+    }
+
+    .map-pin:hover .map-pin-price, .map-pin.selected .map-pin-price {
+      color: #fff;
+    }
+
+    .map-pin::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%) rotate(45deg);
+      width: 10px;
+      height: 10px;
+      background: inherit;
+      border-right: 2px solid #fff;
+      border-bottom: 2px solid #fff;
+    }
+
+    .map-preview-card {
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 14px;
+      z-index: 30;
+      background: #fff;
+      border: 1px solid var(--indigo-border);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow-lg);
+      max-width: 520px;
+      margin: 0 auto;
+      animation: fadeUp 0.2s ease-out;
+    }
+
+    /* =========================================================================
+       FLOATING COMPARE BAR
+       ========================================================================= */
+    .compare-bar {
+      position: fixed;
+      bottom: 82px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 46;
+      background: #1e1b4b;
+      color: #fff;
+      border-radius: 16px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: var(--shadow-lg);
+      max-width: 94vw;
+      animation: fadeUp 0.2s ease-out;
+    }
+
+    @media (min-width: 768px) {
+      .compare-bar {
+        bottom: 22px;
+      }
+    }
+
+    .compare-bar.hidden {
+      display: none;
+    }
+
+    .compare-bar-text {
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .compare-now-btn {
+      border: none;
+      background: var(--indigo);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 8px 14px;
+      border-radius: 10px;
+      white-space: nowrap;
+    }
+
+    .compare-clear-btn {
+      border: none;
+      background: rgba(255, 255, 255, 0.14);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 8px 11px;
+      border-radius: 10px;
+    }
+
+    /* =========================================================================
+       UPDATES FEED (TAB 2)
+       ========================================================================= */
+    .feed-container {
+      max-width: 720px;
+      margin: 24px auto 48px;
+    }
+
+    .section-header-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .section-subtitle {
+      margin: 3px 0 0;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .update-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 14px;
+    }
+
+    .update-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .update-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--indigo-soft);
+      border: 1px solid var(--indigo-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 21px;
+      flex-shrink: 0;
+    }
+
+    .update-body {
+      margin: 0 0 14px;
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    .update-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding-top: 12px;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    /* =========================================================================
+       SAVED & FOLLOWING HUB (TAB 3)
+       ========================================================================= */
+    .saved-container {
+      margin: 24px auto 48px;
+    }
+
+    .saved-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    @media (min-width: 768px) {
+      .saved-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .saved-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .speed-dial-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding-top: 10px;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    /* =========================================================================
+       MODALS (SHOP DETAIL, COMPARE, REPORT ISSUE)
+       ========================================================================= */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      background: rgba(15, 23, 42, 0.58);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-panel {
+      background: #fff;
+      width: 100%;
+      max-width: 760px;
+      max-height: 92vh;
+      border-radius: 20px;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      animation: fadeUp 0.2s ease-out;
+    }
+
+    .modal-panel.wide {
+      max-width: 920px;
+    }
+
+    .modal-panel.narrow {
+      max-width: 480px;
+    }
+
+    .modal-header {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      background: #fff;
+    }
+
+    .modal-close {
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      color: var(--text);
+      width: 38px;
+      height: 38px;
+      border-radius: 11px;
+      font-size: 16px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .modal-close:hover {
+      background: #e2e8f0;
+    }
+
+    .modal-body {
+      padding: 20px;
+      overflow-y: auto;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .detail-section {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+    }
+
+    .detail-section-title {
+      margin: 0 0 12px;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .action-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .btn-whatsapp {
+      border: none;
+      background: #16a34a;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 10px 14px;
+      border-radius: 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-whatsapp:hover {
+      background: #15803d;
+    }
+
+    .btn-follow {
+      border: 1px solid var(--indigo);
+      background: var(--indigo-soft);
+      color: var(--indigo);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 10px 14px;
+      border-radius: 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-follow.following {
+      background: var(--emerald);
+      border-color: var(--emerald);
+      color: #fff;
+    }
+
+    .rules-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    @media (min-width: 640px) {
+      .rules-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .rule-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+    }
+
+    .rule-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-subtle);
+    }
+
+    .rule-val {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text);
+      margin-top: 2px;
+    }
+
+    .list-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 11px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .list-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .list-row:first-child {
+      padding-top: 0;
+    }
+
+    .in-store-search {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      border-radius: 11px;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 500;
+      outline: none;
+      margin-bottom: 12px;
+    }
+
+    .in-store-search:focus {
+      border-color: var(--indigo);
+      background: #fff;
+    }
+
+    .hours-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .hours-table td {
+      padding: 7px 8px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .hours-table tr.today-row {
+      background: var(--indigo-soft);
+      color: var(--indigo-dark);
+      font-weight: 800;
+    }
+
+    .compare-table-wrap {
+      overflow-x: auto;
+    }
+
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      background: #fff;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .compare-table th, .compare-table td {
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .compare-table th {
+      background: var(--indigo-soft);
+      color: var(--indigo-dark);
+      font-weight: 800;
+    }
+
+    .compare-table td:first-child {
+      font-weight: 700;
+      color: var(--text-muted);
+      background: #f8fafc;
+      width: 150px;
+    }
+
+    .mini-map-box {
+      position: relative;
+      height: 180px;
+      border-radius: 14px;
+      border: 1px solid var(--indigo-border);
+      background-color: #eef4ff;
+      background-image:
+        linear-gradient(to right, rgba(79, 70, 229, 0.08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(79, 70, 229, 0.08) 1px, transparent 1px);
+      background-size: 24px 24px;
+      overflow: hidden;
+      transition: box-shadow 0.25s ease;
+    }
+
+    .mini-map-box.highlight {
+      box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.28);
+    }
+
+    .empty-state {
+      background: #fff;
+      border: 1px dashed var(--indigo-border);
+      border-radius: var(--radius);
+      padding: 44px 20px;
+      text-align: center;
+    }
+
+    /* =========================================================================
+       TOAST NOTIFICATIONS
+       ========================================================================= */
+    .toast-stack {
+      position: fixed;
+      bottom: 84px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 90;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      width: 92%;
+      max-width: 460px;
+      pointer-events: none;
+    }
+
+    @media (min-width: 768px) {
+      .toast-stack {
+        bottom: 24px;
+      }
+    }
+
+    .toast {
+      pointer-events: auto;
+      background: #0f172a;
+      color: #fff;
+      padding: 12px 16px;
+      border-radius: 14px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      animation: fadeUp 0.2s ease-out;
+    }
+
+    .toast.success {
+      background: #065f46;
+    }
+
+    .toast.indigo {
+      background: var(--indigo-dark);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .illustrated-card {
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: #fff;
+    }
+
+    .report-link {
+      border: none;
+      background: transparent;
+      color: var(--text-subtle);
+      font-size: 12px;
+      font-weight: 600;
+      text-decoration: underline;
+      padding: 6px;
+    }
+
+    .report-link:hover {
+      color: var(--red);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== STICKY TOP NAVBAR ==================== -->
+  <header class="navbar">
+    <div class="container navbar-inner">
+      <div class="brand" onclick="switchTab('discover')">
+        <div class="brand-badge">NB</div>
+        <div class="brand-text-wrap">
+          <span class="brand-name">NearBuzz</span>
+          <span class="campus-pill">Campus Radar</span>
+        </div>
+      </div>
+
+      <!-- Desktop 3-Tab Navigation -->
+      <nav class="nav-tabs" aria-label="Main navigation">
+        <button id="navDiscover" class="nav-tab active" onclick="switchTab('discover')">
+          <span>🔍</span><span>Discover</span>
+        </button>
+        <button id="navUpdates" class="nav-tab" onclick="switchTab('updates')">
+          <span>🔔</span><span>Updates</span>
+          <span id="navUnreadBadge" class="nav-badge unread">3</span>
+        </button>
+        <button id="navSaved" class="nav-tab" onclick="switchTab('saved')">
+          <span>🔖</span><span>Saved</span>
+          <span id="navSavedBadge" class="nav-badge saved">2</span>
+        </button>
+      </nav>
+
+      <!-- Compact Student Pill -->
+      <div class="student-pill">
+        <span>🎓</span>
+        <span>Student</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN CONTENT ROOT ==================== -->
+  <main id="appRoot" style="flex: 1;"></main>
+
+  <!-- ==================== MOBILE BOTTOM NAVIGATION ==================== -->
+  <nav class="mobile-nav" aria-label="Mobile navigation">
+    <button id="mobDiscover" class="mobile-nav-btn active" onclick="switchTab('discover')">
+      <span style="font-size:18px;">🔍</span>
+      <span>Discover</span>
+    </button>
+    <button id="mobUpdates" class="mobile-nav-btn" onclick="switchTab('updates')">
+      <span style="font-size:18px;">🔔</span>
+      <span>Updates</span>
+      <span id="mobUnreadBadge" class="mobile-nav-badge nav-badge unread">3</span>
+    </button>
+    <button id="mobSaved" class="mobile-nav-btn" onclick="switchTab('saved')">
+      <span style="font-size:18px;">🔖</span>
+      <span>Saved</span>
+      <span id="mobSavedBadge" class="mobile-nav-badge nav-badge saved">2</span>
+    </button>
+  </nav>
+
+  <!-- ==================== FLOATING COMPARE BAR ==================== -->
+  <div id="compareBar" class="compare-bar hidden">
+    <span id="compareBarText" class="compare-bar-text">Compare 2 Hostels</span>
+    <button class="compare-now-btn" onclick="openCompareModal()">Compare Now</button>
+    <button class="compare-clear-btn" onclick="clearCompare()">Clear</button>
+  </div>
+
+  <!-- ==================== SHOP DETAIL MODAL ==================== -->
+  <div id="detailModal" class="modal-backdrop" onclick="if(event.target===this) closeDetailModal()">
+    <div class="modal-panel" role="dialog" aria-modal="true">
+      <div id="detailModalHeader" class="modal-header"></div>
+      <div id="detailModalBody" class="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- ==================== COMPARE MODAL ==================== -->
+  <div id="compareModal" class="modal-backdrop" onclick="if(event.target===this) closeCompareModal()">
+    <div class="modal-panel wide" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <div>
+          <h2 id="compareModalTitle" style="margin:0; font-size:18px; font-weight:800;">Side-by-Side Comparison</h2>
+          <p style="margin:2px 0 0; font-size:13px; color:var(--text-muted);">Compare rent, distance, vacancies, and facilities at a glance</p>
+        </div>
+        <button class="modal-close" onclick="closeCompareModal()" aria-label="Close comparison">✕</button>
+      </div>
+      <div id="compareModalBody" class="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- ==================== REPORT ISSUE MODAL ==================== -->
+  <div id="reportModal" class="modal-backdrop" onclick="if(event.target===this) closeReportModal()">
+    <div class="modal-panel narrow" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <div>
+          <h2 style="margin:0; font-size:17px; font-weight:800;">Report an Issue</h2>
+          <p id="reportShopName" style="margin:2px 0 0; font-size:12px; color:var(--text-muted);"></p>
+        </div>
+        <button class="modal-close" onclick="closeReportModal()" aria-label="Close report modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div style="display:flex; flex-direction:column; gap:8px;" id="reportReasonsList"></div>
+        <div>
+          <label style="display:block; font-size:12px; font-weight:700; color:var(--text-muted); margin-bottom:6px;">Optional Note</label>
+          <textarea id="reportNoteInput" rows="3" placeholder="Tell us what needs updating..." style="width:100%; border:1px solid var(--border); border-radius:12px; padding:10px 12px; font-size:14px; outline:none;"></textarea>
+        </div>
+        <button class="btn-primary" style="width:100%; padding:12px;" onclick="submitReport()">Submit Report to Admin</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== TOAST STACK ==================== -->
+  <div id="toastStack" class="toast-stack"></div>
+
+  <!-- ==================== APPLICATION JAVASCRIPT ==================== -->
+  <script>
+    /* =========================================================================
+       1. INLINE SVG HELPERS & ILLUSTRATED ROOM / THALI GRAPHICS
+       ========================================================================= */
+    const VERIFIED_SVG = `<svg class="verified-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-label="Verified"><path d="M12 2l2.4 2.1 3.2-.3.9 3.1 2.8 1.6-.9 3.1.9 3.1-2.8 1.6-.9 3.1-3.2-.3L12 22l-2.4-2.1-3.2.3-.9-3.1-2.8-1.6.9-3.1-.9-3.1 2.8-1.6.9-3.1 3.2.3L12 2zm-1.2 13.4l5.2-5.2-1.4-1.4-3.8 3.8-1.7-1.7-1.4 1.4 3.1 3.1z"/></svg>`;
+
+    const BOOKMARK_SVG = (filled) => filled
+      ? `<svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/></svg>`
+      : `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>`;
+
+    function makeRoomSvg(title, accent = '#4f46e5', bg = '#eef2ff') {
+      return `
+        <svg viewBox="0 0 240 120" style="width:100%; height:96px; display:block; background:${bg};">
+          <rect x="14" y="14" width="66" height="44" rx="6" fill="#fff" stroke="${accent}" stroke-width="2" opacity="0.9"/>
+          <line x1="47" y1="14" x2="47" y2="58" stroke="${accent}" stroke-width="1.5" opacity="0.5"/>
+          <rect x="16" y="72" width="128" height="32" rx="8" fill="${accent}" opacity="0.88"/>
+          <rect x="22" y="64" width="38" height="14" rx="5" fill="#fff"/>
+          <rect x="158" y="54" width="66" height="50" rx="6" fill="#fff" stroke="#cbd5e1" stroke-width="2"/>
+          <rect x="172" y="20" width="44" height="14" rx="4" fill="#fff" stroke="${accent}" stroke-width="1.8"/>
+          <text x="120" y="114" text-anchor="middle" font-size="10" font-weight="700" fill="#334155">${escapeHtml(title)}</text>
+        </svg>
+      `;
+    }
+
+    function makeThaliSvg(label, dishHighlight) {
+      return `
+        <svg viewBox="0 0 320 130" style="width:100%; height:120px; display:block; background:linear-gradient(135deg,#fffbeb,#ecfdf5);">
+          <ellipse cx="160" cy="66" rx="106" ry="52" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2.5"/>
+          <ellipse cx="160" cy="66" rx="96" ry="44" fill="#f8fafc"/>
+          <circle cx="105" cy="48" r="18" fill="#ea580c" stroke="#fff" stroke-width="2.5"/>
+          <circle cx="152" cy="40" r="17" fill="#eab308" stroke="#fff" stroke-width="2.5"/>
+          <circle cx="198" cy="48" r="16" fill="#16a34a" stroke="#fff" stroke-width="2.5"/>
+          <ellipse cx="132" cy="84" rx="28" ry="15" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+          <ellipse cx="192" cy="84" rx="24" ry="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+          <circle cx="234" cy="68" r="11" fill="#b45309" stroke="#fff" stroke-width="2"/>
+          <rect x="10" y="10" rx="8" width="124" height="22" fill="rgba(15,23,42,0.78)"/>
+          <text x="20" y="24" font-size="10" font-weight="700" fill="#fff">${escapeHtml(label)}</text>
+          <rect x="10" y="98" rx="8" width="166" height="22" fill="rgba(5,150,105,0.92)"/>
+          <text x="18" y="112" font-size="10" font-weight="700" fill="#fff">⭐ ${escapeHtml(dishHighlight)}</text>
+        </svg>
+      `;
+    }
+
+    /* =========================================================================
+       2. REALISTIC CAMPUS DATA (8 SHOPS AROUND BHOLARAM USTAD MARG, INDORE)
+       ========================================================================= */
+    const CATEGORIES = [
+      { key: 'All', label: 'All Services', icon: '✨' },
+      { key: 'Hostels & PGs', label: 'Hostels & PGs', icon: '🏠' },
+      { key: 'Mess & Tiffin', label: 'Mess & Tiffin', icon: '🍱' },
+      { key: 'Printing & Xerox', label: 'Printing & Xerox', icon: '🖨️' },
+      { key: 'Books & Stationery', label: 'Books & Stationery', icon: '📚' },
+      { key: 'Kirana & Essentials', label: 'Kirana & Essentials', icon: '🛒' },
+      { key: 'Study Libraries', label: 'Study Libraries', icon: '📖' }
+    ];
+
+    const QUICK_TAGS = [
+      'AC room under 9000',
+      'Veg tiffin nearby',
+      'No-wait Xerox',
+      '24x7 Study Library'
+    ];
+
+    const SHOPS = [
+      {
+        id: 'sai-hostel',
+        name: 'Shree Sai Boys Hostel & PG',
+        category: 'Hostels & PGs',
+        emoji: '🏠',
+        distanceMeters: 250,
+        verified: true,
+        openNow: true,
+        availableToday: true,
+        startingPrice: 6500,
+        priceText: '₹6,500/mo',
+        liveStatus: '3 Beds Vacant',
+        liveTone: 'green',
+        tags: ['AC', 'Wi-Fi', 'Boys Only'],
+        address: 'Plot 14, Lane 2, Bholaram Ustad Marg, Indore',
+        phone: '+91 98261 44510',
+        mapPos: { x: 32, y: 42 },
+        compareData: {
+          vacancies: '3 Beds Vacant',
+          cooling: 'AC & Cooler',
+          wifi: 'High-Speed Wi-Fi',
+          curfew: '10:30 PM',
+          highlights: 'Boys Only, RO Water, Power Backup, CCTV'
+        },
+        hours: [
+          ['Monday – Saturday', '7:00 AM – 10:30 PM (Visits)'],
+          ['Sunday', '9:00 AM – 8:00 PM']
+        ],
+        details: {
+          rules: {
+            forWhom: 'Boys Only',
+            deposit: '1 Month Rent',
+            electricity: 'Separate (Per Unit)',
+            curfew: '10:30 PM'
+          },
+          facilities: ['High-Speed Wi-Fi', 'Attached Bathroom', 'RO Drinking Water', 'Power Backup', 'CCTV Security', 'Two-Wheeler Parking', 'Study Table & Chair'],
+          rooms: [
+            { type: 'Single AC Room', cooling: 'AC', rent: 8500, vacant: 1, note: 'Attached bath, balcony, study desk & cupboard', bg: '#eef2ff' },
+            { type: 'Double Sharing AC', cooling: 'AC', rent: 6800, vacant: 2, note: 'Spacious 2-bed room with inverter backup', bg: '#eff6ff' },
+            { type: 'Triple Sharing Cooler', cooling: 'Cooler', rent: 6500, vacant: 0, note: 'Budget friendly room near RO cooler', bg: '#f1f5f9' }
+          ]
+        }
+      },
+      {
+        id: 'royal-girls-pg',
+        name: 'Royal Residency Girls PG',
+        category: 'Hostels & PGs',
+        emoji: '🏠',
+        distanceMeters: 420,
+        verified: true,
+        openNow: true,
+        availableToday: true,
+        startingPrice: 8500,
+        priceText: '₹8,500/mo',
+        liveStatus: '2 AC Beds Vacant',
+        liveTone: 'green',
+        tags: ['AC', 'Wi-Fi', 'Girls Only', 'Food Included'],
+        address: 'House 8, Hostel Lane, Near Bholaram Gate 2, Indore',
+        phone: '+91 98262 88310',
+        mapPos: { x: 68, y: 58 },
+        compareData: {
+          vacancies: '2 AC Beds Vacant',
+          cooling: 'Full AC Rooms',
+          wifi: 'Fiber Wi-Fi',
+          curfew: '9:30 PM',
+          highlights: 'Girls Only, 3 Meals Included, Biometric Gate, Warden'
+        },
+        hours: [
+          ['Monday – Sunday', '8:00 AM – 9:30 PM (Parent/Student Visits)']
+        ],
+        details: {
+          rules: {
+            forWhom: 'Girls Only',
+            deposit: '₹5,000 Refundable',
+            electricity: 'Included in Rent',
+            curfew: '9:30 PM'
+          },
+          facilities: ['Full AC', '3 Meals Included', 'Fiber Wi-Fi', 'Female Warden', 'Biometric Entry', 'Washing Machine', 'CCTV Security', 'RO Water'],
+          rooms: [
+            { type: 'Double Sharing AC (With Food)', cooling: 'AC', rent: 8500, vacant: 2, note: '3 veg meals + evening tea, attached washroom', bg: '#eef2ff' },
+            { type: 'Single AC Suite (With Food)', cooling: 'AC', rent: 11000, vacant: 0, note: 'Corner airy room with study table & wardrobe', bg: '#f1f5f9' }
+          ]
+        }
+      },
+      {
+        id: 'annapurna-mess',
+        name: 'Annapurna Home Mess & Tiffin',
+        category: 'Mess & Tiffin',
+        emoji: '🍱',
+        distanceMeters: 180,
+        verified: true,
+        openNow: true,
+        availableToday: true,
+        startingPrice: 2800,
+        priceText: '₹2,800/mo',
+        liveStatus: 'Lunch Photo • 12:15 PM',
+        liveTone: 'green',
+        tags: ['Pure Veg', 'Tiffin Delivery', 'Trial ₹70'],
+        address: 'Shop 4, Ground Floor, Bholaram Ustad Marg, Indore',
+        phone: '+91 98265 77219',
+        mapPos: { x: 46, y: 46 },
+        hours: [
+          ['Lunch (Mon – Sun)', '12:00 PM – 2:30 PM'],
+          ['Dinner (Mon – Sat)', '7:30 PM – 10:00 PM'],
+          ['Sunday Dinner', 'Closed']
+        ],
+        details: {
+          foodType: 'Pure Veg',
+          trialMeal: 'Single Trial Thali ₹70',
+          lunch: {
+            time: 'Uploaded Today, 12:15 PM',
+            special: 'Paneer Butter Masala',
+            menu: 'Paneer Butter Masala, Dal Tadka, 5 Butter Roti, Jeera Rice, Green Salad & Chaas'
+          },
+          dinner: {
+            time: 'Planned for 7:30 PM',
+            special: 'Suji Halwa',
+            menu: 'Aloo Matar, Mix Dal, 5 Tawa Roti, Steamed Rice & Hot Suji Halwa'
+          },
+          plans: [
+            { name: 'Full Month (Lunch + Dinner)', price: '₹2,800 / mo', desc: 'Unlimited roti in dine-in, Sunday special included' },
+            { name: 'Only Dinner Tiffin', price: '₹1,600 / mo', desc: '5 Roti, Dal, Sabzi, Rice — Free hostel delivery' },
+            { name: 'Single Trial Thali', price: '₹70 / plate', desc: 'Walk in & taste before subscribing' }
+          ],
+          facilities: ['Pure Veg', 'Free Hostel Delivery', 'Unlimited Roti', 'Home-Style Food', 'Pause Plan on Holidays', 'UPI Accepted']
+        }
+      },
+      {
+        id: 'sharma-print',
+        name: 'Sharma Print & Stationery Hub',
+        category: 'Printing & Xerox',
+        emoji: '🖨️',
+        distanceMeters: 120,
+        verified: true,
+        openNow: true,
+        availableToday: true,
+        startingPrice: 1,
+        priceText: '₹1/page',
+        liveStatus: 'No Waiting',
+        liveTone: 'green',
+        tags: ['WhatsApp Print', 'Color Print', 'Hard Binding'],
+        address: 'Shop 7, Near Campus Gate 2, Bholaram Ustad Marg, Indore',
+        phone: '+91 94250 31890',
+        mapPos: { x: 58, y: 34 },
+        hours: [
+          ['Monday – Saturday', '8:30 AM – 9:30 PM'],
+          ['Sunday', '10:00 AM – 4:00 PM']
+        ],
+        details: {
+          rushStatus: 'No Waiting (Fast)',
+          whatsappPrint: true,
+          rates: [
+            { name: 'B&W Print / Xerox (Single Side)', price: '₹1 / page' },
+            { name: 'B&W Print / Xerox (Back-to-Back)', price: '₹1.5 / page' },
+            { name: 'Color Print (A4 Laser)', price: '₹5 / page' },
+            { name: 'Spiral Binding', price: '₹30 / copy' },
+            { name: 'Hard Binding (Thesis / Project Report)', price: '₹180 / copy' },
+            { name: 'Lamination (A4)', price: '₹20 / sheet' }
+          ],
+          stationery: [
+            { name: 'Classmate Spiral Register (200pg)', pack: 'Single Item', price: '₹75', inStock: true },
+            { name: 'Blue Ball Pen Pack', pack: 'Pack of 10', price: '₹90', inStock: true },
+            { name: 'Practical Lab File with Sheets', pack: '1 File + 20 Sheets', price: '₹45', inStock: true },
+            { name: 'JK Copier A4 Paper Rim', pack: '500 Sheets', price: '₹295', inStock: true }
+          ]
+        }
+      },
+      {
+        id: 'vidya-books',
+        name: 'Vidya Book Depot & Stationery',
+        category: 'Books & Stationery',
+        emoji: '📚',
+        distanceMeters: 300,
+        verified: true,
+        openNow: true,
+        availableToday: true,
+        startingPrice: 120,
+        priceText: 'From ₹120',
+        liveStatus: '50% Buyback Available',
+        liveTone: 'green',
+        tags: ['Second-Hand', 'B.Tech Books', 'Print Add-On'],
+        address: 'Shop 3, Near Campus Gate 1, Bholaram Ustad Marg, Indore',
+        phone: '+91 98931 60412',
+        mapPos: { x: 26, y: 52 },
+        hours: [
+          ['Monday – Saturday', '9:00 AM – 9:00 PM'],
+          ['Sunday', 'Closed']
+        ],
+        details: {
+          buybackNote: '50% Guaranteed Buyback on Semester Textbooks',
+          books: [
+            { title: 'Engineering Mathematics Vol. 1 (H.K. Dass)', condition: 'Second-Hand', buyback: true, price: '₹220', inStock: true },
+            { title: 'Data Structures & Algorithms in Java', condition: 'New Book', buyback: true, price: '₹480', inStock: true },
+            { title: 'GATE CS 2027 Solved Papers', condition: 'New Book', buyback: false, price: '₹650', inStock: true },
+            { title: 'Engineering Drawing (N.D. Bhatt)', condition: 'Second-Hand', buyback: true, price: '₹120', inStock: true }
+          ],
+          stationery: [
+            { name: 'Classmate Register Bundle', pack: 'Pack of 6', price: '₹320', inStock: true },
+            { name: 'Casio Scientific Calculator fx-991EX', pack: 'Single Item', price: '₹1,150', inStock: true },
+            { name: 'Mini Drafter + Sheet Tube Combo', pack: 'Combo Bundle', price: '₹420', inStock: true }
+          ],
+          printRates: [
+            { name: 'B&W Xerox / Print', price: '₹2 / page' },
+            { name: 'Color Print', price: '₹10 / page' },
+            { name: 'Spiral Binding', price: '₹35 / copy' }
+          ]
+        }
+      },
+      {
+        id: 'gupta-kirana',
+        name: 'Gupta Kirana & Daily Needs',
+        category: 'Kirana & Essentials',
+        emoji: '🛒',
+        distanceMeters: 90,
+        verified: true,
+        openNow: true,
+        availableToday: true,
+        startingPrice: 20,
+        priceText: 'From ₹20',
+        liveStatus: 'Free Hostel Delivery',
+        liveTone: 'green',
+        tags: ['20L Water Can', 'Late Night', 'UPI'],
+        address: 'Shop 2, Near Campus Gate 1, Bholaram Ustad Marg, Indore',
+        phone: '+91 97542 11908',
+        mapPos: { x: 38, y: 32 },
+        hours: [
+          ['Monday – Sunday', '6:30 AM – 11:30 PM']
+        ],
+        details: {
+          deliveryBanner: 'Free Hostel Delivery within 15–30 mins (Min Order ₹50)',
+          items: [
+            { name: '20L RO Drinking Water Can', shelf: 'Water & Dairy', unit: '20L Can', price: '₹35', inStock: true },
+            { name: 'Amul Taaza Milk 500ml', shelf: 'Water & Dairy', unit: 'Per Piece', price: '₹27', inStock: true },
+            { name: 'Maggi Masala 4-Pack', shelf: 'Snacks & Maggi', unit: 'Pack of 4', price: '₹56', inStock: true },
+            { name: 'Hostel Tea & Biscuit Combo', shelf: 'Snacks & Maggi', unit: 'Combo Bundle', price: '₹45', inStock: true },
+            { name: 'Surf Excel Washing Powder', shelf: 'Hostel Essentials', unit: '500g', price: '₹68', inStock: true },
+            { name: 'Dettol Handwash Refill', shelf: 'Toiletries', unit: 'Per Piece', price: '₹99', inStock: false }
+          ]
+        }
+      },
+      {
+        id: 'saraswati-library',
+        name: 'Saraswati 24x7 Study Library',
+        category: 'Study Libraries',
+        emoji: '📖',
+        distanceMeters: 380,
+        verified: true,
+        openNow: true,
+        availableToday: true,
+        startingPrice: 700,
+        priceText: '₹700/mo',
+        liveStatus: '11 Seats Vacant',
+        liveTone: 'green',
+        tags: ['Full AC', 'High-Speed Wi-Fi', '24x7'],
+        address: '2nd Floor, Above SBI ATM, Near Gate 2, Bholaram Marg, Indore',
+        phone: '+91 98268 90341',
+        mapPos: { x: 74, y: 38 },
+        compareData: {
+          vacancies: '11 Seats Vacant',
+          cooling: 'Full AC Hall',
+          wifi: '300 Mbps Wi-Fi',
+          curfew: 'Open 24x7',
+          highlights: '1-Day Free Demo, Personal Locker, Free Exam Books'
+        },
+        hours: [
+          ['Monday – Sunday', 'Open 24 Hours (24x7)']
+        ],
+        details: {
+          freeDemo: '1-Day Free Trial Available',
+          facilities: ['Full AC', 'High-Speed Wi-Fi', 'Individual Charging Socket', 'Personal Locker', 'RO Cold Water', 'Newspapers & Magazines', 'CCTV Security'],
+          shifts: [
+            { name: 'Full Day Reserved Seat', timing: '24x7 Access', fee: '₹1,200/mo', type: 'Reserved Desk', vacant: 3 },
+            { name: 'Morning Shift', timing: '6:00 AM – 2:00 PM', fee: '₹700/mo', type: 'Unreserved', vacant: 4 },
+            { name: 'Evening Shift', timing: '2:00 PM – 10:00 PM', fee: '₹700/mo', type: 'Unreserved', vacant: 2 },
+            { name: 'Night Owl Shift', timing: '9:00 PM – 6:00 AM', fee: '₹800/mo', type: 'Reserved Desk', vacant: 2 }
+          ],
+          books: [
+            { title: 'GATE CS Made Easy Handbook', cat: 'GATE / Engineering', status: 'Available (4)' },
+            { title: 'Indian Polity by M. Laxmikanth', cat: 'UPSC / SSC', status: 'Available (3)' },
+            { title: 'The Hindu Daily Newspaper', cat: 'Newspapers', status: 'Available (3)' },
+            { title: 'R.S. Aggarwal Quantitative Aptitude', cat: 'Competitive', status: 'Available (2)' }
+          ]
+        }
+      },
+      {
+        id: 'focus-zone-library',
+        name: 'Focus Zone AC Library',
+        category: 'Study Libraries',
+        emoji: '📖',
+        distanceMeters: 650,
+        verified: true,
+        openNow: true,
+        availableToday: true,
+        startingPrice: 900,
+        priceText: '₹900/mo',
+        liveStatus: '5 Seats Vacant',
+        liveTone: 'amber',
+        tags: ['Full AC', 'Personal Locker', 'Separate Girls Section'],
+        address: '1st Floor, Vishnupuri Cross, Bholaram Ustad Marg, Indore',
+        phone: '+91 98269 51204',
+        mapPos: { x: 82, y: 70 },
+        compareData: {
+          vacancies: '5 Seats Vacant',
+          cooling: 'Full AC Cabins',
+          wifi: 'Dual Fiber Wi-Fi',
+          curfew: '6:00 AM – 11:00 PM',
+          highlights: 'Separate Girls Section, Personal Locker, Silent Zone'
+        },
+        hours: [
+          ['Monday – Sunday', '6:00 AM – 11:00 PM']
+        ],
+        details: {
+          freeDemo: 'Free 2-Hour Visit',
+          facilities: ['Full AC', 'Personal Locker', 'Separate Girls Section', 'Dual Fiber Wi-Fi', 'Ergonomic Chairs', 'RO Water'],
+          shifts: [
+            { name: 'Full Day AC Cabin', timing: '6:00 AM – 11:00 PM', fee: '₹1,350/mo', type: 'Reserved Desk', vacant: 2 },
+            { name: 'Half Day Shift (Any 8 Hrs)', timing: 'Flexible Timing', fee: '₹900/mo', type: 'Unreserved', vacant: 3 }
+          ],
+          books: [
+            { title: 'Lucent General Knowledge', cat: 'UPSC / SSC', status: 'Available (3)' },
+            { title: 'Pratiyogita Darpan Monthly', cat: 'Magazines', status: 'Available (2)' },
+            { title: 'CLRS Introduction to Algorithms', cat: 'B.Tech Reference', status: 'Available (1)' }
+          ]
+        }
+      }
+    ];
+
+    const UPDATES_FEED = [
+      {
+        id: 'upd_1',
+        shopId: 'annapurna-mess',
+        time: '25 mins ago',
+        body: 'Paneer Butter Masala, Dal Tadka, 5 Roti & Jeera Rice — Ready now! Hot tiffins leaving for hostels.',
+        hasThaliPhoto: true,
+        photoLabel: 'Lunch • 12:15 PM',
+        photoDish: 'Paneer Butter Masala'
+      },
+      {
+        id: 'upd_2',
+        shopId: 'saraswati-library',
+        time: '1 hour ago',
+        body: '3 Morning Shift Reserved Seats just opened up — ₹700/mo, free 1-day demo today!',
+        hasThaliPhoto: false
+      },
+      {
+        id: 'upd_3',
+        shopId: 'sharma-print',
+        time: '2 hours ago',
+        body: 'No waiting right now! Special ₹1/page bulk rate for B.Tech major project reports. Send PDF on WhatsApp.',
+        hasThaliPhoto: false
+      },
+      {
+        id: 'upd_4',
+        shopId: 'sai-hostel',
+        time: '3 hours ago',
+        body: '1 Double Sharing AC bed vacated on 2nd floor — immediate shift available with Wi-Fi & power backup.',
+        hasThaliPhoto: false
+      },
+      {
+        id: 'upd_5',
+        shopId: 'vidya-books',
+        time: '5 hours ago',
+        body: 'Fresh stock of Second-Hand B.Tech 5th & 7th Sem books arrived with 50% buyback guarantee.',
+        hasThaliPhoto: false
+      },
+      {
+        id: 'upd_6',
+        shopId: 'gupta-kirana',
+        time: 'Today, 8:30 AM',
+        body: 'Fresh 20L RO Water Cans restocked — free hostel delivery within 20 mins on orders ₹50+.',
+        hasThaliPhoto: false
+      }
+    ];
+
+    const REPORT_REASONS = [
+      'Wrong price listed',
+      'Shop closed permanently',
+      'Fake availability (rooms/seats full)',
+      'Incorrect GPS pin / address'
+    ];
+
+    /* =========================================================================
+       3. APPLICATION STATE
+       ========================================================================= */
+    const state = {
+      activeTab: 'discover', // 'discover' | 'updates' | 'saved'
+      unreadUpdates: 3,
+      searchQuery: '',
+      campus: 'Bholaram Ustad Marg, Indore',
+      gpsLocating: false,
+      gpsLocked: false,
+      maxDistance: 2000,
+      selectedCategory: 'All',
+      onlyOpenNow: false,
+      onlyAvailableToday: false,
+      sortBy: 'nearest', // 'nearest' | 'price'
+      viewMode: 'grid', // 'grid' | 'map'
+      selectedMapShopId: 'annapurna-mess',
+      savedIds: new Set(['annapurna-mess', 'saraswati-library']),
+      followedIds: new Set(['annapurna-mess', 'saraswati-library']),
+      compareIds: [],
+      updatesFilter: 'following', // 'following' | 'all'
+      savedFilter: 'All Saved',
+      activeDetailShopId: null,
+      detailInStoreSearch: '',
+      detailKiranaShelf: 'All',
+      reportShopId: null,
+      selectedReportReason: REPORT_REASONS[0]
+    };
+
+    /* =========================================================================
+       4. UTILITIES & TOASTS
+       ========================================================================= */
+    function escapeHtml(str) {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function getShopById(id) {
+      return SHOPS.find((s) => s.id === id);
+    }
+
+    function showToast(message, variant = 'default') {
+      const stack = document.getElementById('toastStack');
+      const el = document.createElement('div');
+      el.className = `toast ${variant}`;
+      const icon = variant === 'success' ? '✓' : variant === 'indigo' ? '💬' : 'ℹ️';
+      el.innerHTML = `<span>${icon}</span><span>${escapeHtml(message)}</span>`;
+      stack.appendChild(el);
+      setTimeout(() => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(6px)';
+        el.style.transition = 'all 0.2s ease';
+        setTimeout(() => el.remove(), 220);
+      }, 3000);
+    }
+
+    /* =========================================================================
+       5. SMART NATURAL-LANGUAGE SEARCH & FILTERING ENGINE
+       ========================================================================= */
+    function getFilteredShops() {
+      const rawQ = state.searchQuery.trim().toLowerCase();
+
+      // Parse optional price ceiling like "under 9000" or "below 1000"
+      let maxPrice = null;
+      const priceMatch = rawQ.match(/(?:under|below|less than|<=?)\s*₹?\s*(\d+)/i);
+      if (priceMatch) {
+        maxPrice = parseInt(priceMatch[1], 10);
+      }
+
+      // Clean meaningful keywords
+      const stopWords = new Set(['under', 'below', 'less', 'than', 'nearby', 'near', 'me', 'in', 'for', 'a', 'the', 'and', 'with']);
+      const tokens = rawQ
+        .replace(/₹?\d+/g, '')
+        .split(/[\s,/-]+/)
+        .map((t) => t.trim())
+        .filter((t) => t.length >= 2 && !stopWords.has(t));
+
+      let list = SHOPS.filter((shop) => {
+        if (shop.distanceMeters > state.maxDistance) return false;
+        if (state.selectedCategory !== 'All' && shop.category !== state.selectedCategory) return false;
+        if (state.onlyOpenNow && !shop.openNow) return false;
+        if (state.onlyAvailableToday && !shop.availableToday) return false;
+
+        if (maxPrice !== null && shop.startingPrice > maxPrice) {
+          return false;
+        }
+
+        if (tokens.length > 0) {
+          const haystack = [
+            shop.name,
+            shop.category,
+            shop.liveStatus,
+            shop.address,
+            ...shop.tags,
+            JSON.stringify(shop.details)
+          ].join(' ').toLowerCase();
+
+          // Map synonyms so natural queries feel smart
+          const synonymMap = {
+            room: ['hostel', 'pg', 'room', 'bed'],
+            rooms: ['hostel', 'pg', 'room', 'bed'],
+            tiffin: ['tiffin', 'mess', 'thali', 'meal'],
+            veg: ['veg', 'pure veg'],
+            xerox: ['xerox', 'print', 'photocopy'],
+            wait: ['waiting', 'fast'],
+            no: ['no waiting'],
+            water: ['water', '20l', 'can'],
+            second: ['second-hand', 'second hand'],
+            hand: ['second-hand', 'second hand']
+          };
+
+          const allMatch = tokens.every((tok) => {
+            if (haystack.includes(tok)) return true;
+            if (synonymMap[tok]) {
+              return synonymMap[tok].some((alt) => haystack.includes(alt));
+            }
+            return false;
+          });
+
+          if (!allMatch) return false;
+        }
+
+        return true;
+      });
+
+      if (state.sortBy === 'price') {
+        list.sort((a, b) => a.startingPrice - b.startingPrice);
+      } else {
+        list.sort((a, b) => a.distanceMeters - b.distanceMeters);
+      }
+
+      return list;
+    }
+
+    /* =========================================================================
+       6. NAVIGATION & TOP/BOTTOM BAR SYNC
+       ========================================================================= */
+    function switchTab(tab) {
+      state.activeTab = tab;
+      if (tab === 'updates' && state.unreadUpdates > 0) {
+        state.unreadUpdates = 0;
+      }
+      syncNavUI();
+      renderApp();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function syncNavUI() {
+      ['discover', 'updates', 'saved'].forEach((t) => {
+        const cap = t.charAt(0).toUpperCase() + t.slice(1);
+        document.getElementById('nav' + cap)?.classList.toggle('active', state.activeTab === t);
+        document.getElementById('mob' + cap)?.classList.toggle('active', state.activeTab === t);
+      });
+
+      const unreadEls = [document.getElementById('navUnreadBadge'), document.getElementById('mobUnreadBadge')];
+      unreadEls.forEach((el) => {
+        if (!el) return;
+        if (state.unreadUpdates > 0) {
+          el.style.display = 'inline-flex';
+          el.textContent = state.unreadUpdates;
+        } else {
+          el.style.display = 'none';
+        }
+      });
+
+      const savedCount = state.savedIds.size;
+      [document.getElementById('navSavedBadge'), document.getElementById('mobSavedBadge')].forEach((el) => {
+        if (el) el.textContent = savedCount;
+      });
+    }
+
+    /* =========================================================================
+       7. RENDER ROUTER
+       ========================================================================= */
+    function renderApp() {
+      const root = document.getElementById('appRoot');
+      if (state.activeTab === 'discover') {
+        root.innerHTML = renderDiscoverTab();
+      } else if (state.activeTab === 'updates') {
+        root.innerHTML = renderUpdatesTab();
+      } else {
+        root.innerHTML = renderSavedTab();
+      }
+      syncCompareBar();
+    }
+
+    /* =========================================================================
+       8. TAB 1 — DISCOVER (HERO, PILLS, GRID VIEW, MAP VIEW)
+       ========================================================================= */
+    function renderDiscoverTab() {
+      const shops = getFilteredShops();
+
+      return `
+        <div class="container">
+          <!-- HERO NATURAL-LANGUAGE SEARCH -->
+          <section class="hero-wrap">
+            <div class="hero">
+              <h1>Find hostels, mess plans, print shops &amp; libraries near your campus</h1>
+              <p class="hero-sub">Live room vacancies, today's mess food photos, and verified prices updated directly by local owners.</p>
+
+              <form class="search-box" onsubmit="event.preventDefault(); renderApp();">
+                <div class="search-input-wrap">
+                  <span style="font-size:17px;">🔍</span>
+                  <input
+                    id="mainSearchInput"
+                    class="search-input"
+                    type="text"
+                    value="${escapeHtml(state.searchQuery)}"
+                    placeholder='Try "AC room under 9000", "veg tiffin", "color print", "24x7 library"...'
+                    oninput="state.searchQuery = this.value; renderDiscoverResultsOnly();"
+                  />
+                  ${
+                    state.searchQuery
+                      ? `<button type="button" class="search-clear-btn" onclick="clearSearch()" aria-label="Clear search">✕</button>`
+                      : ''
+                  }
+                </div>
+                <button type="submit" class="search-submit-btn">Search</button>
+              </form>
+
+              <div class="quick-tags">
+                <span class="quick-tags-label">Try tapping:</span>
+                ${QUICK_TAGS.map(
+                  (tag) => `<button type="button" class="quick-tag" onclick="applyQuickTag('${escapeHtml(tag)}')">${escapeHtml(tag)}</button>`
+                ).join('')}
+              </div>
+
+              <!-- Location & Distance Radius Bar -->
+              <div class="location-bar">
+                <button type="button" class="gps-btn" onclick="triggerGps()">
+                  <span>${state.gpsLocating ? '⏳' : '📍'}</span>
+                  <span>${state.gpsLocating ? 'Locating...' : state.gpsLocked ? 'Near: Bholaram Ustad Marg, Indore' : 'Use My GPS'}</span>
+                </button>
+
+                <select class="hero-select" aria-label="Select campus area" onchange="state.campus = this.value; showToast('Switched campus to ' + this.value);">
+                  ${['Bholaram Ustad Marg, Indore', 'Bhawarkua Square, Indore', 'Vijay Nagar Campus, Indore']
+                    .map((c) => `<option value="${c}" ${state.campus === c ? 'selected' : ''}>🎓 ${c}</option>`)
+                    .join('')}
+                </select>
+
+                <select class="hero-select" aria-label="Select max distance" onchange="state.maxDistance = Number(this.value); renderApp();">
+                  <option value="500" ${state.maxDistance === 500 ? 'selected' : ''}>Within 500 m</option>
+                  <option value="1000" ${state.maxDistance === 1000 ? 'selected' : ''}>Within 1 km</option>
+                  <option value="2000" ${state.maxDistance === 2000 ? 'selected' : ''}>Within 2 km</option>
+                  <option value="5000" ${state.maxDistance === 5000 ? 'selected' : ''}>Within 5 km</option>
+                </select>
+              </div>
+            </div>
+          </section>
+
+          <!-- CATEGORY FILTER PILLS -->
+          <div class="category-bar" role="tablist" aria-label="Service categories">
+            ${CATEGORIES.map(
+              (c) => `
+                <button
+                  type="button"
+                  class="cat-pill ${state.selectedCategory === c.key ? 'active' : ''}"
+                  onclick="state.selectedCategory = '${c.key}'; renderApp();"
+                >
+                  <span>${c.icon}</span>
+                  <span>${c.label}</span>
+                </button>
+              `
+            ).join('')}
+          </div>
+
+          <!-- DYNAMIC RESULTS CONTAINER -->
+          <div id="discoverResultsMount">
+            ${renderDiscoverResultsInner(shops)}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderDiscoverResultsOnly() {
+      const mount = document.getElementById('discoverResultsMount');
+      if (mount) {
+        mount.innerHTML = renderDiscoverResultsInner(getFilteredShops());
+      }
+    }
+
+    function renderDiscoverResultsInner(shops) {
+      return `
+        <!-- TOOLBAR -->
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <span class="results-count">${shops.length} ${shops.length === 1 ? 'place' : 'places'} found nearby</span>
+            <button
+              type="button"
+              class="filter-chip ${state.onlyOpenNow ? 'active' : ''}"
+              onclick="state.onlyOpenNow = !state.onlyOpenNow; renderApp();"
+            >
+              ${state.onlyOpenNow ? '✓ ' : ''}Open Now
+            </button>
+            <button
+              type="button"
+              class="filter-chip ${state.onlyAvailableToday ? 'active' : ''}"
+              onclick="state.onlyAvailableToday = !state.onlyAvailableToday; renderApp();"
+            >
+              ${state.onlyAvailableToday ? '✓ ' : ''}Available Today
+            </button>
+            <select class="sort-select" aria-label="Sort results" onchange="state.sortBy = this.value; renderApp();">
+              <option value="nearest" ${state.sortBy === 'nearest' ? 'selected' : ''}>Sort: Nearest First</option>
+              <option value="price" ${state.sortBy === 'price' ? 'selected' : ''}>Sort: Lowest Price</option>
+            </select>
+          </div>
+
+          <div class="view-toggle" role="group" aria-label="Toggle Grid or Map View">
+            <button
+              type="button"
+              class="view-toggle-btn ${state.viewMode === 'grid' ? 'active' : ''}"
+              onclick="state.viewMode = 'grid'; renderApp();"
+            >
+              <span>▦</span><span>Grid View</span>
+            </button>
+            <button
+              type="button"
+              class="view-toggle-btn ${state.viewMode === 'map' ? 'active' : ''}"
+              onclick="state.viewMode = 'map'; renderApp();"
+            >
+              <span>🗺️</span><span>Map View</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- RESULTS: GRID OR MAP -->
+        ${state.viewMode === 'grid' ? renderShopsGrid(shops) : renderCampusMap(shops)}
+      `;
+    }
+
+    function renderShopsGrid(shops) {
+      if (shops.length === 0) {
+        return `
+          <div class="empty-state" style="margin-bottom:40px;">
+            <div style="font-size:36px; margin-bottom:8px;">🔍</div>
+            <h3 style="margin:0; font-size:18px; font-weight:800;">No campus services match your filter</h3>
+            <p style="margin:6px 0 16px; font-size:14px; color:var(--text-muted);">Try increasing your distance radius or clearing your search query.</p>
+            <button class="btn-primary" onclick="resetAllFilters()">Reset Filters</button>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="shops-grid">
+          ${shops.map((shop) => {
+            const isSaved = state.savedIds.has(shop.id);
+            const canCompare = shop.category === 'Hostels & PGs' || shop.category === 'Study Libraries';
+            const isCompared = state.compareIds.includes(shop.id);
+
+            return `
+              <article class="shop-card">
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                  <div class="card-top-row">
+                    <div class="card-meta-left">
+                      <span class="cat-badge"><span>${shop.emoji}</span><span>${escapeHtml(shop.category)}</span></span>
+                      <span class="dist-badge">${shop.distanceMeters} m away</span>
+                    </div>
+                    <button
+                      type="button"
+                      class="save-icon-btn ${isSaved ? 'saved' : ''}"
+                      onclick="toggleSave('${shop.id}')"
+                      aria-label="${isSaved ? 'Remove from saved' : 'Save shop'}"
+                      title="${isSaved ? 'Saved' : 'Save shop'}"
+                    >
+                      ${BOOKMARK_SVG(isSaved)}
+                    </button>
+                  </div>
+
+                  <div class="shop-title-row">
+                    <h3 class="shop-title">${escapeHtml(shop.name)}</h3>
+                    ${shop.verified ? VERIFIED_SVG : ''}
+                  </div>
+
+                  <div class="status-pill ${shop.liveTone}">
+                    <span class="status-dot"></span>
+                    <span>${escapeHtml(shop.liveStatus)}</span>
+                  </div>
+
+                  <div class="card-tags">
+                    ${shop.tags.slice(0, 3).map((t) => `<span class="tag-chip">${escapeHtml(t)}</span>`).join('')}
+                  </div>
+                </div>
+
+                <div>
+                  <div class="card-footer">
+                    <div class="price-block">
+                      <span class="price-label">Starts at</span>
+                      <span class="price-value">${escapeHtml(shop.priceText)}</span>
+                    </div>
+                    <button type="button" class="btn-primary" onclick="openDetailModal('${shop.id}')">
+                      See Prices &amp; Hours
+                    </button>
+                  </div>
+
+                  ${
+                    canCompare
+                      ? `
+                        <div class="compare-row">
+                          <label class="compare-check ${isCompared ? 'checked' : ''}">
+                            <input
+                              type="checkbox"
+                              ${isCompared ? 'checked' : ''}
+                              onchange="toggleCompare('${shop.id}')"
+                            />
+                            <span>${isCompared ? 'Added to Compare' : 'Compare'}</span>
+                          </label>
+                          <span style="font-size:11px; color:var(--text-subtle); font-weight:600;">
+                            ${state.followedIds.has(shop.id) ? '🔔 Following' : ''}
+                          </span>
+                        </div>
+                      `
+                      : state.followedIds.has(shop.id)
+                      ? `<div class="compare-row"><span style="font-size:11px; color:var(--emerald); font-weight:700;">🔔 Following updates</span></div>`
+                      : ''
+                  }
+                </div>
+              </article>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    function renderCampusMap(shops) {
+      const selectedShop = shops.find((s) => s.id === state.selectedMapShopId) || shops[0] || null;
+      const landmarks = [
+        { name: 'Campus Gate 1', x: 24, y: 38 },
+        { name: 'Campus Gate 2', x: 66, y: 24 },
+        { name: 'Bholaram Ustad Marg', x: 48, y: 56 },
+        { name: 'Hostel Lane', x: 74, y: 74 }
+      ];
+
+      return `
+        <div class="map-shell">
+          <div class="map-header">
+            <span>🗺️ Interactive Campus Map — ${escapeHtml(state.campus)}</span>
+            <span>Tap any emoji pin to preview prices &amp; availability</span>
+          </div>
+
+          <div class="map-canvas">
+            <!-- Stylized Campus Roads SVG -->
+            <svg style="position:absolute; inset:0; width:100%; height:100%; pointer-events:none;" viewBox="0 0 900 500" preserveAspectRatio="none">
+              <path d="M 0 250 Q 260 220 500 245 T 900 195" stroke="#ffffff" stroke-width="34" fill="none" stroke-linecap="round"/>
+              <path d="M 0 250 Q 260 220 500 245 T 900 195" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="10 10" fill="none"/>
+              <path d="M 215 0 L 250 500" stroke="#ffffff" stroke-width="24" fill="none"/>
+              <path d="M 590 0 L 570 242" stroke="#ffffff" stroke-width="22" fill="none"/>
+              <path d="M 580 245 L 650 500" stroke="#ffffff" stroke-width="20" fill="none"/>
+              <rect x="650" y="30" width="190" height="105" rx="22" fill="#dbeafe" opacity="0.65"/>
+              <rect x="30" y="320" width="150" height="120" rx="22" fill="#e0e7ff" opacity="0.65"/>
+            </svg>
+
+            <!-- Campus Landmarks -->
+            ${landmarks.map((lm) => `
+              <div class="map-landmark" style="left:${lm.x}%; top:${lm.y}%;">
+                <span class="map-landmark-dot"></span>
+                <span class="map-landmark-label">${lm.name}</span>
+              </div>
+            `).join('')}
+
+            <!-- Shop Emoji Pins -->
+            ${shops.map((shop) => {
+              const active = selectedShop && selectedShop.id === shop.id;
+              return `
+                <button
+                  type="button"
+                  class="map-pin ${active ? 'selected' : ''}"
+                  style="left:${shop.mapPos.x}%; top:${shop.mapPos.y}%;"
+                  onclick="state.selectedMapShopId='${shop.id}'; renderApp();"
+                  aria-label="${escapeHtml(shop.name)}"
+                >
+                  <span style="font-size:17px;">${shop.emoji}</span>
+                  <span class="map-pin-price">${escapeHtml(shop.priceText)}</span>
+                </button>
+              `;
+            }).join('')}
+
+            <!-- Floating Selected Pin Preview Card -->
+            ${
+              selectedShop
+                ? `
+                  <div class="map-preview-card">
+                    <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:10px;">
+                      <div>
+                        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:4px;">
+                          <span class="cat-badge">${selectedShop.emoji} ${escapeHtml(selectedShop.category)}</span>
+                          <span class="dist-badge">${selectedShop.distanceMeters} m away</span>
+                        </div>
+                        <div class="shop-title-row">
+                          <h3 style="margin:0; font-size:16px; font-weight:800;">${escapeHtml(selectedShop.name)}</h3>
+                          ${VERIFIED_SVG}
+                        </div>
+                        <div style="margin-top:6px;" class="status-pill ${selectedShop.liveTone}">
+                          <span class="status-dot"></span>
+                          <span>${escapeHtml(selectedShop.liveStatus)}</span>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        class="save-icon-btn ${state.savedIds.has(selectedShop.id) ? 'saved' : ''}"
+                        onclick="toggleSave('${selectedShop.id}')"
+                        aria-label="Save shop"
+                      >
+                        ${BOOKMARK_SVG(state.savedIds.has(selectedShop.id))}
+                      </button>
+                    </div>
+
+                    <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:12px; padding-top:10px; border-top:1px solid #f1f5f9;">
+                      <div>
+                        <span class="price-label">Starts at</span>
+                        <div class="price-value">${escapeHtml(selectedShop.priceText)}</div>
+                      </div>
+                      <button type="button" class="btn-primary" onclick="openDetailModal('${selectedShop.id}')">
+                        See Prices &amp; Hours →
+                      </button>
+                    </div>
+                  </div>
+                `
+                : `<div class="map-preview-card" style="text-align:center; font-weight:700; color:var(--text-muted);">No shops match the current filters on map.</div>`
+            }
+          </div>
+        </div>
+      `;
+    }
+
+    /* =========================================================================
+       9. TAB 2 — UPDATES (LIVE FEED FROM VENDORS)
+       ========================================================================= */
+    function renderUpdatesTab() {
+      const filteredUpdates =
+        state.updatesFilter === 'following'
+          ? UPDATES_FEED.filter((u) => state.followedIds.has(u.shopId))
+          : UPDATES_FEED;
+
+      return `
+        <div class="container">
+          <div class="feed-container">
+            <div class="section-header-row">
+              <div>
+                <h1 class="section-title">Live Campus Updates</h1>
+                <p class="section-subtitle">Daily mess menus, seat openings, and print offers directly from owners</p>
+              </div>
+              <div class="view-toggle">
+                <button
+                  type="button"
+                  class="view-toggle-btn ${state.updatesFilter === 'following' ? 'active' : ''}"
+                  onclick="state.updatesFilter='following'; renderApp();"
+                >
+                  Following Only (${UPDATES_FEED.filter((u) => state.followedIds.has(u.shopId)).length})
+                </button>
+                <button
+                  type="button"
+                  class="view-toggle-btn ${state.updatesFilter === 'all' ? 'active' : ''}"
+                  onclick="state.updatesFilter='all'; renderApp();"
+                >
+                  All Nearby (${UPDATES_FEED.length})
+                </button>
+              </div>
+            </div>
+
+            ${
+              filteredUpdates.length === 0
+                ? `
+                  <div class="empty-state">
+                    <div style="font-size:36px; margin-bottom:8px;">🔔</div>
+                    <h3 style="margin:0; font-size:17px; font-weight:800;">You're not following any shops yet</h3>
+                    <p style="margin:6px 0 16px; font-size:14px; color:var(--text-muted);">Follow your regular mess, library, or print shop to get daily updates here.</p>
+                    <button class="btn-primary" onclick="state.updatesFilter='all'; renderApp();">Show All Nearby Updates</button>
+                  </div>
+                `
+                : filteredUpdates.map((upd) => {
+                    const shop = getShopById(upd.shopId);
+                    if (!shop) return '';
+                    const isFollowing = state.followedIds.has(shop.id);
+                    return `
+                      <article class="update-card">
+                        <div class="update-head">
+                          <div style="display:flex; align-items:flex-start; gap:12px;">
+                            <div class="update-avatar">${shop.emoji}</div>
+                            <div>
+                              <div class="shop-title-row">
+                                <strong style="font-size:15px; font-weight:800;">${escapeHtml(shop.name)}</strong>
+                                ${VERIFIED_SVG}
+                              </div>
+                              <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:3px;">
+                                <span class="cat-badge">${escapeHtml(shop.category)}</span>
+                                <span style="font-size:12px; color:var(--text-subtle); font-weight:600;">• ${escapeHtml(upd.time)}</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <button
+                            type="button"
+                            class="filter-chip ${isFollowing ? 'active' : ''}"
+                            onclick="toggleFollow('${shop.id}')"
+                          >
+                            ${isFollowing ? '✓ Following' : '+ Follow'}
+                          </button>
+                        </div>
+
+                        <p class="update-body">${escapeHtml(upd.body)}</p>
+
+                        ${
+                          upd.hasThaliPhoto
+                            ? `
+                              <div class="illustrated-card" style="margin-bottom:14px;">
+                                ${makeThaliSvg(upd.photoLabel, upd.photoDish)}
+                              </div>
+                            `
+                            : ''
+                        }
+
+                        <div class="update-actions">
+                          <button type="button" class="btn-primary" onclick="openDetailModal('${shop.id}')">View Shop</button>
+                          <button type="button" class="btn-whatsapp" onclick="triggerWhatsApp('${shop.id}')">💬 WhatsApp</button>
+                        </div>
+                      </article>
+                    `;
+                  }).join('')
+            }
+          </div>
+        </div>
+      `;
+    }
+
+    /* =========================================================================
+       10. TAB 3 — SAVED & FOLLOWING HUB
+       ========================================================================= */
+    function renderSavedTab() {
+      const savedShops = SHOPS.filter((s) => state.savedIds.has(s.id));
+      const filterPills = ['All Saved', 'Following (Updates On)', ...CATEGORIES.slice(1).map((c) => c.key)];
+
+      const visibleShops = savedShops.filter((s) => {
+        if (state.savedFilter === 'All Saved') return true;
+        if (state.savedFilter === 'Following (Updates On)') return state.followedIds.has(s.id);
+        return s.category === state.savedFilter;
+      });
+
+      return `
+        <div class="container">
+          <div class="saved-container">
+            <div class="section-header-row">
+              <div>
+                <h1 class="section-title">Saved &amp; Following</h1>
+                <p class="section-subtitle">Your daily campus speed-dial for regular tiffin, hostels, libraries &amp; shops</p>
+              </div>
+              <button class="btn-secondary" onclick="switchTab('discover')">+ Find More Shops</button>
+            </div>
+
+            <div class="category-bar" style="padding-top:0;">
+              ${filterPills.map((fp) => `
+                <button
+                  type="button"
+                  class="cat-pill ${state.savedFilter === fp ? 'active' : ''}"
+                  onclick="state.savedFilter='${fp}'; renderApp();"
+                >
+                  ${escapeHtml(fp)}
+                </button>
+              `).join('')}
+            </div>
+
+            ${
+              visibleShops.length === 0
+                ? `
+                  <div class="empty-state" style="margin-top:16px;">
+                    <div style="font-size:38px; margin-bottom:8px;">🔖</div>
+                    <h3 style="margin:0; font-size:18px; font-weight:800;">No saved shops here yet</h3>
+                    <p style="margin:6px 0 18px; font-size:14px; color:var(--text-muted);">Tap the bookmark icon on any shop card to keep it handy for 1-tap calls and WhatsApp.</p>
+                    <button class="btn-primary" onclick="switchTab('discover')">Explore Nearby Services</button>
+                  </div>
+                `
+                : `
+                  <div class="saved-grid">
+                    ${visibleShops.map((shop) => {
+                      const isFollowing = state.followedIds.has(shop.id);
+                      return `
+                        <article class="saved-card">
+                          <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:10px;">
+                            <div>
+                              <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:5px;">
+                                <span class="cat-badge">${shop.emoji} ${escapeHtml(shop.category)}</span>
+                                <span class="dist-badge">${shop.distanceMeters} m away</span>
+                              </div>
+                              <div class="shop-title-row">
+                                <h3 class="shop-title">${escapeHtml(shop.name)}</h3>
+                                ${VERIFIED_SVG}
+                              </div>
+                              <div style="margin-top:8px;" class="status-pill ${shop.liveTone}">
+                                <span class="status-dot"></span>
+                                <span>${escapeHtml(shop.liveStatus)}</span>
+                              </div>
+                            </div>
+                            <span style="font-size:15px; font-weight:800; color:var(--indigo); white-space:nowrap;">${escapeHtml(shop.priceText)}</span>
+                          </div>
+
+                          <div class="speed-dial-row">
+                            <button type="button" class="btn-secondary" onclick="triggerCall('${shop.id}')">📞 Call</button>
+                            <button type="button" class="btn-whatsapp" onclick="triggerWhatsApp('${shop.id}')">💬 WhatsApp</button>
+                            <button type="button" class="btn-primary" onclick="openDetailModal('${shop.id}')">See Prices</button>
+                            <button
+                              type="button"
+                              class="filter-chip ${isFollowing ? 'active' : ''}"
+                              onclick="toggleFollow('${shop.id}')"
+                            >
+                              ${isFollowing ? '🔔 Updates On' : '🔕 Updates Off'}
+                            </button>
+                            <button
+                              type="button"
+                              class="filter-chip"
+                              style="color:var(--red); border-color:#fecaca;"
+                              onclick="toggleSave('${shop.id}')"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        </article>
+                      `;
+                    }).join('')}
+                  </div>
+                `
+            }
+          </div>
+        </div>
+      `;
+    }
+
+    /* =========================================================================
+       11. BUSINESS-SPECIFIC SHOP DETAIL MODAL
+       ========================================================================= */
+    function openDetailModal(shopId) {
+      state.activeDetailShopId = shopId;
+      state.detailInStoreSearch = '';
+      state.detailKiranaShelf = 'All';
+      renderDetailModal();
+      document.getElementById('detailModal').classList.add('open');
+    }
+
+    function closeDetailModal() {
+      state.activeDetailShopId = null;
+      document.getElementById('detailModal').classList.remove('open');
+    }
+
+    function renderDetailModal() {
+      const shop = getShopById(state.activeDetailShopId);
+      if (!shop) return;
+
+      const isSaved = state.savedIds.has(shop.id);
+      const isFollowing = state.followedIds.has(shop.id);
+
+      document.getElementById('detailModalHeader').innerHTML = `
+        <div>
+          <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:5px;">
+            <span class="cat-badge">${shop.emoji} ${escapeHtml(shop.category)}</span>
+            <span class="dist-badge">${shop.distanceMeters} m away</span>
+            <span class="status-pill ${shop.liveTone}" style="padding:3px 9px; font-size:11px;">
+              <span class="status-dot"></span>${escapeHtml(shop.liveStatus)}
+            </span>
+          </div>
+          <div class="shop-title-row">
+            <h2 style="margin:0; font-size:20px; font-weight:800;">${escapeHtml(shop.name)}</h2>
+            ${VERIFIED_SVG}
+          </div>
+          <p style="margin:4px 0 0; font-size:13px; color:var(--text-muted);">📍 ${escapeHtml(shop.address)}</p>
+        </div>
+        <button class="modal-close" onclick="closeDetailModal()" aria-label="Close details">✕</button>
+      `;
+
+      let businessSpecificHtml = '';
+
+      /* --- 1) HOSTELS & PGs --- */
+      if (shop.category === 'Hostels & PGs') {
+        const d = shop.details;
+        businessSpecificHtml = `
+          <div class="detail-section">
+            <h3 class="detail-section-title">🛏️ Available Rooms &amp; Monthly Rent</h3>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px;">
+              ${d.rooms.map((r) => `
+                <div class="illustrated-card">
+                  ${makeRoomSvg(r.type, r.cooling === 'AC' ? '#4f46e5' : '#0284c7', r.bg)}
+                  <div style="padding:12px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; gap:6px;">
+                      <strong style="font-size:14px;">${escapeHtml(r.type)}</strong>
+                      <span class="tag-chip">${escapeHtml(r.cooling)}</span>
+                    </div>
+                    <div style="font-size:17px; font-weight:800; color:var(--indigo); margin:6px 0 4px;">
+                      ₹${r.rent.toLocaleString('en-IN')}<span style="font-size:11px; color:var(--text-subtle); font-weight:600;">/mo</span>
+                    </div>
+                    <p style="margin:0 0 10px; font-size:12px; color:var(--text-muted);">${escapeHtml(r.note)}</p>
+                    <div style="display:flex; align-items:center; justify-content:space-between; gap:6px;">
+                      <span class="status-pill ${r.vacant > 0 ? 'green' : 'amber'}" style="font-size:11px; padding:3px 8px;">
+                        ${r.vacant > 0 ? `● ${r.vacant} Vacant` : 'Full'}
+                      </span>
+                      <button class="btn-secondary" style="padding:5px 9px; font-size:11px;" onclick="triggerWhatsApp('${shop.id}', '${escapeHtml(r.type)}')">
+                        💬 Ask
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="detail-section">
+            <h3 class="detail-section-title">📋 Hostel Rules &amp; Facilities</h3>
+            <div class="rules-grid" style="margin-bottom:12px;">
+              <div class="rule-box"><div class="rule-label">For Whom</div><div class="rule-val">${escapeHtml(d.rules.forWhom)}</div></div>
+              <div class="rule-box"><div class="rule-label">Security Deposit</div><div class="rule-val">${escapeHtml(d.rules.deposit)}</div></div>
+              <div class="rule-box"><div class="rule-label">Electricity</div><div class="rule-val">${escapeHtml(d.rules.electricity)}</div></div>
+              <div class="rule-box"><div class="rule-label">Gate Curfew</div><div class="rule-val">${escapeHtml(d.rules.curfew)}</div></div>
+            </div>
+            <div class="card-tags">
+              ${d.facilities.map((f) => `<span class="tag-chip">✓ ${escapeHtml(f)}</span>`).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      /* --- 2) MESS & TIFFIN --- */
+      else if (shop.category === 'Mess & Tiffin') {
+        const d = shop.details;
+        businessSpecificHtml = `
+          <div class="detail-section">
+            <h3 class="detail-section-title">
+              <span>🍲 Today's Fresh Menu &amp; Food Photos</span>
+              <span class="status-pill green" style="font-size:11px; padding:3px 9px;">🌿 ${escapeHtml(d.foodType)}</span>
+            </h3>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:12px;">
+              <div class="illustrated-card">
+                ${makeThaliSvg("Today's Lunch", d.lunch.special)}
+                <div style="padding:12px;">
+                  <div style="font-size:11px; font-weight:700; color:var(--emerald); margin-bottom:4px;">🕒 ${escapeHtml(d.lunch.time)}</div>
+                  <p style="margin:0; font-size:13px; color:var(--text);">${escapeHtml(d.lunch.menu)}</p>
+                </div>
+              </div>
+              <div class="illustrated-card">
+                ${makeThaliSvg("Today's Dinner", d.dinner.special)}
+                <div style="padding:12px;">
+                  <div style="font-size:11px; font-weight:700; color:var(--indigo); margin-bottom:4px;">🕒 ${escapeHtml(d.dinner.time)}</div>
+                  <p style="margin:0; font-size:13px; color:var(--text);">${escapeHtml(d.dinner.menu)}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-section">
+            <h3 class="detail-section-title">
+              <span>🍽️ Meal Plans &amp; Tiffin Rates</span>
+              <span class="cat-badge">${escapeHtml(d.trialMeal)}</span>
+            </h3>
+            ${d.plans.map((p) => `
+              <div class="list-row">
+                <div>
+                  <strong style="font-size:14px;">${escapeHtml(p.name)}</strong>
+                  <div style="font-size:12px; color:var(--text-muted);">${escapeHtml(p.desc)}</div>
+                </div>
+                <strong style="font-size:15px; color:var(--indigo); white-space:nowrap;">${escapeHtml(p.price)}</strong>
+              </div>
+            `).join('')}
+            <div class="card-tags" style="margin-top:12px;">
+              ${d.facilities.map((f) => `<span class="tag-chip">✓ ${escapeHtml(f)}</span>`).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      /* --- 3) PRINTING & XEROX --- */
+      else if (shop.category === 'Printing & Xerox') {
+        const d = shop.details;
+        const q = state.detailInStoreSearch.trim().toLowerCase();
+        const filteredStat = d.stationery.filter((i) => !q || i.name.toLowerCase().includes(q));
+
+        businessSpecificHtml = `
+          <div class="detail-section">
+            <h3 class="detail-section-title">
+              <span>🖨️ Print &amp; Binding Rate Card</span>
+              <span class="status-pill green" style="font-size:11px; padding:3px 9px;">● ${escapeHtml(d.rushStatus)}</span>
+            </h3>
+            ${d.rates.map((r) => `
+              <div class="list-row">
+                <span style="font-size:14px; font-weight:600;">${escapeHtml(r.name)}</span>
+                <strong style="font-size:14px; color:var(--indigo);">${escapeHtml(r.price)}</strong>
+              </div>
+            `).join('')}
+          </div>
+
+          <div class="detail-section">
+            <h3 class="detail-section-title">✏️ Stationery &amp; Supplies Available</h3>
+            <input
+              type="text"
+              class="in-store-search"
+              value="${escapeHtml(state.detailInStoreSearch)}"
+              placeholder="🔍 Search register, pen pack, lab file, A4 rim..."
+              oninput="state.detailInStoreSearch = this.value; renderDetailModal();"
+            />
+            ${filteredStat.map((i) => `
+              <div class="list-row">
+                <div>
+                  <strong style="font-size:14px;">${escapeHtml(i.name)}</strong>
+                  <div style="font-size:12px; color:var(--text-muted);">${escapeHtml(i.pack)}</div>
+                </div>
+                <div style="text-align:right;">
+                  <strong style="font-size:14px; color:var(--indigo);">${escapeHtml(i.price)}</strong>
+                  <div style="font-size:11px; font-weight:700; color:var(--emerald);">In Stock</div>
+                </div>
+              </div>
+            `).join('') || '<p style="font-size:13px; color:var(--text-muted); margin:0;">No matching stationery found.</p>'}
+          </div>
+        `;
+      }
+
+      /* --- 4) BOOKS & STATIONERY --- */
+      else if (shop.category === 'Books & Stationery') {
+        const d = shop.details;
+        const q = state.detailInStoreSearch.trim().toLowerCase();
+        const filteredBooks = d.books.filter((b) => !q || b.title.toLowerCase().includes(q) || b.condition.toLowerCase().includes(q));
+
+        businessSpecificHtml = `
+          <div class="detail-section">
+            <h3 class="detail-section-title">
+              <span>📚 Books Catalog</span>
+              <span class="status-pill green" style="font-size:11px; padding:3px 9px;">♻️ 50% Buyback</span>
+            </h3>
+            <input
+              type="text"
+              class="in-store-search"
+              value="${escapeHtml(state.detailInStoreSearch)}"
+              placeholder="🔍 Search Maths, Java, GATE, Second-Hand..."
+              oninput="state.detailInStoreSearch = this.value; renderDetailModal();"
+            />
+            ${filteredBooks.map((b) => `
+              <div class="list-row">
+                <div>
+                  <strong style="font-size:14px;">${escapeHtml(b.title)}</strong>
+                  <div style="display:flex; gap:6px; margin-top:4px; flex-wrap:wrap;">
+                    <span class="tag-chip" style="${b.condition === 'Second-Hand' ? 'background:#fffbeb; color:#b45309; border-color:#fde68a;' : ''}">${escapeHtml(b.condition)}</span>
+                    ${b.buyback ? `<span class="tag-chip" style="background:#ecfdf5; color:#047857; border-color:#a7f3d0;">50% Buyback</span>` : ''}
+                  </div>
+                </div>
+                <div style="text-align:right;">
+                  <strong style="font-size:15px; color:var(--indigo);">${escapeHtml(b.price)}</strong>
+                  <div style="font-size:11px; font-weight:700; color:var(--emerald);">In Stock</div>
+                </div>
+              </div>
+            `).join('') || '<p style="font-size:13px; color:var(--text-muted); margin:0;">No matching books found.</p>'}
+          </div>
+
+          <div class="detail-section">
+            <h3 class="detail-section-title">✏️ Stationery &amp; Student Bundles</h3>
+            ${d.stationery.map((s) => `
+              <div class="list-row">
+                <div>
+                  <strong style="font-size:14px;">${escapeHtml(s.name)}</strong>
+                  <div style="font-size:12px; color:var(--text-muted);">${escapeHtml(s.pack)}</div>
+                </div>
+                <strong style="font-size:14px; color:var(--indigo);">${escapeHtml(s.price)}</strong>
+              </div>
+            `).join('')}
+          </div>
+
+          <div class="detail-section">
+            <h3 class="detail-section-title">🖨️ In-Store Print &amp; Xerox Rates</h3>
+            ${d.printRates.map((r) => `
+              <div class="list-row">
+                <span style="font-size:14px; font-weight:600;">${escapeHtml(r.name)}</span>
+                <strong style="font-size:14px; color:var(--indigo);">${escapeHtml(r.price)}</strong>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      /* --- 5) KIRANA & ESSENTIALS --- */
+      else if (shop.category === 'Kirana & Essentials') {
+        const d = shop.details;
+        const shelves = ['All', 'Water & Dairy', 'Snacks & Maggi', 'Hostel Essentials', 'Toiletries'];
+        const q = state.detailInStoreSearch.trim().toLowerCase();
+        const filteredItems = d.items.filter((i) => {
+          const matchShelf = state.detailKiranaShelf === 'All' || i.shelf === state.detailKiranaShelf;
+          const matchQ = !q || i.name.toLowerCase().includes(q) || i.unit.toLowerCase().includes(q);
+          return matchShelf && matchQ;
+        });
+
+        businessSpecificHtml = `
+          <div style="background:var(--emerald-soft); border:1px solid var(--emerald-border); color:#065f46; border-radius:14px; padding:12px 14px; font-size:13px; font-weight:700;">
+            🚚 ${escapeHtml(d.deliveryBanner)}
+          </div>
+
+          <div class="detail-section">
+            <h3 class="detail-section-title">🛒 Daily Items &amp; Prices</h3>
+            <input
+              type="text"
+              class="in-store-search"
+              value="${escapeHtml(state.detailInStoreSearch)}"
+              placeholder="🔍 Search 20L water can, milk, Maggi, detergent..."
+              oninput="state.detailInStoreSearch = this.value; renderDetailModal();"
+            />
+            <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px;">
+              ${shelves.map((sh) => `
+                <button
+                  type="button"
+                  class="filter-chip ${state.detailKiranaShelf === sh ? 'active' : ''}"
+                  onclick="state.detailKiranaShelf='${sh}'; renderDetailModal();"
+                >
+                  ${escapeHtml(sh)}
+                </button>
+              `).join('')}
+            </div>
+            ${filteredItems.map((i) => `
+              <div class="list-row" style="${i.inStock ? '' : 'opacity:0.6;'}">
+                <div>
+                  <strong style="font-size:14px;">${escapeHtml(i.name)}</strong>
+                  <div style="font-size:12px; color:var(--text-muted);">${escapeHtml(i.shelf)} • ${escapeHtml(i.unit)}</div>
+                </div>
+                <div style="text-align:right;">
+                  <strong style="font-size:15px; color:var(--indigo);">${escapeHtml(i.price)}</strong>
+                  <div style="font-size:11px; font-weight:700; color:${i.inStock ? 'var(--emerald)' : 'var(--red)'};">
+                    ${i.inStock ? 'In Stock' : 'Out of Stock'}
+                  </div>
+                </div>
+              </div>
+            `).join('') || '<p style="font-size:13px; color:var(--text-muted); margin:0;">No matching items found.</p>'}
+          </div>
+        `;
+      }
+
+      /* --- 6) STUDY LIBRARIES --- */
+      else if (shop.category === 'Study Libraries') {
+        const d = shop.details;
+        const q = state.detailInStoreSearch.trim().toLowerCase();
+        const filteredBooks = d.books.filter((b) => !q || b.title.toLowerCase().includes(q) || b.cat.toLowerCase().includes(q));
+
+        businessSpecificHtml = `
+          <div class="detail-section">
+            <h3 class="detail-section-title">
+              <span>🪑 Shift Plans &amp; Live Seat Availability</span>
+              <span class="status-pill green" style="font-size:11px; padding:3px 9px;">🎁 ${escapeHtml(d.freeDemo)}</span>
+            </h3>
+            ${d.shifts.map((sh) => `
+              <div class="list-row">
+                <div>
+                  <strong style="font-size:14px;">${escapeHtml(sh.name)}</strong>
+                  <div style="font-size:12px; color:var(--text-muted);">🕒 ${escapeHtml(sh.timing)} • ${escapeHtml(sh.type)}</div>
+                </div>
+                <div style="text-align:right;">
+                  <strong style="font-size:15px; color:var(--indigo);">${escapeHtml(sh.fee)}</strong>
+                  <div style="font-size:11px; font-weight:700; color:var(--emerald);">● ${sh.vacant} Seats Vacant</div>
+                </div>
+              </div>
+            `).join('')}
+            <div class="card-tags" style="margin-top:12px;">
+              ${d.facilities.map((f) => `<span class="tag-chip">✓ ${escapeHtml(f)}</span>`).join('')}
+            </div>
+          </div>
+
+          <div class="detail-section">
+            <h3 class="detail-section-title">📚 Available Library Books &amp; Newspapers</h3>
+            <input
+              type="text"
+              class="in-store-search"
+              value="${escapeHtml(state.detailInStoreSearch)}"
+              placeholder="🔍 Search GATE, Laxmikanth, The Hindu, Algorithms..."
+              oninput="state.detailInStoreSearch = this.value; renderDetailModal();"
+            />
+            ${filteredBooks.map((b) => `
+              <div class="list-row">
+                <div>
+                  <strong style="font-size:14px;">${escapeHtml(b.title)}</strong>
+                  <div style="font-size:12px; color:var(--text-muted);">${escapeHtml(b.cat)}</div>
+                </div>
+                <span class="status-pill green" style="font-size:11px; padding:3px 9px;">${escapeHtml(b.status)}</span>
+              </div>
+            `).join('') || '<p style="font-size:13px; color:var(--text-muted); margin:0;">No matching books found.</p>'}
+          </div>
+        `;
+      }
+
+      document.getElementById('detailModalBody').innerHTML = `
+        <!-- UNIVERSAL ACTION BAR -->
+        <div class="action-bar">
+          <button type="button" class="btn-follow ${isFollowing ? 'following' : ''}" onclick="toggleFollow('${shop.id}')">
+            <span>${isFollowing ? '✓ Following' : '🔔 Follow for Updates'}</span>
+          </button>
+          <button type="button" class="btn-secondary" onclick="toggleSave('${shop.id}')">
+            ${BOOKMARK_SVG(isSaved)}
+            <span>${isSaved ? 'Saved' : 'Save'}</span>
+          </button>
+          <button type="button" class="btn-primary" onclick="triggerCall('${shop.id}')">📞 Call</button>
+          <button type="button" class="btn-whatsapp" onclick="triggerWhatsApp('${shop.id}')">💬 WhatsApp</button>
+          <button type="button" class="btn-secondary" onclick="scrollToDirections()">🗺️ Get Directions</button>
+        </div>
+
+        <!-- TAILORED BUSINESS CONTENT -->
+        ${businessSpecificHtml}
+
+        <!-- OPENING HOURS -->
+        <div class="detail-section">
+          <h3 class="detail-section-title">⏰ Opening Hours</h3>
+          <table class="hours-table">
+            ${shop.hours.map((row, idx) => `
+              <tr class="${idx === 0 ? 'today-row' : ''}">
+                <td>${escapeHtml(row[0])} ${idx === 0 ? '(Today)' : ''}</td>
+                <td style="text-align:right;">${escapeHtml(row[1])}</td>
+              </tr>
+            `).join('')}
+          </table>
+        </div>
+
+        <!-- EMBEDDED MINI-MAP -->
+        <div class="detail-section" id="detailMiniMapSection">
+          <h3 class="detail-section-title">
+            <span>📍 Location &amp; Walking Route</span>
+            <span style="font-size:12px; color:var(--indigo);">${shop.distanceMeters} m (~${Math.max(1, Math.round(shop.distanceMeters / 80))} min walk)</span>
+          </h3>
+          <div id="detailMiniMapBox" class="mini-map-box">
+            <svg style="position:absolute; inset:0; width:100%; height:100%;" viewBox="0 0 500 180" preserveAspectRatio="none">
+              <path d="M 0 95 Q 170 75 300 92 T 500 72" stroke="#fff" stroke-width="20" fill="none"/>
+              <path d="M 110 92 Q 200 84 ${shop.mapPos.x * 5} ${shop.mapPos.y * 1.7}" stroke="#4f46e5" stroke-width="3.5" stroke-dasharray="6 5" fill="none"/>
+              <circle cx="110" cy="92" r="7" fill="#2563eb" stroke="#fff" stroke-width="2.5"/>
+            </svg>
+            <div style="position:absolute; left:18%; top:58%; font-size:11px; font-weight:800; background:#2563eb; color:#fff; padding:2px 7px; border-radius:6px;">You</div>
+            <div style="position:absolute; left:${shop.mapPos.x}%; top:${shop.mapPos.y}%; transform:translate(-50%,-100%); background:var(--indigo); color:#fff; padding:4px 9px; border-radius:10px; font-size:12px; font-weight:800; border:2px solid #fff; box-shadow:var(--shadow-sm); white-space:nowrap;">
+              ${shop.emoji} ${escapeHtml(shop.name.split(' ')[0])}
+            </div>
+          </div>
+          <div style="margin-top:10px; display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;">
+            <span style="font-size:12px; color:var(--text-muted);">${escapeHtml(shop.address)}</span>
+            <button type="button" class="btn-secondary" onclick="showToast('Opening walking route to ${escapeHtml(shop.name)} (${shop.distanceMeters} m)', 'indigo')">
+              🧭 Open Directions
+            </button>
+          </div>
+        </div>
+
+        <!-- DISCREET REPORT ISSUE FOOTER -->
+        <div style="text-align:center; padding-top:4px;">
+          <button type="button" class="report-link" onclick="openReportModal('${shop.id}')">
+            Something wrong or outdated? Report an issue
+          </button>
+        </div>
+      `;
+    }
+
+    function scrollToDirections() {
+      const box = document.getElementById('detailMiniMapBox');
+      if (!box) return;
+      box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      box.classList.add('highlight');
+      setTimeout(() => box.classList.remove('highlight'), 1400);
+    }
+
+    /* =========================================================================
+       12. QUICK COMPARE (HOSTELS & LIBRARIES)
+       ========================================================================= */
+    function toggleCompare(shopId) {
+      const shop = getShopById(shopId);
+      if (!shop) return;
+
+      const idx = state.compareIds.indexOf(shopId);
+      if (idx >= 0) {
+        state.compareIds.splice(idx, 1);
+      } else {
+        // Ensure same category comparison
+        if (state.compareIds.length > 0) {
+          const firstShop = getShopById(state.compareIds[0]);
+          if (firstShop && firstShop.category !== shop.category) {
+            state.compareIds = [shopId];
+            showToast(`Started new ${shop.category} comparison`);
+          } else if (state.compareIds.length >= 3) {
+            showToast('You can compare up to 3 places at once');
+            renderApp();
+            return;
+          } else {
+            state.compareIds.push(shopId);
+          }
+        } else {
+          state.compareIds.push(shopId);
+        }
+      }
+      renderApp();
+    }
+
+    function clearCompare() {
+      state.compareIds = [];
+      renderApp();
+    }
+
+    function syncCompareBar() {
+      const bar = document.getElementById('compareBar');
+      const text = document.getElementById('compareBarText');
+      if (state.activeTab === 'discover' && state.compareIds.length >= 2) {
+        const cat = getShopById(state.compareIds[0])?.category || 'Places';
+        const shortCat = cat === 'Hostels & PGs' ? 'Hostels' : 'Libraries';
+        text.textContent = `Compare ${state.compareIds.length} ${shortCat}`;
+        bar.classList.remove('hidden');
+      } else {
+        bar.classList.add('hidden');
+      }
+    }
+
+    function openCompareModal() {
+      const list = state.compareIds.map(getShopById).filter(Boolean);
+      if (list.length < 2) return;
+
+      const isHostel = list[0].category === 'Hostels & PGs';
+      document.getElementById('compareModalTitle').textContent = `Compare ${list.length} ${isHostel ? 'Hostels & PGs' : 'Study Libraries'}`;
+
+      document.getElementById('compareModalBody').innerHTML = `
+        <div class="compare-table-wrap">
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th>Feature</th>
+                ${list.map((s) => `<th>${s.emoji} ${escapeHtml(s.name)}</th>`).join('')}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Distance</td>
+                ${list.map((s) => `<td><strong>${s.distanceMeters} m away</strong></td>`).join('')}
+              </tr>
+              <tr>
+                <td>Starting ${isHostel ? 'Rent' : 'Fee'}</td>
+                ${list.map((s) => `<td style="color:var(--indigo); font-weight:800;">${escapeHtml(s.priceText)}</td>`).join('')}
+              </tr>
+              <tr>
+                <td>Live Availability</td>
+                ${list.map((s) => `<td><span class="status-pill ${s.liveTone}" style="font-size:11px; padding:3px 8px;">${escapeHtml(s.compareData.vacancies)}</span></td>`).join('')}
+              </tr>
+              <tr>
+                <td>AC / Cooling</td>
+                ${list.map((s) => `<td>${escapeHtml(s.compareData.cooling)}</td>`).join('')}
+              </tr>
+              <tr>
+                <td>Wi-Fi</td>
+                ${list.map((s) => `<td>${escapeHtml(s.compareData.wifi)}</td>`).join('')}
+              </tr>
+              <tr>
+                <td>${isHostel ? 'Curfew Timing' : 'Open Hours'}</td>
+                ${list.map((s) => `<td>${escapeHtml(s.compareData.curfew)}</td>`).join('')}
+              </tr>
+              <tr>
+                <td>Key Facilities</td>
+                ${list.map((s) => `<td>${escapeHtml(s.compareData.highlights)}</td>`).join('')}
+              </tr>
+              <tr>
+                <td>Action</td>
+                ${list.map((s) => `<td><button class="btn-primary" style="width:100%;" onclick="closeCompareModal(); openDetailModal('${s.id}')">View Details</button></td>`).join('')}
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      document.getElementById('compareModal').classList.add('open');
+    }
+
+    function closeCompareModal() {
+      document.getElementById('compareModal').classList.remove('open');
+    }
+
+    /* =========================================================================
+       13. REPORT ISSUE MODAL
+       ========================================================================= */
+    function openReportModal(shopId) {
+      const shop = getShopById(shopId);
+      if (!shop) return;
+      state.reportShopId = shopId;
+      state.selectedReportReason = REPORT_REASONS[0];
+      document.getElementById('reportShopName').textContent = shop.name;
+      document.getElementById('reportNoteInput').value = '';
+      renderReportReasons();
+      document.getElementById('reportModal').classList.add('open');
+    }
+
+    function closeReportModal() {
+      document.getElementById('reportModal').classList.remove('open');
+    }
+
+    function renderReportReasons() {
+      document.getElementById('reportReasonsList').innerHTML = REPORT_REASONS.map((reason) => {
+        const active = state.selectedReportReason === reason;
+        return `
+          <button
+            type="button"
+            onclick="state.selectedReportReason='${escapeHtml(reason)}'; renderReportReasons();"
+            style="text-align:left; padding:11px 14px; border-radius:12px; font-size:13px; font-weight:700; border:1.5px solid ${active ? 'var(--indigo)' : 'var(--border)'}; background:${active ? 'var(--indigo-soft)' : '#fff'}; color:${active ? 'var(--indigo-dark)' : 'var(--text)'};"
+          >
+            ${active ? '✓ ' : ''}${escapeHtml(reason)}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function submitReport() {
+      closeReportModal();
+      showToast('Report sent to NearBuzz Admin for review', 'success');
+    }
+
+    /* =========================================================================
+       14. USER INTERACTION HANDLERS
+       ========================================================================= */
+    function applyQuickTag(tag) {
+      state.searchQuery = tag;
+      state.selectedCategory = 'All';
+      renderApp();
+    }
+
+    function clearSearch() {
+      state.searchQuery = '';
+      renderApp();
+    }
+
+    function resetAllFilters() {
+      state.searchQuery = '';
+      state.selectedCategory = 'All';
+      state.onlyOpenNow = false;
+      state.onlyAvailableToday = false;
+      state.maxDistance = 2000;
+      renderApp();
+    }
+
+    function triggerGps() {
+      state.gpsLocating = true;
+      renderApp();
+      setTimeout(() => {
+        state.gpsLocating = false;
+        state.gpsLocked = true;
+        state.campus = 'Bholaram Ustad Marg, Indore';
+        renderApp();
+        showToast('GPS locked near Bholaram Ustad Marg, Indore', 'success');
+      }, 650);
+    }
+
+    function toggleSave(shopId) {
+      const shop = getShopById(shopId);
+      if (!shop) return;
+      if (state.savedIds.has(shopId)) {
+        state.savedIds.delete(shopId);
+        showToast(`Removed ${shop.name} from Saved`);
+      } else {
+        state.savedIds.add(shopId);
+        showToast(`Saved ${shop.name} for quick access`, 'success');
+      }
+      syncNavUI();
+      renderApp();
+      if (state.activeDetailShopId === shopId) renderDetailModal();
+    }
+
+    function toggleFollow(shopId) {
+      const shop = getShopById(shopId);
+      if (!shop) return;
+      if (state.followedIds.has(shopId)) {
+        state.followedIds.delete(shopId);
+        showToast(`Turned off updates from ${shop.name}`);
+      } else {
+        state.followedIds.add(shopId);
+        state.savedIds.add(shopId);
+        showToast(`Following ${shop.name} — you'll get live updates!`, 'success');
+      }
+      syncNavUI();
+      renderApp();
+      if (state.activeDetailShopId === shopId) renderDetailModal();
+    }
+
+    function triggerCall(shopId) {
+      const shop = getShopById(shopId);
+      if (!shop) return;
+      showToast(`Dialing ${shop.name} (${shop.phone})...`, 'indigo');
+    }
+
+    function triggerWhatsApp(shopId, specificItem = '') {
+      const shop = getShopById(shopId);
+      if (!shop) return;
+      const msg = specificItem
+        ? `Hi, I saw ${shop.name} on NearBuzz. Is the ${specificItem} still available?`
+        : `Hi, I saw ${shop.name} on NearBuzz. Could you share today's availability?`;
+      showToast(`Opening WhatsApp with: "${msg}"`, 'indigo');
+    }
+
+    /* =========================================================================
+       15. KEYBOARD ESC HANDLER & INITIAL BOOT
+       ========================================================================= */
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeReportModal();
+        closeCompareModal();
+        closeDetailModal();
+      }
+    });
+
+    syncNavUI();
+    renderApp();
+  </script>
+</body>
+</html>

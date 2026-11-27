@@ -8,6 +8,37 @@ export const CATEGORIES = [
   { value: 'LIBRARY', label: 'Study Libraries', short: 'Library' },
 ];
 
+export const BUSINESS_TYPE_TO_CATEGORY = {
+  hostel: 'HOSTEL_PG',
+  mess: 'MESS_TIFFIN',
+  printing: 'PRINTING',
+  books: 'BOOKS_STATIONERY',
+  kirana: 'KIRANA',
+  library: 'LIBRARY',
+};
+
+export const CATEGORY_TO_BUSINESS_TYPE = {
+  HOSTEL_PG: 'hostel',
+  MESS_TIFFIN: 'mess',
+  PRINTING: 'printing',
+  BOOKS_STATIONERY: 'books',
+  KIRANA: 'kirana',
+  LIBRARY: 'library',
+};
+
+export function getBusinessType(business) {
+  if (!business) return null;
+  if (business.businessType && BUSINESS_TYPE_TO_CATEGORY[business.businessType]) {
+    return business.businessType;
+  }
+  return CATEGORY_TO_BUSINESS_TYPE[business.category] || 'hostel';
+}
+
+export function vendorDashboardPath(businessType) {
+  const safeType = BUSINESS_TYPE_TO_CATEGORY[businessType] ? businessType : null;
+  return safeType ? `/vendor/${safeType}` : '/vendor';
+}
+
 export const CATEGORY_LABELS = Object.fromEntries(
   CATEGORIES.filter((c) => c.value).map((c) => [c.value, c.label])
 );

@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
+import api from '../api/axios';
 import { useAuth, roleHomePath } from '../context/AuthContext';
 import { useLocationContext } from '../context/LocationContext';
+import { getBusinessType, vendorDashboardPath } from '../utils/constants';
 
 /**
  * LoginPage — two-step passwordless email OTP login with unmistakable role selection.
@@ -16,11 +18,30 @@ export default function LoginPage() {
   const location = useLocation();
   const redirectTarget = location.state?.from || null;
 
-  useEffect(() => {
-    if (user) {
-      navigate(redirectTarget || roleHomePath(user.role), { replace: true });
+  const resolvePostLoginPath = useCallback(async (userData) => {
+    if (redirectTarget) return redirectTarget;
+    if (userData?.role === 'VENDOR') {
+      try {
+        const res = await api.get('/businesses/my');
+        return vendorDashboardPath(getBusinessType(res.data));
+      } catch {
+        return '/vendor';
+      }
     }
-  }, [user, navigate, redirectTarget]);
+    return roleHomePath(userData?.role);
+  }, [redirectTarget]);
+
+  useEffect(() => {
+    let active = true;
+    if (user) {
+      resolvePostLoginPath(user).then((target) => {
+        if (active) navigate(target, { replace: true });
+      });
+    }
+    return () => {
+      active = false;
+    };
+  }, [user, navigate, resolvePostLoginPath]);
 
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState('');
@@ -58,7 +79,8 @@ export default function LoginPage() {
     try {
       const userData = await verifyOtp(email, otp, name || undefined, role);
       detectGps();
-      navigate(redirectTarget || roleHomePath(userData.role), { replace: true });
+      const target = await resolvePostLoginPath(userData);
+      navigate(target, { replace: true });
     } catch (err) {
       setError(err.response?.data?.message || 'That code did not match or expired. Please try again.');
     } finally {

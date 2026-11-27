@@ -1,0 +1,1859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NearBuzz — Kirana &amp; Essentials Vendor Portal (5/6)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: #F4FBF7;
+      color: #0F172A;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .campus-map-bg {
+      background-color: #E8F5EE;
+      background-image:
+        linear-gradient(to right, rgba(5, 150, 105, 0.09) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(5, 150, 105, 0.09) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+    .fade-in {
+      animation: fadeIn 0.2s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .mic-pulse {
+      animation: micPulse 1.2s infinite;
+    }
+    @keyframes micPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.45); }
+      50% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-emerald-200 selection:text-emerald-950">
+
+  <!-- ==================== STICKY TOP NAVIGATION BAR ==================== -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-emerald-100 shadow-xs">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+      <!-- Brand Logo + Shop Name -->
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="w-11 h-11 rounded-2xl bg-[#059669] text-white font-extrabold text-base flex items-center justify-center shadow-sm shrink-0">
+          NB
+        </div>
+        <div class="min-w-0">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-lg sm:text-xl font-extrabold tracking-tight text-[#0F172A]">NearBuzz</span>
+            <span class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-[#ECFDF5] text-[#065F46] border border-emerald-200">
+              🛒 Kirana &amp; Essentials Portal (5/6)
+            </span>
+          </div>
+          <p id="navShopName" class="text-xs font-semibold text-slate-600 truncate mt-0.5">
+            Gupta Kirana &amp; Daily Needs
+          </p>
+        </div>
+      </div>
+
+      <!-- Prominent Indigo Student Preview Button -->
+      <button
+        onclick="openStudentPreview()"
+        class="min-h-[48px] px-4 sm:px-5 py-2.5 rounded-2xl bg-[#4F46E5] hover:bg-indigo-700 active:scale-[0.99] text-white font-bold text-xs sm:text-sm shadow-sm transition flex items-center gap-2 cursor-pointer"
+      >
+        <span class="text-base">👀</span>
+        <span>Preview What Students See</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN WORKSPACE ==================== -->
+  <main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-5 sm:py-7 space-y-6">
+
+    <!-- ==================== 4 LARGE HORIZONTAL TABS ==================== -->
+    <nav class="bg-white rounded-2xl border border-emerald-100 shadow-xs p-2 overflow-x-auto no-scrollbar" aria-label="Kirana dashboard tabs">
+      <div id="tabsBar" class="flex items-center gap-2 min-w-max sm:min-w-0 sm:grid sm:grid-cols-4">
+        <!-- Populated dynamically -->
+      </div>
+    </nav>
+
+    <!-- ==================== ACTIVE TAB CONTENT ==================== -->
+    <section id="tabContent" class="fade-in">
+      <!-- Populated dynamically -->
+    </section>
+
+  </main>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="mt-auto border-t border-emerald-100 bg-white py-5">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
+      <span><strong>NearBuzz Kirana &amp; Essentials Portal (5/6)</strong> — Bholaram Ustad Marg, Near Campus Gate 1, Indore</span>
+      <span class="text-[#065F46] font-semibold">Owner Helpdesk (WhatsApp): +91 98260 00112</span>
+    </div>
+  </footer>
+
+  <!-- ==================== QUICK ADD COMMON ITEMS MODAL ==================== -->
+  <div id="quickAddModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 backdrop-blur-xs p-3 sm:p-6 overflow-y-auto">
+    <div class="bg-white w-full max-w-xl rounded-2xl shadow-2xl border border-emerald-100 overflow-hidden my-auto max-h-[90vh] flex flex-col fade-in">
+      <div class="bg-[#059669] text-white px-5 py-4 flex items-center justify-between gap-3">
+        <div>
+          <span class="text-[11px] font-bold uppercase tracking-wider bg-white/20 px-2.5 py-0.5 rounded-full">1-Tap Starter Checklist</span>
+          <h2 class="text-lg sm:text-xl font-extrabold mt-1">⚡ Quick Add Common Items</h2>
+        </div>
+        <button
+          onclick="closeQuickAddModal()"
+          aria-label="Close quick add modal"
+          class="w-10 h-10 rounded-xl bg-white/15 hover:bg-white/25 text-white font-bold text-lg flex items-center justify-center cursor-pointer"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div id="quickAddBody" class="p-4 sm:p-5 overflow-y-auto space-y-2.5 bg-slate-50">
+        <!-- Populated dynamically -->
+      </div>
+
+      <div class="px-5 py-4 bg-white border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <span id="quickAddCountLabel" class="text-xs sm:text-sm font-bold text-slate-600">0 items selected</span>
+        <div class="flex items-center gap-2.5 w-full sm:w-auto">
+          <button
+            type="button"
+            onclick="closeQuickAddModal()"
+            class="flex-1 sm:flex-none min-h-[48px] px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm cursor-pointer"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onclick="confirmQuickAddItems()"
+            class="flex-1 sm:flex-none min-h-[48px] px-6 py-2 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-extrabold text-sm shadow-sm cursor-pointer"
+          >
+            Add Selected to My Shop
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== LIVE STUDENT PREVIEW MODAL (INDIGO & BLUE #4F46E5) ==================== -->
+  <div id="studentPreviewModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/65 backdrop-blur-xs p-3 sm:p-6 overflow-y-auto">
+    <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl border border-indigo-100 overflow-hidden my-auto max-h-[92vh] flex flex-col fade-in">
+      <!-- Indigo Student App Header -->
+      <div class="bg-gradient-to-r from-[#4F46E5] to-blue-600 text-white px-5 py-4 flex items-center justify-between gap-3">
+        <div>
+          <span class="inline-block text-[11px] font-bold uppercase tracking-wider bg-white/20 px-2.5 py-0.5 rounded-full">
+            Student App View
+          </span>
+          <h2 class="text-lg sm:text-xl font-extrabold mt-1">How Students See Your Kirana Store</h2>
+        </div>
+        <button
+          onclick="closeStudentPreview()"
+          aria-label="Close student preview"
+          class="w-11 h-11 rounded-xl bg-white/15 hover:bg-white/25 text-white font-bold text-lg flex items-center justify-center cursor-pointer"
+        >
+          ✕
+        </button>
+      </div>
+
+      <!-- Dynamic Student Preview Content -->
+      <div id="studentPreviewBody" class="p-4 sm:p-6 overflow-y-auto space-y-5 bg-slate-50">
+        <!-- Populated dynamically -->
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-5 py-3.5 bg-white border-t border-slate-200 flex items-center justify-between gap-3">
+        <span class="text-xs text-slate-500">Every price, stock status &amp; delivery setting updates live here.</span>
+        <button
+          onclick="closeStudentPreview()"
+          class="min-h-[48px] px-5 py-2.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-sm cursor-pointer"
+        >
+          Back to Owner Portal
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== FLOATING TOAST CONTAINER ==================== -->
+  <div id="toastContainer" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none flex flex-col gap-2 items-center w-[92%] max-w-md"></div>
+
+  <!-- ==================== APPLICATION SCRIPT ==================== -->
+  <script>
+    /* =========================================================================
+       1. CONSTANTS, SHELVES, QUICK-ADD ITEMS, TIME SLOTS & CAMPUS LANDMARKS
+       ========================================================================= */
+    const SHELVES = [
+      { key: 'Water & Dairy', icon: '💧', label: '💧 Water & Dairy', badgeClass: 'bg-sky-100 text-sky-800' },
+      { key: 'Snacks & Maggi', icon: '🍜', label: '🍜 Snacks & Maggi', badgeClass: 'bg-amber-100 text-amber-900' },
+      { key: 'Hostel Essentials', icon: '🛏️', label: '🛏️ Hostel Essentials', badgeClass: 'bg-emerald-100 text-emerald-800' },
+      { key: 'Toiletries', icon: '🧴', label: '🧴 Toiletries', badgeClass: 'bg-purple-100 text-purple-800' }
+    ];
+
+    const SELL_AS_OPTIONS = [
+      { key: 'Single Item', label: 'Single Item' },
+      { key: 'Pack', label: 'Pack (e.g. Pack of 4)' },
+      { key: 'Combo Bundle', label: 'Combo Bundle' }
+    ];
+
+    const UNIT_PACK_PILLS = [
+      'Per Piece', '250g', '500g', '1 kg', '20L Can', 'Pack of 4', 'Pack of 6', 'Combo'
+    ];
+
+    const QUICK_ADD_STARTER = [
+      { id: 'qa1', name: '20L Water Can', shelf: 'Water & Dairy', sellAs: 'Single Item', unit: '20L Can', price: 35, checked: false },
+      { id: 'qa2', name: 'Amul Gold Milk 500ml', shelf: 'Water & Dairy', sellAs: 'Single Item', unit: 'Per Piece', price: 33, checked: false },
+      { id: 'qa3', name: 'Maggi 4-Pack', shelf: 'Snacks & Maggi', sellAs: 'Pack', unit: 'Pack of 4', price: 56, checked: false },
+      { id: 'qa4', name: 'Bread Loaf', shelf: 'Snacks & Maggi', sellAs: 'Single Item', unit: 'Per Piece', price: 40, checked: false },
+      { id: 'qa5', name: 'Dettol Soap', shelf: 'Toiletries', sellAs: 'Single Item', unit: 'Per Piece', price: 38, checked: false },
+      { id: 'qa6', name: 'Colgate Toothpaste', shelf: 'Toiletries', sellAs: 'Single Item', unit: 'Per Piece', price: 65, checked: false },
+      { id: 'qa7', name: 'Eggs Tray (6)', shelf: 'Water & Dairy', sellAs: 'Pack', unit: 'Pack of 6', price: 48, checked: false },
+      { id: 'qa8', name: 'Kurkure', shelf: 'Snacks & Maggi', sellAs: 'Single Item', unit: 'Per Piece', price: 20, checked: false },
+      { id: 'qa9', name: 'Washing Powder 500g', shelf: 'Hostel Essentials', sellAs: 'Single Item', unit: '500g', price: 68, checked: false },
+      { id: 'qa10', name: 'Bisleri 1L', shelf: 'Water & Dairy', sellAs: 'Single Item', unit: 'Per Piece', price: 20, checked: false }
+    ];
+
+    const ALL_FEATURES = [
+      '20L Water Can Delivery',
+      'Late Night Open',
+      'Cold Drinks & Ice Cream',
+      'Dairy & Fresh Milk',
+      'Phone / WhatsApp Order',
+      'UPI Accepted',
+      'Monthly Khata for Regulars',
+      'Hostel Bulk Discounts'
+    ];
+
+    const NOTICE_TEMPLATES = [
+      'Fresh milk & bread arrived!',
+      '20L Water cans back in stock — call for hostel delivery.',
+      'Shop open late till 11:30 PM during exams!'
+    ];
+
+    const TIME_SLOTS = [
+      '05:30 AM', '06:00 AM', '06:30 AM', '07:00 AM', '07:30 AM', '08:00 AM', '09:00 AM', '10:00 AM',
+      '07:00 PM', '08:00 PM', '09:00 PM', '09:30 PM', '10:00 PM', '10:30 PM', '11:00 PM', '11:30 PM', '12:00 AM'
+    ];
+
+    const DAYS_LIST = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+    const CAMPUS_LANDMARKS = [
+      { name: 'Campus Gate 1', x: 46, y: 45, lat: 22.6915, lng: 75.8674 },
+      { name: 'Hostel Lane', x: 68, y: 66, lat: 22.6901, lng: 75.8706 },
+      { name: 'Main Square', x: 24, y: 30, lat: 22.6946, lng: 75.8626 }
+    ];
+
+    /* =========================================================================
+       2. APPLICATION STATE (PRE-LOADED WITH GUPTA KIRANA & DAILY NEEDS)
+       ========================================================================= */
+    const state = {
+      activeTab: 'items', // 'items' | 'delivery' | 'hours' | 'info'
+      addItemExpanded: false,
+      itemSearch: '',
+      shelfFilter: 'All Shelves',
+      outOfStockOnly: false,
+      studentSearch: '',
+      studentShelfFilter: 'All Shelves',
+      listeningField: null, // 'itemName' | 'noticeText' | null
+
+      shop: {
+        name: 'Gupta Kirana & Daily Needs',
+        ownerName: 'Suresh Gupta',
+        phone: '97542 11908',
+        address: 'Shop 2, Bholaram Ustad Marg, Near Campus Gate 1, Indore',
+        mapPin: {
+          x: 46,
+          y: 45,
+          lat: 22.6915,
+          lng: 75.8674,
+          landmark: 'Near Campus Gate 1'
+        }
+      },
+
+      items: [
+        {
+          id: 'ki_1',
+          name: '20L RO Water Can',
+          shelf: 'Water & Dairy',
+          sellAs: 'Single Item',
+          unit: '20L Can',
+          price: 35,
+          qty: 18,
+          inStock: true
+        },
+        {
+          id: 'ki_2',
+          name: 'Maggi Masala Pack of 4',
+          shelf: 'Snacks & Maggi',
+          sellAs: 'Pack',
+          unit: 'Pack of 4',
+          price: 56,
+          qty: 25,
+          inStock: true
+        },
+        {
+          id: 'ki_3',
+          name: 'Amul Taaza Milk 500ml',
+          shelf: 'Water & Dairy',
+          sellAs: 'Single Item',
+          unit: 'Per Piece',
+          price: 27,
+          qty: 30,
+          inStock: true
+        },
+        {
+          id: 'ki_4',
+          name: 'Hostel Tea & Biscuit Combo',
+          shelf: 'Snacks & Maggi',
+          sellAs: 'Combo Bundle',
+          unit: 'Combo',
+          price: 45,
+          qty: 12,
+          inStock: true
+        },
+        {
+          id: 'ki_5',
+          name: 'Dettol Handwash Refill',
+          shelf: 'Toiletries',
+          sellAs: 'Single Item',
+          unit: 'Per Piece',
+          price: 99,
+          qty: 0,
+          inStock: false
+        },
+        {
+          id: 'ki_6',
+          name: 'Surf Excel 500g',
+          shelf: 'Hostel Essentials',
+          sellAs: 'Single Item',
+          unit: '500g',
+          price: 68,
+          qty: 14,
+          inStock: true
+        }
+      ],
+
+      newItem: {
+        name: '',
+        shelf: 'Water & Dairy',
+        sellAs: 'Single Item',
+        unit: 'Per Piece',
+        price: '',
+        qty: ''
+      },
+
+      quickAddItems: JSON.parse(JSON.stringify(QUICK_ADD_STARTER)),
+
+      delivery: {
+        mode: 'Free Delivery', // 'Free Delivery' | 'Paid Delivery' | 'Pickup Only'
+        paidCharge: '15',
+        minOrderPreset: '₹50', // 'No Minimum' | '₹50' | '₹100' | '₹150' | 'Custom'
+        minOrderCustom: '',
+        deliveryTime: 'Within 15–30 mins',
+        whatsappOrders: 'Yes — Show WhatsApp Order Button',
+        features: [
+          '20L Water Can Delivery',
+          'Late Night Open',
+          'Cold Drinks & Ice Cream',
+          'Dairy & Fresh Milk',
+          'Phone / WhatsApp Order',
+          'UPI Accepted',
+          'Monthly Khata for Regulars'
+        ]
+      },
+
+      hours: DAYS_LIST.map((day) => ({
+        day,
+        open: true,
+        from: '06:30 AM',
+        to: '11:30 PM'
+      })),
+
+      notices: [
+        {
+          id: 'not_1',
+          text: '20L Water cans back in stock — call for hostel delivery.',
+          time: 'Today, 9:15 AM'
+        }
+      ],
+      noticeDraft: '',
+
+      shopPhotos: [
+        { id: 'sp_1', label: 'Gupta Kirana Front View', url: 'https://placehold.co/600x400/ECFDF5/065F46?text=Gupta+Kirana+%26+Daily+Needs' },
+        { id: 'sp_2', label: 'Paper Price List Board', url: 'https://placehold.co/600x400/D1FAE5/065F46?text=Daily+Essentials+Price+List' }
+      ]
+    };
+
+    /* =========================================================================
+       3. UTILITIES (HTML ESCAPE, TIME FORMAT, TOASTS)
+       ========================================================================= */
+    function escapeHtml(str) {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function getCurrentTimeLabel() {
+      return new Date().toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true });
+    }
+
+    function getShelfMeta(shelfKey) {
+      return SHELVES.find((s) => s.key === shelfKey) || SHELVES[0];
+    }
+
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const el = document.createElement('div');
+      const palette =
+        type === 'error'
+          ? 'bg-red-700 text-white border-red-800'
+          : type === 'info'
+          ? 'bg-slate-900 text-white border-slate-700'
+          : 'bg-[#065F46] text-white border-emerald-900';
+
+      el.className = `pointer-events-auto px-4 py-3 rounded-2xl shadow-lg border text-sm font-semibold flex items-center gap-2.5 fade-in ${palette}`;
+      el.innerHTML = `<span>${type === 'error' ? '⚠️' : type === 'info' ? 'ℹ️' : '✅'}</span><span>${escapeHtml(message)}</span>`;
+      container.appendChild(el);
+
+      setTimeout(() => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(8px)';
+        el.style.transition = 'all 0.25s ease';
+        setTimeout(() => el.remove(), 260);
+      }, 2800);
+    }
+
+    /* =========================================================================
+       4. WEB SPEECH API — VOICE TO TEXT (WITH GRACEFUL FALLBACK TOAST)
+       ========================================================================= */
+    function startVoiceInput(targetField) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        showToast('Voice typing is not supported in this browser. Please type normally.', 'info');
+        return;
+      }
+
+      try {
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'en-IN';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        state.listeningField = targetField;
+        renderTabContent();
+        showToast('Listening... Speak clearly now', 'info');
+
+        recognition.onresult = (event) => {
+          const spoken = event.results[0][0].transcript;
+          if (targetField === 'itemName') {
+            state.newItem.name = state.newItem.name ? `${state.newItem.name} ${spoken}` : spoken;
+          } else if (targetField === 'noticeText') {
+            state.noticeDraft = state.noticeDraft ? `${state.noticeDraft} ${spoken}` : spoken;
+          }
+          state.listeningField = null;
+          renderTabContent();
+          showToast('Voice text added!');
+        };
+
+        recognition.onerror = () => {
+          state.listeningField = null;
+          renderTabContent();
+          showToast('Could not hear clearly. Tap mic again or type normally.', 'error');
+        };
+
+        recognition.onend = () => {
+          if (state.listeningField === targetField) {
+            state.listeningField = null;
+            renderTabContent();
+          }
+        };
+
+        recognition.start();
+      } catch (e) {
+        state.listeningField = null;
+        renderTabContent();
+        showToast('Microphone unavailable. Please type instead.', 'info');
+      }
+    }
+
+    /* =========================================================================
+       5. MASTER RENDER FUNCTIONS
+       ========================================================================= */
+    function renderAll() {
+      document.getElementById('navShopName').textContent = state.shop.name;
+      renderTabsBar();
+      renderTabContent();
+    }
+
+    function renderTabsBar() {
+      const tabs = [
+        { id: 'items', icon: '🛒', label: 'Items & Prices' },
+        { id: 'delivery', icon: '🚚', label: 'Delivery & Facilities' },
+        { id: 'hours', icon: '⏰', label: 'Hours & Notices' },
+        { id: 'info', icon: '📍', label: 'Shop Info & GPS' }
+      ];
+
+      document.getElementById('tabsBar').innerHTML = tabs
+        .map((t) => {
+          const active = state.activeTab === t.id;
+          return `
+            <button
+              onclick="switchTab('${t.id}')"
+              class="min-h-[52px] px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap ${
+                active
+                  ? 'bg-[#059669] text-white shadow-sm'
+                  : 'bg-white text-slate-700 hover:bg-[#ECFDF5] hover:text-[#065F46]'
+              }"
+            >
+              <span class="text-base">${t.icon}</span>
+              <span>${t.label}</span>
+            </button>
+          `;
+        })
+        .join('');
+    }
+
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+      renderTabsBar();
+      renderTabContent();
+    }
+
+    function renderTabContent() {
+      const container = document.getElementById('tabContent');
+      if (state.activeTab === 'items') {
+        container.innerHTML = renderItemsTab();
+      } else if (state.activeTab === 'delivery') {
+        container.innerHTML = renderDeliveryTab();
+      } else if (state.activeTab === 'hours') {
+        container.innerHTML = renderHoursAndNoticesTab();
+      } else if (state.activeTab === 'info') {
+        container.innerHTML = renderShopInfoTab();
+        attachMapInteractions();
+      }
+    }
+
+    /* =========================================================================
+       6. TAB 1 — ITEMS & PRICES (DEFAULT TAB)
+       ========================================================================= */
+    function renderItemsTab() {
+      const totalCount = state.items.length;
+      const inStockCount = state.items.filter((i) => i.inStock).length;
+      const outOfStockCount = totalCount - inStockCount;
+
+      const ni = state.newItem;
+      const isMicActive = state.listeningField === 'itemName';
+
+      const q = state.itemSearch.trim().toLowerCase();
+      const filteredItems = state.items.filter((item) => {
+        const matchesSearch =
+          !q ||
+          item.name.toLowerCase().includes(q) ||
+          item.shelf.toLowerCase().includes(q) ||
+          item.unit.toLowerCase().includes(q);
+        const matchesShelf = state.shelfFilter === 'All Shelves' || item.shelf === state.shelfFilter;
+        const matchesStock = !state.outOfStockOnly || !item.inStock;
+        return matchesSearch && matchesShelf && matchesStock;
+      });
+
+      return `
+        <div class="space-y-6">
+          <!-- Top 3 Summary Stat Cards -->
+          <div class="grid grid-cols-3 gap-3 sm:gap-4">
+            <div class="bg-white rounded-2xl border border-emerald-100 shadow-xs p-4 text-center">
+              <div class="text-2xl sm:text-3xl font-extrabold text-[#0F172A]">${totalCount}</div>
+              <div class="text-xs sm:text-sm font-bold text-slate-600 mt-0.5">Total Items</div>
+            </div>
+            <div class="bg-[#ECFDF5] rounded-2xl border border-emerald-200 shadow-xs p-4 text-center">
+              <div class="text-2xl sm:text-3xl font-extrabold text-[#065F46]">${inStockCount}</div>
+              <div class="text-xs sm:text-sm font-bold text-[#065F46] mt-0.5">In Stock</div>
+            </div>
+            <div class="bg-red-50 rounded-2xl border border-red-200 shadow-xs p-4 text-center">
+              <div class="text-2xl sm:text-3xl font-extrabold text-red-700">${outOfStockCount}</div>
+              <div class="text-xs sm:text-sm font-bold text-red-700 mt-0.5">Out of Stock</div>
+            </div>
+          </div>
+
+          <!-- Search Bar + Shelf Filter Pills + Out of Stock Toggle -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-4 sm:p-5 space-y-3.5">
+            <input
+              type="text"
+              value="${escapeHtml(state.itemSearch)}"
+              placeholder="🔍 Search item name, e.g. Maggi, Water Can..."
+              oninput="state.itemSearch = this.value; renderTabContent();"
+              class="w-full min-h-[50px] px-4 py-2.5 rounded-xl bg-slate-50 border-2 border-slate-200 text-sm sm:text-base font-medium focus:outline-none focus:border-[#059669]"
+            />
+
+            <div class="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onclick="state.shelfFilter = 'All Shelves'; renderTabContent();"
+                class="min-h-[44px] px-4 py-2 rounded-full border-2 font-bold text-xs sm:text-sm transition cursor-pointer ${
+                  state.shelfFilter === 'All Shelves'
+                    ? 'bg-[#059669] border-[#059669] text-white'
+                    : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-400'
+                }"
+              >
+                All Shelves
+              </button>
+
+              ${SHELVES.map((sh) => {
+                const active = state.shelfFilter === sh.key;
+                return `
+                  <button
+                    type="button"
+                    onclick="state.shelfFilter = '${sh.key}'; renderTabContent();"
+                    class="min-h-[44px] px-4 py-2 rounded-full border-2 font-bold text-xs sm:text-sm transition cursor-pointer ${
+                      active
+                        ? 'bg-[#059669] border-[#059669] text-white'
+                        : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-400'
+                    }"
+                  >
+                    ${sh.label}
+                  </button>
+                `;
+              }).join('')}
+
+              <button
+                type="button"
+                onclick="state.outOfStockOnly = !state.outOfStockOnly; renderTabContent();"
+                class="min-h-[44px] px-4 py-2 rounded-full border-2 font-bold text-xs sm:text-sm transition cursor-pointer ${
+                  state.outOfStockOnly
+                    ? 'bg-red-600 border-red-600 text-white'
+                    : 'bg-red-50/70 border-red-200 text-red-700 hover:border-red-400'
+                }"
+              >
+                ${state.outOfStockOnly ? '✓ Out of Stock Only' : 'Out of Stock Only'}
+              </button>
+            </div>
+          </div>
+
+          <!-- Prominent Action Bar: 2 Large Buttons -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <button
+              type="button"
+              onclick="state.addItemExpanded = !state.addItemExpanded; renderTabContent();"
+              class="min-h-[56px] px-6 py-3.5 rounded-2xl bg-[#059669] hover:bg-[#047857] active:scale-[0.99] text-white font-extrabold text-base shadow-sm transition cursor-pointer flex items-center justify-center gap-2"
+            >
+              <span>${state.addItemExpanded ? '▲' : '➕'}</span>
+              <span>${state.addItemExpanded ? 'Hide Add Item Form' : '+ Add New Item'}</span>
+            </button>
+
+            <button
+              type="button"
+              onclick="openQuickAddModal()"
+              class="min-h-[56px] px-6 py-3.5 rounded-2xl bg-[#ECFDF5] hover:bg-emerald-100 border-2 border-[#059669] text-[#065F46] font-extrabold text-base shadow-xs transition cursor-pointer flex items-center justify-center gap-2"
+            >
+              <span>⚡</span>
+              <span>Quick Add Common Items</span>
+            </button>
+          </div>
+
+          <!-- Expandable "+ Add New Item" Form Card -->
+          ${
+            state.addItemExpanded
+              ? `
+                <div class="bg-white rounded-2xl border-2 border-[#059669]/40 shadow-sm p-5 sm:p-6 space-y-5 fade-in">
+                  <div class="border-b border-slate-100 pb-3">
+                    <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">➕ Add New Kirana Item</h2>
+                    <p class="text-xs sm:text-sm text-slate-600 mt-0.5">Speak or type the item name, tap the shelf &amp; pack size, and enter ₹ price.</p>
+                  </div>
+
+                  <!-- 1. Item Name + Voice Mic -->
+                  <div class="space-y-2">
+                    <label class="block text-sm sm:text-base font-bold text-[#0F172A]">1. Item Name</label>
+                    <div class="flex items-center gap-2.5">
+                      <input
+                        type="text"
+                        value="${escapeHtml(ni.name)}"
+                        placeholder="e.g. 20L RO Water Can, Amul Milk, Maggi 4-Pack"
+                        oninput="state.newItem.name = this.value"
+                        class="flex-1 min-h-[52px] px-4 py-3 rounded-xl bg-white border-2 border-slate-200 font-bold text-sm sm:text-base focus:outline-none focus:border-[#059669]"
+                      />
+                      <button
+                        type="button"
+                        onclick="startVoiceInput('itemName')"
+                        aria-label="Speak item name"
+                        class="min-w-[54px] h-[52px] px-3.5 rounded-xl border-2 font-bold text-sm flex items-center justify-center gap-1.5 cursor-pointer transition ${
+                          isMicActive
+                            ? 'bg-red-600 border-red-600 text-white mic-pulse'
+                            : 'bg-[#ECFDF5] hover:bg-emerald-100 border-emerald-300 text-[#065F46]'
+                        }"
+                      >
+                        <span class="text-lg">🎙️</span>
+                        <span class="hidden sm:inline">${isMicActive ? 'Listening' : 'Speak'}</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- 2. Shelf / Category Tappable Pills -->
+                  <div class="space-y-2">
+                    <label class="block text-sm sm:text-base font-bold text-[#0F172A]">2. Shelf / Category</label>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                      ${SHELVES.map((sh) => {
+                        const active = ni.shelf === sh.key;
+                        return `
+                          <button
+                            type="button"
+                            onclick="state.newItem.shelf = '${sh.key}'; renderTabContent();"
+                            class="min-h-[48px] px-3 py-2.5 rounded-xl border-2 font-bold text-xs sm:text-sm transition cursor-pointer ${
+                              active
+                                ? 'bg-[#059669] border-[#059669] text-white shadow-xs'
+                                : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-400'
+                            }"
+                          >
+                            ${sh.label}
+                          </button>
+                        `;
+                      }).join('')}
+                    </div>
+                  </div>
+
+                  <!-- 3. Sell As 3 Large Tappable Pills -->
+                  <div class="space-y-2">
+                    <label class="block text-sm sm:text-base font-bold text-[#0F172A]">3. Sell As</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                      ${SELL_AS_OPTIONS.map((opt) => {
+                        const active = ni.sellAs === opt.key;
+                        return `
+                          <button
+                            type="button"
+                            onclick="state.newItem.sellAs = '${opt.key}'; renderTabContent();"
+                            class="min-h-[50px] px-4 py-2.5 rounded-xl border-2 font-bold text-sm transition cursor-pointer ${
+                              active
+                                ? 'bg-[#059669] border-[#059669] text-white shadow-xs'
+                                : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-400'
+                            }"
+                          >
+                            ${active ? '✓ ' : ''}${opt.label}
+                          </button>
+                        `;
+                      }).join('')}
+                    </div>
+                  </div>
+
+                  <!-- 4. Unit / Pack Size Quick Pills -->
+                  <div class="space-y-2">
+                    <label class="block text-sm sm:text-base font-bold text-[#0F172A]">4. Unit / Pack Size</label>
+                    <div class="flex flex-wrap gap-2">
+                      ${UNIT_PACK_PILLS.map((u) => {
+                        const active = ni.unit === u;
+                        return `
+                          <button
+                            type="button"
+                            onclick="state.newItem.unit = '${u}'; renderTabContent();"
+                            class="min-h-[44px] px-3.5 py-2 rounded-full border-2 font-bold text-xs sm:text-sm transition cursor-pointer ${
+                              active
+                                ? 'bg-[#059669] border-[#059669] text-white'
+                                : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-400'
+                            }"
+                          >
+                            ${u}
+                          </button>
+                        `;
+                      }).join('')}
+                    </div>
+                  </div>
+
+                  <!-- 5. Price & Optional Available Qty -->
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="space-y-1.5">
+                      <label class="block text-sm sm:text-base font-bold text-[#0F172A]">5. Price (₹)</label>
+                      <div class="flex items-center">
+                        <span class="min-h-[52px] px-4 flex items-center rounded-l-xl bg-slate-100 border-2 border-r-0 border-slate-200 font-extrabold text-lg text-slate-700">₹</span>
+                        <input
+                          type="number"
+                          min="0"
+                          value="${escapeHtml(ni.price)}"
+                          placeholder="e.g. 35"
+                          oninput="state.newItem.price = this.value"
+                          class="w-full min-h-[52px] px-4 py-3 rounded-r-xl bg-white border-2 border-slate-200 text-lg font-extrabold focus:outline-none focus:border-[#059669]"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="space-y-1.5">
+                      <label class="block text-sm sm:text-base font-bold text-[#0F172A]">6. Available Qty (Optional)</label>
+                      <input
+                        type="number"
+                        min="0"
+                        value="${escapeHtml(ni.qty)}"
+                        placeholder="e.g. 20"
+                        oninput="state.newItem.qty = this.value"
+                        class="w-full min-h-[52px] px-4 py-3 rounded-xl bg-white border-2 border-slate-200 text-base font-bold focus:outline-none focus:border-[#059669]"
+                      />
+                    </div>
+                  </div>
+
+                  <!-- Save Item Button -->
+                  <button
+                    type="button"
+                    onclick="saveNewItem()"
+                    class="w-full sm:w-auto min-h-[54px] px-9 py-3.5 rounded-2xl bg-[#059669] hover:bg-[#047857] text-white font-extrabold text-base shadow-sm cursor-pointer"
+                  >
+                    ✓ Save Item
+                  </button>
+                </div>
+              `
+              : ''
+          }
+
+          <!-- Items List -->
+          <div class="space-y-3.5">
+            <div class="flex items-center justify-between px-1">
+              <h3 class="text-lg font-extrabold text-[#0F172A]">Your Store Items (${filteredItems.length})</h3>
+              <span class="text-xs text-slate-500">Tap green/red button to update stock live</span>
+            </div>
+
+            ${
+              filteredItems.length === 0
+                ? `
+                  <div class="bg-white rounded-2xl border border-dashed border-emerald-300 p-10 text-center">
+                    <p class="text-3xl mb-2">🛒</p>
+                    <p class="font-bold text-slate-800">No items match your filter</p>
+                    <p class="text-sm text-slate-500 mt-1">Clear your search or tap "All Shelves" above.</p>
+                  </div>
+                `
+                : filteredItems
+                    .map((item) => {
+                      const shelfMeta = getShelfMeta(item.shelf);
+                      return `
+                        <div class="bg-white rounded-2xl border-2 ${
+                          item.inStock ? 'border-emerald-100' : 'border-red-200 bg-red-50/20'
+                        } shadow-xs p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                          <!-- Left Info -->
+                          <div class="space-y-1.5 flex-1 min-w-0">
+                            <div class="flex flex-wrap items-center gap-2">
+                              <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold ${shelfMeta.badgeClass}">
+                                ${shelfMeta.label}
+                              </span>
+                              <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold ${
+                                item.sellAs === 'Combo Bundle'
+                                  ? 'bg-pink-100 text-pink-800'
+                                  : item.sellAs === 'Pack'
+                                  ? 'bg-indigo-100 text-indigo-800'
+                                  : 'bg-slate-100 text-slate-700'
+                              }">
+                                ${escapeHtml(item.sellAs)}
+                              </span>
+                              <span class="text-xs font-semibold text-slate-500">${escapeHtml(item.unit)}</span>
+                              ${
+                                item.qty !== '' && item.qty !== null && item.qty !== undefined && Number(item.qty) > 0
+                                  ? `<span class="text-xs font-semibold text-slate-500">• Qty: ${item.qty}</span>`
+                                  : ''
+                              }
+                            </div>
+
+                            <h4 class="text-base sm:text-lg font-extrabold text-[#0F172A]">${escapeHtml(item.name)}</h4>
+                            <div class="text-xl font-extrabold text-[#065F46]">₹${item.price}</div>
+                          </div>
+
+                          <!-- Right Controls: Big 1-Tap Stock Switch + Copy + Delete -->
+                          <div class="flex flex-wrap items-center gap-2.5 shrink-0">
+                            <button
+                              type="button"
+                              onclick="toggleItemStock('${item.id}')"
+                              class="min-h-[48px] px-4 py-2 rounded-xl border-2 font-extrabold text-sm transition cursor-pointer ${
+                                item.inStock
+                                  ? 'bg-[#059669] hover:bg-[#047857] border-[#059669] text-white'
+                                  : 'bg-red-100 hover:bg-red-200 border-red-400 text-red-800'
+                              }"
+                            >
+                              ${item.inStock ? '✓ In Stock' : '✕ Out of Stock'}
+                            </button>
+
+                            <button
+                              type="button"
+                              onclick="copyItem('${item.id}')"
+                              class="min-h-[48px] px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-emerald-50 hover:text-[#065F46] text-slate-700 font-bold text-sm cursor-pointer"
+                            >
+                              📋 Copy
+                            </button>
+
+                            <button
+                              type="button"
+                              onclick="deleteItem('${item.id}')"
+                              aria-label="Delete item"
+                              class="min-h-[48px] px-3.5 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 font-bold text-sm cursor-pointer"
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                        </div>
+                      `;
+                    })
+                    .join('')
+            }
+          </div>
+        </div>
+      `;
+    }
+
+    function saveNewItem() {
+      const ni = state.newItem;
+      const priceNum = parseFloat(ni.price);
+      if (!ni.name.trim()) {
+        showToast('Please enter the Item Name', 'error');
+        return;
+      }
+      if (isNaN(priceNum) || priceNum <= 0) {
+        showToast('Please enter a valid Price in ₹', 'error');
+        return;
+      }
+
+      state.items.unshift({
+        id: 'ki_' + Date.now(),
+        name: ni.name.trim(),
+        shelf: ni.shelf,
+        sellAs: ni.sellAs,
+        unit: ni.unit,
+        price: priceNum,
+        qty: ni.qty ? parseInt(ni.qty, 10) : '',
+        inStock: true
+      });
+
+      state.newItem = { name: '', shelf: 'Water & Dairy', sellAs: 'Single Item', unit: 'Per Piece', price: '', qty: '' };
+      state.addItemExpanded = false;
+      renderTabContent();
+      showToast('Item saved to your shop!');
+    }
+
+    function toggleItemStock(id) {
+      const item = state.items.find((i) => i.id === id);
+      if (!item) return;
+      item.inStock = !item.inStock;
+      renderTabContent();
+      showToast(item.inStock ? `"${item.name}" marked In Stock` : `"${item.name}" marked Out of Stock`, 'info');
+    }
+
+    function copyItem(id) {
+      const item = state.items.find((i) => i.id === id);
+      if (!item) return;
+      state.items.unshift({
+        ...item,
+        id: 'ki_' + Date.now(),
+        name: item.name + ' (Copy)'
+      });
+      renderTabContent();
+      showToast('Item copied!');
+    }
+
+    function deleteItem(id) {
+      state.items = state.items.filter((i) => i.id !== id);
+      renderTabContent();
+      showToast('Item removed from shop', 'info');
+    }
+
+    /* ---------- QUICK ADD COMMON ITEMS MODAL ---------- */
+    function openQuickAddModal() {
+      renderQuickAddModalBody();
+      const modal = document.getElementById('quickAddModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeQuickAddModal() {
+      const modal = document.getElementById('quickAddModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function renderQuickAddModalBody() {
+      const selectedCount = state.quickAddItems.filter((i) => i.checked).length;
+      document.getElementById('quickAddCountLabel').textContent = `${selectedCount} item${selectedCount === 1 ? '' : 's'} selected`;
+
+      document.getElementById('quickAddBody').innerHTML = state.quickAddItems
+        .map(
+          (qa, idx) => `
+            <div class="p-3.5 rounded-2xl border-2 ${
+              qa.checked ? 'border-[#059669] bg-[#ECFDF5]/60' : 'border-slate-200 bg-white'
+            } flex items-center justify-between gap-3">
+              <label class="flex items-center gap-3 flex-1 cursor-pointer min-w-0">
+                <input
+                  type="checkbox"
+                  ${qa.checked ? 'checked' : ''}
+                  onchange="state.quickAddItems[${idx}].checked = this.checked; renderQuickAddModalBody();"
+                  class="w-5 h-5 accent-[#059669] rounded cursor-pointer shrink-0"
+                />
+                <div class="min-w-0">
+                  <div class="font-bold text-sm text-[#0F172A] truncate">${escapeHtml(qa.name)}</div>
+                  <div class="text-xs text-slate-500">${escapeHtml(qa.shelf)} • ${escapeHtml(qa.unit)}</div>
+                </div>
+              </label>
+              <div class="flex items-center shrink-0">
+                <span class="min-h-[40px] px-2.5 flex items-center rounded-l-xl bg-slate-100 border border-r-0 border-slate-300 font-bold text-xs text-slate-700">₹</span>
+                <input
+                  type="number"
+                  value="${qa.price}"
+                  oninput="state.quickAddItems[${idx}].price = parseFloat(this.value) || 0"
+                  class="w-20 min-h-[40px] px-2.5 py-1 rounded-r-xl bg-white border border-slate-300 font-extrabold text-sm text-[#065F46]"
+                />
+              </div>
+            </div>
+          `
+        )
+        .join('');
+    }
+
+    function confirmQuickAddItems() {
+      const chosen = state.quickAddItems.filter((i) => i.checked);
+      if (!chosen.length) {
+        showToast('Please tick at least 1 item first', 'error');
+        return;
+      }
+      chosen.forEach((c) => {
+        state.items.unshift({
+          id: 'ki_' + Date.now() + Math.random().toString(36).slice(2, 5),
+          name: c.name,
+          shelf: c.shelf,
+          sellAs: c.sellAs,
+          unit: c.unit,
+          price: c.price || 10,
+          qty: 10,
+          inStock: true
+        });
+        c.checked = false;
+      });
+      closeQuickAddModal();
+      renderTabContent();
+      showToast(`Added ${chosen.length} item${chosen.length === 1 ? '' : 's'} to your shop!`);
+    }
+
+    /* =========================================================================
+       7. TAB 2 — DELIVERY & FACILITIES
+       ========================================================================= */
+    function renderDeliveryTab() {
+      const d = state.delivery;
+
+      const renderOptionGroup = (label, options, currentVal, fnName) => `
+        <div class="space-y-2.5">
+          <label class="block text-sm sm:text-base font-bold text-[#0F172A]">${label}</label>
+          <div class="flex flex-wrap gap-2.5">
+            ${options
+              .map((opt) => {
+                const active = currentVal === opt;
+                return `
+                  <button
+                    type="button"
+                    onclick="${fnName}('${escapeHtml(opt)}')"
+                    class="min-h-[48px] px-4 py-2.5 rounded-xl border-2 font-bold text-sm sm:text-base transition cursor-pointer ${
+                      active
+                        ? 'bg-[#059669] border-[#059669] text-white shadow-xs'
+                        : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-400 hover:bg-[#ECFDF5]/60'
+                    }"
+                  >
+                    ${active ? '✓ ' : ''}${opt}
+                  </button>
+                `;
+              })
+              .join('')}
+          </div>
+        </div>
+      `;
+
+      return `
+        <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-7 space-y-7">
+          <div>
+            <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">🚚 Delivery &amp; Store Facilities</h2>
+            <p class="text-sm text-slate-600 mt-0.5">Tap the options that apply to your Kirana store.</p>
+          </div>
+
+          <!-- Home / Hostel Delivery -->
+          <div class="space-y-3">
+            ${renderOptionGroup('1. Home / Hostel Delivery', ['Free Delivery', 'Paid Delivery', 'Pickup Only'], d.mode, 'setDeliveryMode')}
+            ${
+              d.mode === 'Paid Delivery'
+                ? `
+                  <div class="sm:max-w-xs space-y-1.5 pt-1">
+                    <label class="block text-xs font-bold text-slate-600">Delivery Charge (₹)</label>
+                    <div class="flex items-center">
+                      <span class="min-h-[48px] px-4 flex items-center rounded-l-xl bg-slate-100 border-2 border-r-0 border-slate-200 font-bold text-slate-700">₹</span>
+                      <input
+                        type="number"
+                        value="${escapeHtml(d.paidCharge)}"
+                        placeholder="e.g. 15"
+                        oninput="state.delivery.paidCharge = this.value"
+                        class="w-full min-h-[48px] px-4 py-2 rounded-r-xl bg-white border-2 border-slate-200 font-bold text-base focus:outline-none focus:border-[#059669]"
+                      />
+                    </div>
+                  </div>
+                `
+                : ''
+            }
+          </div>
+
+          <!-- Minimum Order for Delivery -->
+          <div class="space-y-3">
+            ${renderOptionGroup('2. Minimum Order for Delivery (₹)', ['No Minimum', '₹50', '₹100', '₹150'], d.minOrderPreset, 'setMinOrderPreset')}
+            <div class="sm:max-w-xs flex items-center gap-2 pt-1">
+              <span class="text-xs font-bold text-slate-500 whitespace-nowrap">Or custom ₹:</span>
+              <input
+                type="number"
+                value="${escapeHtml(d.minOrderCustom)}"
+                placeholder="e.g. 200"
+                oninput="state.delivery.minOrderCustom = this.value; if(this.value) state.delivery.minOrderPreset = 'Custom';"
+                class="w-32 min-h-[44px] px-3 py-1.5 rounded-xl bg-white border-2 border-slate-200 font-bold text-sm focus:outline-none focus:border-[#059669]"
+              />
+            </div>
+          </div>
+
+          <!-- Delivery Time -->
+          ${renderOptionGroup('3. Delivery Time', ['Within 15–30 mins', 'Within 1 Hour', 'Same Day'], d.deliveryTime, 'setDeliveryTime')}
+
+          <!-- WhatsApp Orders -->
+          ${renderOptionGroup('4. Accept Orders on WhatsApp?', ['Yes — Show WhatsApp Order Button', 'No'], d.whatsappOrders, 'setWhatsappOrders')}
+
+          <!-- Tap-to-Select Feature Chips -->
+          <div class="space-y-3 pt-3 border-t border-slate-100">
+            <label class="block text-sm sm:text-base font-bold text-[#0F172A]">5. Tap Facilities You Offer</label>
+            <div class="flex flex-wrap gap-2.5">
+              ${ALL_FEATURES.map((feat) => {
+                const selected = d.features.includes(feat);
+                return `
+                  <button
+                    type="button"
+                    onclick="toggleFeature('${escapeHtml(feat)}')"
+                    class="min-h-[48px] px-4 py-2.5 rounded-full border-2 font-bold text-sm transition cursor-pointer flex items-center gap-2 ${
+                      selected
+                        ? 'bg-[#ECFDF5] border-[#059669] text-[#065F46]'
+                        : 'bg-white border-slate-200 text-slate-600 hover:border-emerald-300'
+                    }"
+                  >
+                    <span class="text-base leading-none">${selected ? '✓' : '+'}</span>
+                    <span>${feat}</span>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-slate-100">
+            <button
+              type="button"
+              onclick="showToast('Delivery & Facility settings saved!')"
+              class="w-full sm:w-auto min-h-[52px] px-8 py-3 rounded-2xl bg-[#059669] hover:bg-[#047857] text-white font-extrabold text-base shadow-sm cursor-pointer"
+            >
+              ✓ Save Delivery &amp; Facilities
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function setDeliveryMode(v) { state.delivery.mode = v; renderTabContent(); }
+    function setMinOrderPreset(v) { state.delivery.minOrderPreset = v; state.delivery.minOrderCustom = ''; renderTabContent(); }
+    function setDeliveryTime(v) { state.delivery.deliveryTime = v; renderTabContent(); }
+    function setWhatsappOrders(v) { state.delivery.whatsappOrders = v; renderTabContent(); }
+
+    function toggleFeature(feat) {
+      const idx = state.delivery.features.indexOf(feat);
+      if (idx >= 0) state.delivery.features.splice(idx, 1);
+      else state.delivery.features.push(feat);
+      renderTabContent();
+    }
+
+    /* =========================================================================
+       8. TAB 3 — HOURS & NOTICES
+       ========================================================================= */
+    function renderHoursAndNoticesTab() {
+      const isMicActive = state.listeningField === 'noticeText';
+
+      return `
+        <div class="space-y-6">
+          <!-- Weekly Opening Hours -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-6 space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">⏰ Weekly Opening Hours</h2>
+                <p class="text-sm text-slate-600 mt-0.5">Students check timings for morning milk &amp; late-night snacks.</p>
+              </div>
+              <button
+                type="button"
+                onclick="copyMondayHoursToAll()"
+                class="min-h-[48px] px-4 py-2.5 rounded-xl bg-[#ECFDF5] hover:bg-emerald-100 text-[#065F46] border border-emerald-200 font-bold text-sm cursor-pointer"
+              >
+                📋 Copy Monday to All Days
+              </button>
+            </div>
+
+            <div class="space-y-2.5">
+              ${state.hours
+                .map(
+                  (h, idx) => `
+                    <div class="p-3.5 sm:p-4 rounded-2xl border-2 ${
+                      h.open ? 'border-emerald-100 bg-white' : 'border-slate-200 bg-slate-50'
+                    } flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div class="flex items-center justify-between sm:justify-start gap-4 min-w-[190px]">
+                        <span class="font-extrabold text-base text-[#0F172A] w-28">${h.day}</span>
+                        <button
+                          type="button"
+                          onclick="toggleDayOpen(${idx})"
+                          class="min-h-[42px] px-4 py-1.5 rounded-full font-bold text-xs sm:text-sm cursor-pointer ${
+                            h.open ? 'bg-[#059669] text-white' : 'bg-slate-200 text-slate-700'
+                          }"
+                        >
+                          ${h.open ? '✓ Open' : 'Closed'}
+                        </button>
+                      </div>
+
+                      ${
+                        h.open
+                          ? `
+                            <div class="flex items-center gap-2.5 flex-wrap">
+                              <select
+                                onchange="state.hours[${idx}].from = this.value; showToast('Opening hours saved');"
+                                class="min-h-[44px] px-3 py-2 rounded-xl bg-slate-50 border border-slate-300 font-bold text-sm"
+                              >
+                                ${TIME_SLOTS.map((t) => `<option value="${t}" ${h.from === t ? 'selected' : ''}>${t}</option>`).join('')}
+                              </select>
+                              <span class="text-sm font-bold text-slate-400">to</span>
+                              <select
+                                onchange="state.hours[${idx}].to = this.value; showToast('Opening hours saved');"
+                                class="min-h-[44px] px-3 py-2 rounded-xl bg-slate-50 border border-slate-300 font-bold text-sm"
+                              >
+                                ${TIME_SLOTS.map((t) => `<option value="${t}" ${h.to === t ? 'selected' : ''}>${t}</option>`).join('')}
+                              </select>
+                            </div>
+                          `
+                          : `<span class="text-sm font-semibold text-slate-400">Store closed on ${h.day}</span>`
+                      }
+                    </div>
+                  `
+                )
+                .join('')}
+            </div>
+          </div>
+
+          <!-- Post a Shop Notice -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-6 space-y-5">
+            <div>
+              <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">📢 Post a Shop Notice</h2>
+              <p class="text-sm text-slate-600 mt-0.5">Tap a ready-made message or speak using the mic button.</p>
+            </div>
+
+            <div class="space-y-2">
+              <p class="text-xs font-extrabold uppercase tracking-wider text-[#065F46]">⚡ 1-Tap Ready Templates:</p>
+              <div class="grid grid-cols-1 gap-2.5">
+                ${NOTICE_TEMPLATES.map(
+                  (tpl, idx) => `
+                    <button
+                      type="button"
+                      onclick="applyNoticeTemplate(${idx})"
+                      class="text-left p-3.5 rounded-xl bg-[#ECFDF5]/80 hover:bg-emerald-100 border border-emerald-200 text-sm font-bold text-[#0F172A] flex items-center justify-between gap-3 cursor-pointer"
+                    >
+                      <span>"${tpl}"</span>
+                      <span class="px-2.5 py-1 rounded-lg bg-white text-[#065F46] text-xs font-extrabold border border-emerald-200 shrink-0">Tap to Use</span>
+                    </button>
+                  `
+                ).join('')}
+              </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-2.5">
+              <textarea
+                rows="3"
+                placeholder="Type or speak your notice..."
+                oninput="state.noticeDraft = this.value"
+                class="flex-1 p-4 rounded-xl bg-white border-2 border-slate-200 text-base text-[#0F172A] focus:outline-none focus:border-[#059669]"
+              >${escapeHtml(state.noticeDraft)}</textarea>
+              <button
+                type="button"
+                onclick="startVoiceInput('noticeText')"
+                class="min-h-[52px] sm:w-28 rounded-xl border-2 font-bold text-sm flex items-center justify-center gap-1.5 cursor-pointer transition ${
+                  isMicActive
+                    ? 'bg-red-600 border-red-600 text-white mic-pulse'
+                    : 'bg-[#ECFDF5] hover:bg-emerald-100 border-emerald-300 text-[#065F46]'
+                }"
+              >
+                <span class="text-lg">🎙️</span>
+                <span>${isMicActive ? 'Listening' : 'Speak'}</span>
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onclick="postNotice()"
+              class="w-full sm:w-auto min-h-[52px] px-7 py-3 rounded-2xl bg-[#059669] hover:bg-[#047857] text-white font-extrabold text-base shadow-sm cursor-pointer"
+            >
+              📢 Post Notice
+            </button>
+
+            <div class="pt-4 border-t border-slate-100 space-y-3">
+              <h3 class="text-sm font-extrabold uppercase tracking-wider text-slate-500">Active Notices (${state.notices.length})</h3>
+              ${
+                state.notices.length === 0
+                  ? `<p class="text-sm text-slate-500">No active notices right now.</p>`
+                  : state.notices
+                      .map(
+                        (n) => `
+                          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-start justify-between gap-3">
+                            <div>
+                              <p class="text-sm sm:text-base font-bold text-[#0F172A]">${escapeHtml(n.text)}</p>
+                              <p class="text-xs text-slate-500 mt-1">🕒 ${escapeHtml(n.time)}</p>
+                            </div>
+                            <button
+                              type="button"
+                              onclick="deleteNotice('${n.id}')"
+                              class="min-h-[42px] px-3 py-1.5 rounded-xl bg-white hover:bg-red-50 hover:text-red-700 border border-slate-200 text-xs font-bold text-slate-600 cursor-pointer shrink-0"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        `
+                      )
+                      .join('')
+              }
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function toggleDayOpen(idx) {
+      state.hours[idx].open = !state.hours[idx].open;
+      renderTabContent();
+    }
+
+    function copyMondayHoursToAll() {
+      const mon = state.hours[0];
+      state.hours = state.hours.map((d) => ({ ...d, open: mon.open, from: mon.from, to: mon.to }));
+      renderTabContent();
+      showToast('Monday timings copied to all 7 days!');
+    }
+
+    function applyNoticeTemplate(idx) {
+      state.noticeDraft = NOTICE_TEMPLATES[idx];
+      renderTabContent();
+      showToast('Template filled! Tap "Post Notice" to publish.', 'info');
+    }
+
+    function postNotice() {
+      const text = state.noticeDraft.trim();
+      if (!text) {
+        showToast('Please tap a template or type a notice first', 'error');
+        return;
+      }
+      state.notices.unshift({
+        id: 'not_' + Date.now(),
+        text,
+        time: `Today, ${getCurrentTimeLabel()}`
+      });
+      state.noticeDraft = '';
+      renderTabContent();
+      showToast('Notice posted to nearby students!');
+    }
+
+    function deleteNotice(id) {
+      state.notices = state.notices.filter((n) => n.id !== id);
+      renderTabContent();
+      showToast('Notice deleted', 'info');
+    }
+
+    /* =========================================================================
+       9. TAB 4 — SHOP INFO & GPS
+       ========================================================================= */
+    function renderShopInfoTab() {
+      const s = state.shop;
+      const pin = s.mapPin;
+
+      return `
+        <div class="space-y-6">
+          <!-- Shop Details -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-7 space-y-5">
+            <div>
+              <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">Store Details &amp; Contact</h2>
+              <p class="text-sm text-slate-600 mt-0.5">Students use this number for water can &amp; hostel grocery orders.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="space-y-1.5">
+                <label class="block text-sm font-bold text-[#0F172A]">Shop Name</label>
+                <input
+                  type="text"
+                  value="${escapeHtml(s.name)}"
+                  oninput="state.shop.name = this.value; document.getElementById('navShopName').textContent = this.value;"
+                  class="w-full min-h-[50px] px-4 py-2.5 rounded-xl bg-white border-2 border-slate-200 font-bold text-base focus:outline-none focus:border-[#059669]"
+                />
+              </div>
+              <div class="space-y-1.5">
+                <label class="block text-sm font-bold text-[#0F172A]">Owner Name</label>
+                <input
+                  type="text"
+                  value="${escapeHtml(s.ownerName)}"
+                  oninput="state.shop.ownerName = this.value"
+                  class="w-full min-h-[50px] px-4 py-2.5 rounded-xl bg-white border-2 border-slate-200 font-bold text-base focus:outline-none focus:border-[#059669]"
+                />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="space-y-1.5">
+                <label class="block text-sm font-bold text-[#0F172A]">Phone / WhatsApp Number</label>
+                <div class="flex items-center">
+                  <span class="min-h-[50px] px-3.5 flex items-center rounded-l-xl bg-slate-100 border-2 border-r-0 border-slate-200 font-extrabold text-slate-600">+91</span>
+                  <input
+                    type="tel"
+                    value="${escapeHtml(s.phone)}"
+                    oninput="state.shop.phone = this.value"
+                    class="w-full min-h-[50px] px-4 py-2.5 rounded-r-xl bg-white border-2 border-slate-200 font-bold text-base focus:outline-none focus:border-[#059669]"
+                  />
+                </div>
+              </div>
+              <div class="space-y-1.5">
+                <label class="block text-sm font-bold text-[#0F172A]">Full Address &amp; Landmark</label>
+                <input
+                  type="text"
+                  value="${escapeHtml(s.address)}"
+                  oninput="state.shop.address = this.value"
+                  class="w-full min-h-[50px] px-4 py-2.5 rounded-xl bg-white border-2 border-slate-200 font-bold text-base focus:outline-none focus:border-[#059669]"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Snap Photo of Paper Price List / Shop Exterior -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-7 space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">📸 Snap Photo of Paper Price List / Shop Exterior</h2>
+                <p class="text-sm text-slate-600 mt-0.5">Upload a photo of your shop front or rate board so students recognize your store.</p>
+              </div>
+              <label class="min-h-[48px] px-5 py-2.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-sm shadow-sm cursor-pointer inline-flex items-center justify-center gap-2 shrink-0">
+                <span>+ Upload Photos</span>
+                <input type="file" accept="image/*" multiple class="hidden" onchange="handleShopPhotoUpload(event)" />
+              </label>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              ${state.shopPhotos
+                .map(
+                  (p) => `
+                    <div class="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-2xs">
+                      <img
+                        src="${p.url}"
+                        alt="${escapeHtml(p.label)}"
+                        onerror="this.src='https://placehold.co/600x400/ECFDF5/065F46?text=Kirana+Store'"
+                        class="w-full h-44 object-cover bg-emerald-50"
+                      />
+                      <div class="p-3 flex items-center justify-between gap-2">
+                        <span class="text-sm font-bold text-slate-800 truncate">${escapeHtml(p.label)}</span>
+                        <button
+                          type="button"
+                          onclick="deleteShopPhoto('${p.id}')"
+                          class="min-h-[38px] px-3 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 font-bold text-xs cursor-pointer"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  `
+                )
+                .join('')}
+            </div>
+          </div>
+
+          <!-- Interactive Draggable Pin Map -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-7 space-y-5">
+            <div>
+              <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">📍 Shop GPS Location</h2>
+              <p class="text-sm text-slate-600 mt-0.5">Tap GPS, pick a quick landmark, or drag the emerald pin onto your store.</p>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2.5">
+              <button
+                type="button"
+                onclick="useCurrentGps()"
+                class="min-h-[48px] px-5 py-2.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-sm shadow-sm inline-flex items-center gap-2 cursor-pointer"
+              >
+                <span>🎯</span>
+                <span>Use My Current GPS Location</span>
+              </button>
+
+              ${CAMPUS_LANDMARKS.map(
+                (lm, i) => `
+                  <button
+                    type="button"
+                    onclick="jumpToLandmark(${i})"
+                    class="min-h-[48px] px-4 py-2 rounded-xl bg-[#ECFDF5] hover:bg-emerald-100 border border-emerald-200 text-[#065F46] text-xs sm:text-sm font-bold cursor-pointer"
+                  >
+                    📍 ${lm.name}
+                  </button>
+                `
+              ).join('')}
+            </div>
+
+            <div class="rounded-2xl border-2 border-emerald-200 overflow-hidden bg-white">
+              <div class="px-4 py-2.5 bg-[#ECFDF5] border-b border-emerald-100 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
+                <span class="font-bold text-[#065F46]">🗺️ Bholaram Ustad Marg, Indore</span>
+                <span id="mapCoordsLabel" class="font-mono text-xs font-bold text-[#065F46]">${pin.lat.toFixed(4)}° N, ${pin.lng.toFixed(4)}° E</span>
+              </div>
+
+              <div id="kiranaMapCanvas" class="relative w-full h-72 sm:h-80 campus-map-bg select-none touch-none overflow-hidden cursor-crosshair">
+                <svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 800 360" preserveAspectRatio="none">
+                  <path d="M 0 175 Q 250 155 460 172 T 800 142" stroke="#FFFFFF" stroke-width="26" fill="none" />
+                  <path d="M 0 175 Q 250 155 460 172 T 800 142" stroke="#CBD5E1" stroke-width="2" stroke-dasharray="8 8" fill="none" />
+                  <path d="M 185 0 L 230 360" stroke="#FFFFFF" stroke-width="20" fill="none" />
+                  <path d="M 550 158 L 580 360" stroke="#FFFFFF" stroke-width="14" fill="none" />
+                  <path d="M 620 0 L 605 155" stroke="#FFFFFF" stroke-width="16" fill="none" />
+                  <rect x="640" y="22" width="135" height="90" rx="18" fill="#BBF7D0" opacity="0.65" />
+                </svg>
+
+                ${CAMPUS_LANDMARKS.map(
+                  (lm) => `
+                    <div class="absolute -translate-x-1/2 -translate-y-1/2 pointer-events-none flex flex-col items-center" style="left: ${lm.x}%; top: ${lm.y}%;">
+                      <span class="w-2.5 h-2.5 rounded-full bg-slate-500/80 ring-2 ring-white"></span>
+                      <span class="mt-1 px-2.5 py-0.5 rounded-md bg-white/95 text-[11px] font-bold text-slate-700 shadow-2xs whitespace-nowrap border border-slate-200">${lm.name}</span>
+                    </div>
+                  `
+                ).join('')}
+
+                <div id="kiranaMapPin" class="absolute z-20 -translate-x-1/2 -translate-y-full cursor-grab active:cursor-grabbing" style="left: ${pin.x}%; top: ${pin.y}%;">
+                  <div class="flex flex-col items-center">
+                    <div class="px-3 py-1 rounded-xl bg-[#065F46] text-white text-xs font-extrabold shadow-lg whitespace-nowrap border-2 border-white">
+                      🛒 Gupta Kirana
+                    </div>
+                    <div class="w-3.5 h-3.5 bg-[#065F46] rotate-45 -mt-2 border-r-2 border-b-2 border-white"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="px-4 py-3 bg-slate-50 border-t border-emerald-100 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
+                <span id="mapLandmarkLabel" class="font-semibold text-slate-700">📍 ${escapeHtml(pin.landmark)}</span>
+                <button
+                  type="button"
+                  onclick="showToast('Shop Info & GPS Location saved!')"
+                  class="min-h-[44px] px-5 py-2 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs sm:text-sm cursor-pointer"
+                >
+                  ✓ Save Info &amp; GPS
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function handleShopPhotoUpload(event) {
+      const files = Array.from(event.target.files || []);
+      files.forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          state.shopPhotos.unshift({
+            id: 'sp_' + Date.now() + Math.random().toString(36).slice(2, 5),
+            label: file.name.replace(/\.[^/.]+$/, '').slice(0, 26) || 'Store Photo',
+            url: e.target.result
+          });
+          renderTabContent();
+          showToast('Photo uploaded!');
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function deleteShopPhoto(id) {
+      state.shopPhotos = state.shopPhotos.filter((p) => p.id !== id);
+      renderTabContent();
+      showToast('Photo deleted', 'info');
+    }
+
+    function attachMapInteractions() {
+      const canvas = document.getElementById('kiranaMapCanvas');
+      const pinEl = document.getElementById('kiranaMapPin');
+      if (!canvas || !pinEl) return;
+
+      let dragging = false;
+
+      const movePin = (clientX, clientY) => {
+        const rect = canvas.getBoundingClientRect();
+        const xPct = Math.max(8, Math.min(92, ((clientX - rect.left) / rect.width) * 100));
+        const yPct = Math.max(14, Math.min(92, ((clientY - rect.top) / rect.height) * 100));
+
+        const lat = 22.6975 - (yPct / 100) * 0.012;
+        const lng = 75.8590 + (xPct / 100) * 0.018;
+
+        let nearest = CAMPUS_LANDMARKS[0];
+        let minDist = Infinity;
+        CAMPUS_LANDMARKS.forEach((lm) => {
+          const d = Math.hypot(lm.x - xPct, lm.y - yPct);
+          if (d < minDist) { minDist = d; nearest = lm; }
+        });
+
+        state.shop.mapPin = {
+          x: Math.round(xPct),
+          y: Math.round(yPct),
+          lat,
+          lng,
+          landmark: `Near ${nearest.name}`
+        };
+
+        pinEl.style.left = state.shop.mapPin.x + '%';
+        pinEl.style.top = state.shop.mapPin.y + '%';
+
+        const coordsEl = document.getElementById('mapCoordsLabel');
+        if (coordsEl) coordsEl.textContent = `${lat.toFixed(4)}° N, ${lng.toFixed(4)}° E`;
+        const lmEl = document.getElementById('mapLandmarkLabel');
+        if (lmEl) lmEl.textContent = `📍 ${state.shop.mapPin.landmark}`;
+      };
+
+      canvas.addEventListener('pointerdown', (e) => {
+        dragging = true;
+        canvas.setPointerCapture(e.pointerId);
+        movePin(e.clientX, e.clientY);
+      });
+      canvas.addEventListener('pointermove', (e) => {
+        if (dragging) movePin(e.clientX, e.clientY);
+      });
+      canvas.addEventListener('pointerup', () => { dragging = false; });
+      canvas.addEventListener('pointercancel', () => { dragging = false; });
+    }
+
+    function useCurrentGps() {
+      state.shop.mapPin = {
+        x: 46,
+        y: 45,
+        lat: 22.6915,
+        lng: 75.8674,
+        landmark: 'Near Campus Gate 1 (GPS Locked)'
+      };
+      renderTabContent();
+      showToast('GPS location locked near Campus Gate 1, Indore!', 'info');
+    }
+
+    function jumpToLandmark(idx) {
+      const lm = CAMPUS_LANDMARKS[idx];
+      if (!lm) return;
+      state.shop.mapPin = {
+        x: lm.x,
+        y: lm.y,
+        lat: lm.lat,
+        lng: lm.lng,
+        landmark: `Near ${lm.name}`
+      };
+      renderTabContent();
+      showToast(`Pin moved to ${lm.name}`, 'info');
+    }
+
+    /* =========================================================================
+       10. LIVE STUDENT PREVIEW MODAL (INDIGO & BLUE #4F46E5)
+       ========================================================================= */
+    function openStudentPreview() {
+      renderStudentPreviewContent();
+      const modal = document.getElementById('studentPreviewModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeStudentPreview() {
+      const modal = document.getElementById('studentPreviewModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function renderStudentPreviewContent() {
+      const s = state.shop;
+      const d = state.delivery;
+      const mon = state.hours[0];
+      const showWhatsapp = d.whatsappOrders.startsWith('Yes');
+
+      const deliveryBadgeText =
+        d.mode === 'Free Delivery'
+          ? `🚚 Free Delivery (${d.deliveryTime})`
+          : d.mode === 'Paid Delivery'
+          ? `🚚 Delivery ₹${d.paidCharge} (${d.deliveryTime})`
+          : '🏪 Pickup Only';
+
+      const minOrderText =
+        d.minOrderPreset === 'Custom' && d.minOrderCustom
+          ? `Min Order ₹${d.minOrderCustom}`
+          : d.minOrderPreset === 'No Minimum'
+          ? 'No Min Order'
+          : `Min Order ${d.minOrderPreset}`;
+
+      const q = state.studentSearch.trim().toLowerCase();
+      const filteredItems = state.items.filter((item) => {
+        const matchesQ = !q || item.name.toLowerCase().includes(q) || item.unit.toLowerCase().includes(q);
+        const matchesShelf = state.studentShelfFilter === 'All Shelves' || item.shelf === state.studentShelfFilter;
+        return matchesQ && matchesShelf;
+      });
+
+      document.getElementById('studentPreviewBody').innerHTML = `
+        <!-- Store Header Card -->
+        <div class="bg-white rounded-2xl border border-indigo-100 shadow-sm p-5 space-y-4">
+          <div class="flex items-start gap-3.5">
+            <div class="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-3xl shrink-0">
+              🛒
+            </div>
+            <div class="min-w-0">
+              <div class="flex flex-wrap items-center gap-1.5">
+                <span class="px-2.5 py-0.5 rounded-full bg-indigo-50 text-[#4F46E5] text-xs font-extrabold">Kirana &amp; Essentials</span>
+                <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-extrabold">✓ Verified</span>
+                <span class="text-xs font-semibold text-slate-500">• 150 m away</span>
+              </div>
+              <h3 class="text-xl font-extrabold text-slate-900 mt-1">${escapeHtml(s.name)}</h3>
+              <p class="text-sm text-slate-600">📍 ${escapeHtml(s.address)}</p>
+            </div>
+          </div>
+
+          <!-- Open & Delivery Status Badges -->
+          <div class="flex flex-wrap gap-2 pt-2 border-t border-slate-100">
+            <span class="px-3 py-1 rounded-xl bg-emerald-100 text-emerald-800 text-xs font-extrabold">
+              🟢 Open Today (${mon.open ? `${mon.from} – ${mon.to}` : 'Closed'})
+            </span>
+            <span class="px-3 py-1 rounded-xl bg-blue-50 text-blue-800 border border-blue-200 text-xs font-bold">
+              ${escapeHtml(deliveryBadgeText)}
+            </span>
+            ${
+              d.mode !== 'Pickup Only'
+                ? `<span class="px-3 py-1 rounded-xl bg-indigo-50 text-indigo-800 text-xs font-bold">${escapeHtml(minOrderText)}</span>`
+                : ''
+            }
+          </div>
+
+          <!-- Call & Conditional WhatsApp Order Buttons -->
+          <div class="grid ${showWhatsapp ? 'grid-cols-3' : 'grid-cols-2'} gap-2.5">
+            <div class="min-h-[46px] rounded-xl bg-[#4F46E5] text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5">
+              📞 Call
+            </div>
+            ${
+              showWhatsapp
+                ? `
+                  <div class="min-h-[46px] rounded-xl bg-emerald-600 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5">
+                    💬 WhatsApp Order
+                  </div>
+                `
+                : ''
+            }
+            <div class="min-h-[46px] rounded-xl bg-blue-50 text-blue-800 border border-blue-200 font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5">
+              🗺️ Directions
+            </div>
+          </div>
+
+          <!-- Facilities Chips -->
+          <div class="flex flex-wrap gap-1.5">
+            ${d.features
+              .map((f) => `<span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold">✓ ${escapeHtml(f)}</span>`)
+              .join('')}
+          </div>
+        </div>
+
+        <!-- Active Notice Banner -->
+        ${
+          state.notices.length
+            ? `
+              <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 space-y-1">
+                <span class="text-[11px] font-extrabold uppercase tracking-wider text-amber-800">📢 Store Update</span>
+                <p class="text-sm font-bold text-slate-900">${escapeHtml(state.notices[0].text)}</p>
+              </div>
+            `
+            : ''
+        }
+
+        <!-- Student Live Search & Shelf Filter -->
+        <div class="bg-white rounded-2xl border border-indigo-100 p-4 space-y-3">
+          <h4 class="font-extrabold text-slate-900 text-base">🛒 Daily Essentials &amp; Prices (${filteredItems.length})</h4>
+
+          <input
+            type="text"
+            value="${escapeHtml(state.studentSearch)}"
+            placeholder="🔍 Search Maggi, water can, milk..."
+            oninput="state.studentSearch = this.value; renderStudentPreviewContent();"
+            class="w-full min-h-[44px] px-3.5 py-2 rounded-xl bg-slate-50 border-2 border-indigo-100 text-sm font-medium focus:outline-none focus:border-[#4F46E5]"
+          />
+
+          <div class="flex flex-wrap gap-1.5">
+            <button
+              type="button"
+              onclick="state.studentShelfFilter = 'All Shelves'; renderStudentPreviewContent();"
+              class="px-3 py-1.5 rounded-full text-xs font-bold cursor-pointer ${
+                state.studentShelfFilter === 'All Shelves'
+                  ? 'bg-[#4F46E5] text-white'
+                  : 'bg-slate-100 text-slate-700'
+              }"
+            >
+              All
+            </button>
+            ${SHELVES.map(
+              (sh) => `
+                <button
+                  type="button"
+                  onclick="state.studentShelfFilter = '${sh.key}'; renderStudentPreviewContent();"
+                  class="px-3 py-1.5 rounded-full text-xs font-bold cursor-pointer ${
+                    state.studentShelfFilter === sh.key
+                      ? 'bg-[#4F46E5] text-white'
+                      : 'bg-slate-100 text-slate-700'
+                  }"
+                >
+                  ${sh.label}
+                </button>
+              `
+            ).join('')}
+          </div>
+
+          <div class="divide-y divide-slate-100 pt-1">
+            ${
+              filteredItems.length === 0
+                ? `<p class="text-xs text-slate-500 py-2">No matching items found.</p>`
+                : filteredItems
+                    .map(
+                      (item) => `
+                        <div class="py-2.5 first:pt-0 last:pb-0 flex items-center justify-between gap-3 ${item.inStock ? '' : 'opacity-60'}">
+                          <div>
+                            <p class="font-bold text-slate-900 text-sm">${escapeHtml(item.name)}</p>
+                            <div class="flex flex-wrap items-center gap-1.5 mt-0.5">
+                              <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-800">${escapeHtml(item.sellAs)}</span>
+                              <span class="text-xs text-slate-500">${escapeHtml(item.unit)}</span>
+                            </div>
+                          </div>
+                          <div class="text-right shrink-0">
+                            <span class="text-base font-extrabold text-[#4F46E5]">₹${item.price}</span>
+                            <span class="block text-[10px] font-extrabold ${item.inStock ? 'text-emerald-700' : 'text-red-600'}">
+                              ${item.inStock ? 'In Stock' : 'Out of Stock'}
+                            </span>
+                          </div>
+                        </div>
+                      `
+                    )
+                    .join('')
+            }
+          </div>
+        </div>
+
+        <!-- Mini Location & Hours Summary -->
+        <div class="bg-white rounded-2xl border border-indigo-100 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs sm:text-sm">
+          <span class="font-bold text-slate-700">📍 ${escapeHtml(s.mapPin.landmark)} (${s.mapPin.lat.toFixed(4)}° N, ${s.mapPin.lng.toFixed(4)}° E)</span>
+          <span class="font-bold text-indigo-700">🕒 ${mon.open ? `${mon.from} – ${mon.to}` : 'Closed'}</span>
+        </div>
+      `;
+    }
+
+    /* =========================================================================
+       11. INITIALIZE
+       ========================================================================= */
+    renderAll();
+  </script>
+</body>
+</html>

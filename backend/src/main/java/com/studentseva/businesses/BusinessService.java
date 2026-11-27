@@ -15,7 +15,9 @@ import org.locationtech.jts.geom.PrecisionModel;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -51,17 +53,21 @@ public class BusinessService {
         }
 
         // In JTS Geometry: X = Longitude, Y = Latitude
+        Business.Category resolvedCategory = resolveCategory(request);
         Point location = geometryFactory.createPoint(new Coordinate(request.longitude(), request.latitude()));
 
         Business business = new Business();
         business.setOwner(owner);
         business.setName(request.name().trim());
-        business.setCategory(request.category());
+        business.setCategory(resolvedCategory);
         business.setDescription(request.description() != null ? request.description().trim() : null);
         business.setAddress(request.address().trim());
         business.setLocation(location);
         business.setPhone(request.phone() != null ? request.phone().trim() : null);
         business.setWhatsapp(request.whatsapp() != null ? request.whatsapp().trim() : null);
+        if (request.metadata() != null) {
+            business.setMetadata(request.metadata());
+        }
 
         Business saved = businessRepository.save(business);
 
@@ -85,14 +91,41 @@ public class BusinessService {
         Business business = businessRepository.findByOwnerId(owner.getId())
                 .orElseThrow(() -> new NotFoundException("No business listing found for your account."));
 
+        Business.Category resolvedCategory = resolveCategory(request);
         Point location = geometryFactory.createPoint(new Coordinate(request.longitude(), request.latitude()));
         business.setName(request.name().trim());
-        business.setCategory(request.category());
+        business.setCategory(resolvedCategory);
         business.setDescription(request.description() != null ? request.description().trim() : null);
         business.setAddress(request.address().trim());
         business.setLocation(location);
         business.setPhone(request.phone() != null ? request.phone().trim() : null);
         business.setWhatsapp(request.whatsapp() != null ? request.whatsapp().trim() : null);
+        if (request.metadata() != null) {
+            business.setMetadata(request.metadata());
+        }
+
+        Business saved = businessRepository.saveAndFlush(business);
+        return toBusinessResponse(saved);
+    }
+
+    /**
+     * Merges updated category-specific settings/rules into the owner's business metadata JSONB map.
+     */
+    @Transactional
+    public BusinessResponse updateMyBusinessMetadata(Map<String, Object> updates, String ownerEmail) {
+        User owner = userRepository.findByEmail(ownerEmail)
+                .orElseThrow(() -> new NotFoundException("Owner user not found with email: " + ownerEmail));
+
+        Business business = businessRepository.findByOwnerId(owner.getId())
+                .orElseThrow(() -> new NotFoundException("No business listing found for your account."));
+
+        Map<String, Object> merged = business.getMetadata() != null
+                ? new HashMap<>(business.getMetadata())
+                : new HashMap<>();
+        if (updates != null) {
+            merged.putAll(updates);
+        }
+        business.setMetadata(merged);
 
         Business saved = businessRepository.saveAndFlush(business);
         return toBusinessResponse(saved);
@@ -219,6 +252,7 @@ public class BusinessService {
                 b.getOwner().getName(),
                 b.getName(),
                 b.getCategory().name(),
+                b.getCategory().toBusinessType(),
                 b.getDescription(),
                 b.getAddress(),
                 latitude,
@@ -227,9 +261,20 @@ public class BusinessService {
                 b.getWhatsapp(),
                 b.getStatus().name(),
                 b.getVerificationStatus().name(),
+                b.getMetadata() != null ? b.getMetadata() : Map.of(),
                 b.getCreatedAt(),
                 b.getUpdatedAt()
         );
+    }
+
+    private Business.Category resolveCategory(CreateBusinessRequest request) {
+        if (request.businessType() != null && !request.businessType().isBlank()) {
+            return Business.Category.fromBusinessType(request.businessType());
+        }
+        if (request.category() != null) {
+            return request.category();
+        }
+        throw new IllegalArgumentException("Either businessType or category is required.");
     }
 }
 

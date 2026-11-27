@@ -1,0 +1,1629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NearBuzz — Hostels &amp; PGs Vendor Portal (1/6)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: #F4FBF7;
+      color: #0F172A;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .campus-map-bg {
+      background-color: #E8F5EE;
+      background-image:
+        linear-gradient(to right, rgba(5, 150, 105, 0.09) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(5, 150, 105, 0.09) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+    .fade-in {
+      animation: fadeIn 0.2s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .mic-pulse {
+      animation: micPulse 1.2s infinite;
+    }
+    @keyframes micPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.45); }
+      50% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-emerald-200 selection:text-emerald-950">
+
+  <!-- ==================== TOP NAVIGATION BAR ==================== -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-emerald-100 shadow-xs">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+      <!-- Brand Identity -->
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-2xl bg-[#059669] text-white font-extrabold text-base flex items-center justify-center shadow-sm shrink-0">
+          NB
+        </div>
+        <div>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-lg sm:text-xl font-extrabold tracking-tight text-[#0F172A]">NearBuzz</span>
+            <span class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-[#ECFDF5] text-[#047857] border border-emerald-200">
+              🏠 Hostels &amp; PGs Portal (1/6)
+            </span>
+          </div>
+          <p class="text-xs text-slate-500 hidden sm:block mt-0.5">Simple manager for hostel &amp; PG owners</p>
+        </div>
+      </div>
+
+      <!-- Preview Button -->
+      <button
+        onclick="openStudentPreview()"
+        class="min-h-[48px] px-4 sm:px-5 py-2.5 rounded-2xl bg-[#059669] hover:bg-[#047857] active:scale-[0.99] text-white font-bold text-sm shadow-sm transition flex items-center gap-2 cursor-pointer"
+      >
+        <span class="text-base">👀</span>
+        <span>Preview What Students See</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN WORKSPACE ==================== -->
+  <main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-5 sm:py-7 space-y-6">
+
+    <!-- ==================== HEADER SUMMARY STRIP ==================== -->
+    <section id="headerSummaryStrip" class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-6">
+      <!-- Rendered dynamically -->
+    </section>
+
+    <!-- ==================== 4 LARGE CLEAR DASHBOARD TABS ==================== -->
+    <nav class="bg-white rounded-2xl border border-emerald-100 shadow-xs p-2 overflow-x-auto no-scrollbar" aria-label="Hostel dashboard sections">
+      <div id="tabsBar" class="flex items-center gap-2 min-w-max sm:min-w-0 sm:grid sm:grid-cols-4">
+        <!-- Rendered dynamically -->
+      </div>
+    </nav>
+
+    <!-- ==================== ACTIVE TAB CONTENT ==================== -->
+    <section id="tabContent" class="fade-in">
+      <!-- Rendered dynamically -->
+    </section>
+
+  </main>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="mt-auto border-t border-emerald-100 bg-white py-5">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
+      <span><strong>NearBuzz Hostels &amp; PGs Portal (1/6)</strong> — Bholaram Ustad Marg, Indore</span>
+      <span class="text-[#047857] font-semibold">Owner Helpdesk (WhatsApp): +91 98260 00112</span>
+    </div>
+  </footer>
+
+  <!-- ==================== STUDENT PREVIEW MODAL (INDIGO & BLUE THEME) ==================== -->
+  <div id="studentPreviewModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/65 backdrop-blur-xs p-3 sm:p-6 overflow-y-auto">
+    <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl border border-indigo-100 overflow-hidden my-auto max-h-[92vh] flex flex-col fade-in">
+      <!-- Indigo Student App Header -->
+      <div class="bg-gradient-to-r from-indigo-600 to-blue-600 text-white px-5 py-4 flex items-center justify-between gap-3">
+        <div>
+          <span class="inline-block text-[11px] font-bold uppercase tracking-wider bg-white/20 px-2.5 py-0.5 rounded-full">
+            Student App View
+          </span>
+          <h2 class="text-lg sm:text-xl font-extrabold mt-1">How Students See Your Hostel</h2>
+        </div>
+        <button
+          onclick="closeStudentPreview()"
+          aria-label="Close student preview"
+          class="w-11 h-11 rounded-xl bg-white/15 hover:bg-white/25 text-white font-bold text-lg flex items-center justify-center cursor-pointer"
+        >
+          ✕
+        </button>
+      </div>
+
+      <!-- Dynamic Preview Body -->
+      <div id="studentPreviewBody" class="p-4 sm:p-6 overflow-y-auto space-y-5 bg-slate-50">
+        <!-- Populated dynamically -->
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-5 py-3.5 bg-white border-t border-slate-200 flex items-center justify-between gap-3">
+        <span class="text-xs text-slate-500">Changes you make update this student page instantly.</span>
+        <button
+          onclick="closeStudentPreview()"
+          class="min-h-[46px] px-5 py-2.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-sm cursor-pointer"
+        >
+          Back to Owner Portal
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== TOAST NOTIFICATION CONTAINER ==================== -->
+  <div id="toastContainer" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none flex flex-col gap-2 items-center w-[92%] max-w-md"></div>
+
+  <!-- ==================== APPLICATION SCRIPT ==================== -->
+  <script>
+    /* =========================================================================
+       1. CONSTANTS & CAMPUS LANDMARKS
+       ========================================================================= */
+    const ROOM_TYPES = ['Single Room', 'Double Sharing', 'Triple Sharing', 'Dormitory'];
+    const COOLING_TYPES = ['AC', 'Cooler', 'Non-AC'];
+
+    const ALL_FACILITIES = [
+      'High-Speed Wi-Fi',
+      'Attached Bathroom',
+      'Food Included',
+      'RO Drinking Water',
+      'Washing Machine',
+      'Power Backup',
+      'CCTV Security',
+      'Two-Wheeler Parking',
+      'Study Table & Chair',
+      'Hot Water Geyser'
+    ];
+
+    const NOTICE_TEMPLATES = [
+      '2 AC rooms just became vacant!',
+      'Special discount for 1st-year students',
+      'Free room visit available today 10 AM – 7 PM'
+    ];
+
+    const CAMPUS_LANDMARKS = [
+      { name: 'Bholaram Ustad Marg Main Gate', x: 48, y: 48, lat: 22.6914, lng: 75.8676 },
+      { name: 'Bhawarkua Square', x: 22, y: 28, lat: 22.6948, lng: 75.8622 },
+      { name: 'DAVV Takshashila Gate', x: 76, y: 34, lat: 22.6889, lng: 75.8734 },
+      { name: 'Holkar College Road', x: 28, y: 74, lat: 22.6961, lng: 75.8651 },
+      { name: 'Vishnupuri Lane 2', x: 70, y: 72, lat: 22.6897, lng: 75.8708 }
+    ];
+
+    /* =========================================================================
+       2. APPLICATION STATE (PRE-LOADED WITH REALISTIC INDIAN HOSTEL DATA)
+       ========================================================================= */
+    const state = {
+      activeTab: 'rooms', // 'rooms' | 'rules' | 'media' | 'info'
+      addRoomExpanded: true,
+      listeningField: null, // 'roomNote' | 'noticeText' | null
+
+      hostel: {
+        name: 'Shree Sai Boys Hostel & PG',
+        phone: '98261 44510',
+        address: 'Plot 14, Lane 2, Near Bholaram Ustad Marg, Indore',
+        isActive: true,
+        mapPin: {
+          x: 48,
+          y: 48,
+          lat: 22.6914,
+          lng: 75.8676,
+          landmark: 'Near Bholaram Ustad Marg Main Gate'
+        }
+      },
+
+      rules: {
+        forWhom: 'Boys Only',
+        depositType: '1 Month Rent',
+        depositFixedAmount: '5000',
+        electricity: 'Separate (Per Unit)',
+        curfewType: '10:00 PM',
+        curfewCustom: '10:30 PM',
+        facilities: [
+          'High-Speed Wi-Fi',
+          'Attached Bathroom',
+          'Food Included',
+          'RO Drinking Water',
+          'Power Backup',
+          'CCTV Security',
+          'Two-Wheeler Parking',
+          'Study Table & Chair'
+        ]
+      },
+
+      rooms: [
+        {
+          id: 'room_1',
+          type: 'Single Room',
+          cooling: 'AC',
+          rent: 8500,
+          vacantBeds: 2,
+          note: 'Attached bathroom, balcony, study table & cupboard',
+          photos: [
+            { id: 'rp1', url: 'https://placehold.co/480x320/ECFDF5/047857?text=Single+AC+Room' }
+          ]
+        },
+        {
+          id: 'room_2',
+          type: 'Double Sharing',
+          cooling: 'Cooler',
+          rent: 5500,
+          vacantBeds: 3,
+          note: 'Spacious 2-bed room, 3 meals + evening tea included',
+          photos: [
+            { id: 'rp2', url: 'https://placehold.co/480x320/D1FAE5/065F46?text=Double+Cooler+Room' }
+          ]
+        },
+        {
+          id: 'room_3',
+          type: 'Triple Sharing',
+          cooling: 'Non-AC',
+          rent: 4200,
+          vacantBeds: 0,
+          note: 'Budget friendly room near RO water cooler',
+          photos: [
+            { id: 'rp3', url: 'https://placehold.co/480x320/F1F5F9/475569?text=Triple+Sharing+Room' }
+          ]
+        }
+      ],
+
+      // Draft form for "Add a New Room Type"
+      newRoom: {
+        type: 'Double Sharing',
+        cooling: 'AC',
+        rent: '',
+        note: '',
+        vacantBeds: 1,
+        photos: [] // max 3
+      },
+
+      buildingPhotos: [
+        { id: 'bp_1', label: 'Hostel Front Gate', url: 'https://placehold.co/600x400/ECFDF5/047857?text=Hostel+Front+Gate' },
+        { id: 'bp_2', label: 'Clean Dining Hall', url: 'https://placehold.co/600x400/D1FAE5/065F46?text=Mess+%26+Dining+Area' }
+      ],
+
+      notices: [
+        {
+          id: 'not_1',
+          text: '2 AC rooms just became vacant! Walk in anytime between 10 AM – 7 PM for a free room visit.',
+          time: 'Today, 10:15 AM'
+        }
+      ],
+      noticeDraft: ''
+    };
+
+    /* =========================================================================
+       3. UTILITIES (HTML ESCAPE & TOASTS — NO alert() / confirm())
+       ========================================================================= */
+    function escapeHtml(str) {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const el = document.createElement('div');
+      const palette =
+        type === 'error'
+          ? 'bg-red-700 text-white border-red-800'
+          : type === 'info'
+          ? 'bg-slate-900 text-white border-slate-700'
+          : 'bg-[#047857] text-white border-emerald-900';
+
+      el.className = `pointer-events-auto px-4 py-3 rounded-2xl shadow-lg border text-sm font-semibold flex items-center gap-2.5 fade-in ${palette}`;
+      el.innerHTML = `<span>${type === 'error' ? '⚠️' : type === 'info' ? 'ℹ️' : '✅'}</span><span>${escapeHtml(message)}</span>`;
+      container.appendChild(el);
+
+      setTimeout(() => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(8px)';
+        el.style.transition = 'all 0.25s ease';
+        setTimeout(() => el.remove(), 260);
+      }, 2800);
+    }
+
+    /* =========================================================================
+       4. WEB SPEECH API — VOICE TO TEXT (WITH GRACEFUL FALLBACK)
+       ========================================================================= */
+    function startVoiceInput(targetField) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        showToast('Voice typing is not supported in this browser. Please type normally.', 'info');
+        return;
+      }
+
+      try {
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'en-IN';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        state.listeningField = targetField;
+        renderTabContent();
+        showToast('Listening... Speak clearly now', 'info');
+
+        recognition.onresult = (event) => {
+          const spoken = event.results[0][0].transcript;
+          if (targetField === 'roomNote') {
+            state.newRoom.note = state.newRoom.note ? `${state.newRoom.note}, ${spoken}` : spoken;
+          } else if (targetField === 'noticeText') {
+            state.noticeDraft = state.noticeDraft ? `${state.noticeDraft} ${spoken}` : spoken;
+          }
+          state.listeningField = null;
+          renderTabContent();
+          showToast('Voice text added!');
+        };
+
+        recognition.onerror = () => {
+          state.listeningField = null;
+          renderTabContent();
+          showToast('Could not hear clearly. Please tap mic again or type.', 'error');
+        };
+
+        recognition.onend = () => {
+          if (state.listeningField === targetField) {
+            state.listeningField = null;
+            renderTabContent();
+          }
+        };
+
+        recognition.start();
+      } catch (err) {
+        state.listeningField = null;
+        renderTabContent();
+        showToast('Microphone access unavailable. Please type instead.', 'info');
+      }
+    }
+
+    /* =========================================================================
+       5. MASTER RENDER FUNCTIONS
+       ========================================================================= */
+    function renderAll() {
+      renderHeaderSummary();
+      renderTabsBar();
+      renderTabContent();
+    }
+
+    function renderHeaderSummary() {
+      const totalRooms = state.rooms.length;
+      const totalVacantBeds = state.rooms.reduce((sum, r) => sum + (Number(r.vacantBeds) || 0), 0);
+
+      document.getElementById('headerSummaryStrip').innerHTML = `
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+          <!-- Hostel Name & Address -->
+          <div class="flex items-start gap-4">
+            <div class="w-16 h-16 rounded-2xl bg-[#ECFDF5] border border-emerald-200 flex items-center justify-center text-3xl shrink-0">
+              🏠
+            </div>
+            <div class="min-w-0">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ECFDF5] text-[#047857] border border-emerald-200 text-xs font-extrabold">
+                  <span class="w-2 h-2 rounded-full bg-[#059669] animate-pulse"></span>
+                  Active &amp; Visible to Students
+                </span>
+                <span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-bold">
+                  ${escapeHtml(state.rules.forWhom)}
+                </span>
+              </div>
+              <h1 class="text-xl sm:text-2xl font-extrabold text-[#0F172A] mt-1.5 break-words">
+                ${escapeHtml(state.hostel.name)}
+              </h1>
+              <p class="text-sm text-slate-600 mt-0.5 flex items-center gap-1.5">
+                <span>📍</span>
+                <span>${escapeHtml(state.hostel.address)}</span>
+              </p>
+            </div>
+          </div>
+
+          <!-- Quick Summary Counters -->
+          <div class="grid grid-cols-2 gap-3 shrink-0">
+            <div class="rounded-2xl bg-slate-50 border border-slate-200 px-4 py-3 text-center min-w-[136px]">
+              <div class="text-2xl font-extrabold text-[#0F172A]">${totalRooms}</div>
+              <div class="text-xs font-bold text-slate-600 mt-0.5">Room Types Listed</div>
+            </div>
+            <div class="rounded-2xl ${
+              totalVacantBeds > 0
+                ? 'bg-[#ECFDF5] border-emerald-200'
+                : 'bg-red-50 border-red-200'
+            } border px-4 py-3 text-center min-w-[146px]">
+              <div class="text-2xl font-extrabold ${totalVacantBeds > 0 ? 'text-[#047857]' : 'text-red-700'}">
+                ${totalVacantBeds}
+              </div>
+              <div class="text-xs font-bold ${totalVacantBeds > 0 ? 'text-[#047857]' : 'text-red-700'} mt-0.5">
+                Vacant Beds Right Now
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderTabsBar() {
+      const tabs = [
+        { id: 'rooms', icon: '🛏️', label: 'Rooms & Rent', count: state.rooms.length },
+        { id: 'rules', icon: '📋', label: 'Rules & Facilities', count: null },
+        { id: 'media', icon: '📸', label: 'Building Photos & Notice', count: state.notices.length },
+        { id: 'info', icon: '📍', label: 'Shop Info & GPS', count: null }
+      ];
+
+      document.getElementById('tabsBar').innerHTML = tabs
+        .map((t) => {
+          const active = state.activeTab === t.id;
+          return `
+            <button
+              onclick="switchTab('${t.id}')"
+              class="min-h-[52px] px-4 py-2.5 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap ${
+                active
+                  ? 'bg-[#059669] text-white shadow-sm'
+                  : 'bg-white text-slate-700 hover:bg-[#ECFDF5] hover:text-[#047857]'
+              }"
+            >
+              <span class="text-base">${t.icon}</span>
+              <span>${t.label}</span>
+              ${
+                t.count !== null
+                  ? `<span class="px-2 py-0.5 rounded-full text-xs font-extrabold ${
+                      active ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-700'
+                    }">${t.count}</span>`
+                  : ''
+              }
+            </button>
+          `;
+        })
+        .join('');
+    }
+
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+      renderTabsBar();
+      renderTabContent();
+    }
+
+    function renderTabContent() {
+      const container = document.getElementById('tabContent');
+      if (state.activeTab === 'rooms') {
+        container.innerHTML = renderRoomsTab();
+      } else if (state.activeTab === 'rules') {
+        container.innerHTML = renderRulesTab();
+      } else if (state.activeTab === 'media') {
+        container.innerHTML = renderMediaAndNoticeTab();
+      } else if (state.activeTab === 'info') {
+        container.innerHTML = renderInfoAndGpsTab();
+        attachMapInteractions();
+      }
+    }
+
+    /* =========================================================================
+       6. TAB 1 — ROOMS & RENT
+       ========================================================================= */
+    function renderRoomsTab() {
+      const nr = state.newRoom;
+      const isMicActive = state.listeningField === 'roomNote';
+
+      const addRoomCard = `
+        <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm overflow-hidden mb-6">
+          <!-- Expandable Card Header -->
+          <button
+            type="button"
+            onclick="toggleAddRoomCard()"
+            class="w-full px-5 sm:px-6 py-4 bg-[#ECFDF5]/80 hover:bg-[#ECFDF5] flex items-center justify-between gap-3 text-left cursor-pointer border-b border-emerald-100"
+          >
+            <div>
+              <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A] flex items-center gap-2">
+                <span>➕</span> Add a New Room Type
+              </h2>
+              <p class="text-xs sm:text-sm text-slate-600 mt-0.5">Tap room sharing, cooling, enter monthly rent &amp; add room photos</p>
+            </div>
+            <span class="min-h-[40px] px-3.5 rounded-xl bg-white border border-emerald-200 text-[#047857] font-bold text-sm flex items-center">
+              ${state.addRoomExpanded ? 'Hide ▲' : 'Open ▼'}
+            </span>
+          </button>
+
+          ${
+            state.addRoomExpanded
+              ? `
+                <div class="p-5 sm:p-6 space-y-6">
+                  <!-- Room Type Pills -->
+                  <div class="space-y-2.5">
+                    <label class="block text-sm sm:text-base font-bold text-[#0F172A]">1. Room Type</label>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                      ${ROOM_TYPES.map((rt) => {
+                        const active = nr.type === rt;
+                        return `
+                          <button
+                            type="button"
+                            onclick="state.newRoom.type='${rt}'; renderTabContent();"
+                            class="min-h-[50px] px-3 py-2.5 rounded-xl border-2 font-bold text-sm transition cursor-pointer ${
+                              active
+                                ? 'bg-[#059669] border-[#059669] text-white shadow-xs'
+                                : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-400 hover:bg-[#ECFDF5]/60'
+                            }"
+                          >
+                            ${active ? '✓ ' : ''}${rt}
+                          </button>
+                        `;
+                      }).join('')}
+                    </div>
+                  </div>
+
+                  <!-- Cooling Pills -->
+                  <div class="space-y-2.5">
+                    <label class="block text-sm sm:text-base font-bold text-[#0F172A]">2. Cooling</label>
+                    <div class="grid grid-cols-3 gap-2.5 sm:max-w-md">
+                      ${COOLING_TYPES.map((ct) => {
+                        const active = nr.cooling === ct;
+                        return `
+                          <button
+                            type="button"
+                            onclick="state.newRoom.cooling='${ct}'; renderTabContent();"
+                            class="min-h-[50px] px-3 py-2.5 rounded-xl border-2 font-bold text-sm transition cursor-pointer ${
+                              active
+                                ? 'bg-[#059669] border-[#059669] text-white shadow-xs'
+                                : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-400 hover:bg-[#ECFDF5]/60'
+                            }"
+                          >
+                            ${active ? '✓ ' : ''}${ct}
+                          </button>
+                        `;
+                      }).join('')}
+                    </div>
+                  </div>
+
+                  <!-- Monthly Rent & Vacant Beds Stepper -->
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div class="space-y-2">
+                      <label class="block text-sm sm:text-base font-bold text-[#0F172A]">3. Monthly Rent (₹)</label>
+                      <div class="flex items-center">
+                        <span class="min-h-[54px] px-4 flex items-center rounded-l-xl bg-slate-100 border-2 border-r-0 border-slate-200 font-extrabold text-lg text-slate-700">₹</span>
+                        <input
+                          type="number"
+                          min="0"
+                          value="${escapeHtml(nr.rent)}"
+                          placeholder="e.g. 7500"
+                          oninput="state.newRoom.rent = this.value"
+                          class="w-full min-h-[54px] px-4 py-3 rounded-r-xl bg-white border-2 border-slate-200 text-lg font-extrabold text-[#0F172A] focus:outline-none focus:border-[#059669]"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="space-y-2">
+                      <label class="block text-sm sm:text-base font-bold text-[#0F172A]">4. Vacant Beds Right Now</label>
+                      <div class="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onclick="adjustNewRoomBeds(-1)"
+                          class="w-14 h-[54px] rounded-xl bg-slate-100 hover:bg-slate-200 border-2 border-slate-200 text-2xl font-extrabold text-slate-800 cursor-pointer"
+                          aria-label="Decrease vacant beds"
+                        >−</button>
+                        <div class="flex-1 h-[54px] rounded-xl bg-[#ECFDF5] border-2 border-emerald-200 flex items-center justify-center text-2xl font-extrabold text-[#047857]">
+                          ${nr.vacantBeds}
+                        </div>
+                        <button
+                          type="button"
+                          onclick="adjustNewRoomBeds(1)"
+                          class="w-14 h-[54px] rounded-xl bg-emerald-100 hover:bg-emerald-200 border-2 border-emerald-300 text-2xl font-extrabold text-[#047857] cursor-pointer"
+                          aria-label="Increase vacant beds"
+                        >+</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Extra Note with Voice-to-Text Mic -->
+                  <div class="space-y-2">
+                    <label class="block text-sm sm:text-base font-bold text-[#0F172A]">5. Extra Note (Optional)</label>
+                    <div class="flex items-center gap-2.5">
+                      <input
+                        type="text"
+                        value="${escapeHtml(nr.note)}"
+                        placeholder="e.g. Attached bathroom, balcony, study table"
+                        oninput="state.newRoom.note = this.value"
+                        class="flex-1 min-h-[52px] px-4 py-3 rounded-xl bg-white border-2 border-slate-200 text-sm sm:text-base font-medium text-[#0F172A] focus:outline-none focus:border-[#059669]"
+                      />
+                      <button
+                        type="button"
+                        onclick="startVoiceInput('roomNote')"
+                        title="Speak to type"
+                        aria-label="Voice to text for room note"
+                        class="min-w-[52px] h-[52px] px-3.5 rounded-xl border-2 font-bold text-sm flex items-center justify-center gap-1.5 cursor-pointer transition ${
+                          isMicActive
+                            ? 'bg-red-600 border-red-600 text-white mic-pulse'
+                            : 'bg-[#ECFDF5] hover:bg-emerald-100 border-emerald-300 text-[#047857]'
+                        }"
+                      >
+                        <span class="text-lg">🎙️</span>
+                        <span class="hidden sm:inline">${isMicActive ? 'Listening...' : 'Speak'}</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Per-Room Photo Upload (1 to 3 photos via FileReader) -->
+                  <div class="space-y-2.5">
+                    <div class="flex items-center justify-between">
+                      <label class="block text-sm sm:text-base font-bold text-[#0F172A]">6. Room Photos (1 to 3 photos)</label>
+                      <span class="text-xs font-bold text-slate-500">${nr.photos.length}/3 added</span>
+                    </div>
+
+                    <div class="p-4 rounded-2xl border-2 border-dashed border-emerald-300 bg-[#ECFDF5]/40 space-y-3">
+                      <div class="flex flex-wrap items-center gap-3">
+                        ${nr.photos
+                          .map(
+                            (p, idx) => `
+                              <div class="relative w-24 h-24 rounded-xl overflow-hidden border-2 border-emerald-200 bg-white shadow-2xs">
+                                <img src="${p.url}" alt="Room preview" class="w-full h-full object-cover" />
+                                <button
+                                  type="button"
+                                  onclick="removeNewRoomPhoto(${idx})"
+                                  aria-label="Remove photo"
+                                  class="absolute top-1 right-1 w-6 h-6 rounded-full bg-red-600 text-white text-xs font-extrabold flex items-center justify-center shadow cursor-pointer"
+                                >✕</button>
+                              </div>
+                            `
+                          )
+                          .join('')}
+
+                        ${
+                          nr.photos.length < 3
+                            ? `
+                              <label class="min-h-[96px] px-5 py-3 rounded-xl bg-white hover:bg-emerald-50 border-2 border-emerald-200 text-[#047857] font-bold text-sm flex flex-col items-center justify-center gap-1 cursor-pointer transition">
+                                <span class="text-2xl">📷</span>
+                                <span>+ Select Room Photos</span>
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  multiple
+                                  class="hidden"
+                                  onchange="handleNewRoomPhotoFiles(event)"
+                                />
+                              </label>
+                            `
+                            : ''
+                        }
+                      </div>
+                      <p class="text-xs text-slate-600">Upload real photos of this room (bed, window, washroom) so students trust your listing.</p>
+                    </div>
+                  </div>
+
+                  <!-- Submit Button -->
+                  <button
+                    type="button"
+                    onclick="addNewRoom()"
+                    class="w-full sm:w-auto min-h-[54px] px-8 py-3.5 rounded-2xl bg-[#059669] hover:bg-[#047857] active:scale-[0.99] text-white font-extrabold text-base shadow-sm transition cursor-pointer"
+                  >
+                    + Add Room
+                  </button>
+                </div>
+              `
+              : ''
+          }
+        </div>
+      `;
+
+      // Listed Rooms Section
+      const listedRoomsHtml = `
+        <div class="space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2 px-1">
+            <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">Your Listed Rooms (${state.rooms.length})</h2>
+            <span class="text-xs sm:text-sm font-medium text-slate-500">Use − / + anytime to update vacant beds live</span>
+          </div>
+
+          ${
+            state.rooms.length === 0
+              ? `
+                <div class="bg-white rounded-2xl border border-dashed border-emerald-300 p-10 text-center">
+                  <p class="text-3xl mb-2">🛏️</p>
+                  <p class="font-bold text-slate-800">No rooms listed yet</p>
+                  <p class="text-sm text-slate-500 mt-1">Add your first room above to show up to nearby students.</p>
+                </div>
+              `
+              : state.rooms
+                  .map((room) => {
+                    const isFull = room.vacantBeds <= 0;
+                    return `
+                      <div class="bg-white rounded-2xl border-2 ${
+                        isFull ? 'border-slate-200' : 'border-emerald-100'
+                      } shadow-sm p-5 space-y-4">
+                        <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                          <!-- Left: Room Title, Cooling, Rent & Note -->
+                          <div class="space-y-2 flex-1 min-w-0">
+                            <div class="flex flex-wrap items-center gap-2">
+                              <h3 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">
+                                ${escapeHtml(room.type)}
+                              </h3>
+                              <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold ${
+                                room.cooling === 'AC'
+                                  ? 'bg-sky-100 text-sky-800'
+                                  : room.cooling === 'Cooler'
+                                  ? 'bg-teal-100 text-teal-800'
+                                  : 'bg-slate-100 text-slate-700'
+                              }">
+                                ${room.cooling === 'AC' ? '❄️ AC' : room.cooling === 'Cooler' ? '💨 Cooler' : '🌀 Non-AC'}
+                              </span>
+                              <span class="px-3 py-0.5 rounded-full text-xs font-extrabold ${
+                                isFull
+                                  ? 'bg-red-100 text-red-700'
+                                  : 'bg-[#ECFDF5] text-[#047857] border border-emerald-200'
+                              }">
+                                ${isFull ? 'Full' : `${room.vacantBeds} ${room.vacantBeds === 1 ? 'Bed' : 'Beds'} Vacant`}
+                              </span>
+                            </div>
+
+                            <div class="text-xl sm:text-2xl font-extrabold text-[#047857]">
+                              ₹${Number(room.rent).toLocaleString('en-IN')}
+                              <span class="text-xs font-semibold text-slate-500">/ month</span>
+                            </div>
+
+                            ${room.note ? `<p class="text-sm text-slate-600">${escapeHtml(room.note)}</p>` : ''}
+                          </div>
+
+                          <!-- Right: Live Vacant Beds Stepper + Copy & Delete -->
+                          <div class="flex flex-wrap items-center gap-2.5 shrink-0">
+                            <div class="flex items-center gap-1.5 bg-slate-50 border-2 border-slate-200 rounded-2xl p-1.5">
+                              <button
+                                type="button"
+                                onclick="adjustListedRoomBeds('${room.id}', -1)"
+                                class="w-11 h-11 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-xl font-extrabold text-slate-800 cursor-pointer"
+                                aria-label="Decrease vacant beds"
+                              >−</button>
+                              <div class="px-2.5 text-center min-w-[76px]">
+                                <div class="text-lg font-extrabold ${isFull ? 'text-red-600' : 'text-[#047857]'} leading-none">${room.vacantBeds}</div>
+                                <div class="text-[10px] font-bold text-slate-500 mt-0.5">Vacant Beds</div>
+                              </div>
+                              <button
+                                type="button"
+                                onclick="adjustListedRoomBeds('${room.id}', 1)"
+                                class="w-11 h-11 rounded-xl bg-[#ECFDF5] hover:bg-emerald-200 border border-emerald-300 text-xl font-extrabold text-[#047857] cursor-pointer"
+                                aria-label="Increase vacant beds"
+                              >+</button>
+                            </div>
+
+                            <button
+                              type="button"
+                              onclick="duplicateRoom('${room.id}')"
+                              class="min-h-[48px] px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-emerald-50 hover:text-[#047857] text-slate-700 font-bold text-sm cursor-pointer transition"
+                              title="Duplicate room for fast entry"
+                            >
+                              📋 Copy
+                            </button>
+
+                            <button
+                              type="button"
+                              onclick="deleteRoom('${room.id}')"
+                              class="min-h-[48px] px-3.5 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 font-bold text-sm cursor-pointer transition"
+                              aria-label="Delete room"
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                        </div>
+
+                        <!-- Room Photo Thumbnails + Inline "+ Add Photo" -->
+                        <div class="pt-3 border-t border-slate-100 flex flex-wrap items-center gap-2.5">
+                          ${room.photos
+                            .map(
+                              (ph) => `
+                                <div class="relative w-20 h-16 rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
+                                  <img
+                                    src="${ph.url}"
+                                    alt="${escapeHtml(room.type)} photo"
+                                    onerror="this.src='https://placehold.co/300x200/ECFDF5/047857?text=Room'"
+                                    class="w-full h-full object-cover"
+                                  />
+                                  <button
+                                    type="button"
+                                    onclick="deleteListedRoomPhoto('${room.id}', '${ph.id}')"
+                                    aria-label="Delete room photo"
+                                    class="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-slate-900/75 text-white text-[10px] font-bold flex items-center justify-center cursor-pointer"
+                                  >✕</button>
+                                </div>
+                              `
+                            )
+                            .join('')}
+
+                          ${
+                            room.photos.length < 3
+                              ? `
+                                <label class="h-16 px-3.5 rounded-xl bg-[#ECFDF5] hover:bg-emerald-100 border border-dashed border-emerald-400 text-[#047857] font-bold text-xs flex items-center gap-1.5 cursor-pointer transition">
+                                  <span>📷</span>
+                                  <span>+ Add Photo</span>
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    class="hidden"
+                                    onchange="addPhotoToListedRoom('${room.id}', event)"
+                                  />
+                                </label>
+                              `
+                              : `<span class="text-xs font-semibold text-slate-400">Max 3 photos added</span>`
+                          }
+                        </div>
+                      </div>
+                    `;
+                  })
+                  .join('')
+          }
+        </div>
+      `;
+
+      return addRoomCard + listedRoomsHtml;
+    }
+
+    function toggleAddRoomCard() {
+      state.addRoomExpanded = !state.addRoomExpanded;
+      renderTabContent();
+    }
+
+    function adjustNewRoomBeds(delta) {
+      state.newRoom.vacantBeds = Math.max(0, state.newRoom.vacantBeds + delta);
+      renderTabContent();
+    }
+
+    function handleNewRoomPhotoFiles(event) {
+      const files = Array.from(event.target.files || []);
+      const remaining = 3 - state.newRoom.photos.length;
+      const toRead = files.slice(0, remaining);
+
+      toRead.forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          state.newRoom.photos.push({
+            id: 'nrp_' + Date.now() + Math.random().toString(36).slice(2, 6),
+            url: e.target.result
+          });
+          renderTabContent();
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function removeNewRoomPhoto(index) {
+      state.newRoom.photos.splice(index, 1);
+      renderTabContent();
+    }
+
+    function addNewRoom() {
+      const rentNum = parseFloat(state.newRoom.rent);
+      if (isNaN(rentNum) || rentNum <= 0) {
+        showToast('Please enter a valid Monthly Rent in ₹', 'error');
+        return;
+      }
+
+      const defaultPhoto = {
+        id: 'rp_' + Date.now(),
+        url: `https://placehold.co/480x320/ECFDF5/047857?text=${encodeURIComponent(state.newRoom.type + ' ' + state.newRoom.cooling)}`
+      };
+
+      state.rooms.unshift({
+        id: 'room_' + Date.now(),
+        type: state.newRoom.type,
+        cooling: state.newRoom.cooling,
+        rent: rentNum,
+        vacantBeds: state.newRoom.vacantBeds,
+        note: state.newRoom.note.trim(),
+        photos: state.newRoom.photos.length ? [...state.newRoom.photos] : [defaultPhoto]
+      });
+
+      // Reset form
+      state.newRoom = {
+        type: 'Double Sharing',
+        cooling: 'AC',
+        rent: '',
+        note: '',
+        vacantBeds: 1,
+        photos: []
+      };
+
+      renderAll();
+      showToast('New room added to your hostel!');
+    }
+
+    function adjustListedRoomBeds(roomId, delta) {
+      const room = state.rooms.find((r) => r.id === roomId);
+      if (!room) return;
+      room.vacantBeds = Math.max(0, room.vacantBeds + delta);
+      renderHeaderSummary();
+      renderTabContent();
+    }
+
+    function duplicateRoom(roomId) {
+      const room = state.rooms.find((r) => r.id === roomId);
+      if (!room) return;
+      const copy = {
+        ...room,
+        id: 'room_' + Date.now(),
+        photos: room.photos.map((p) => ({ ...p, id: 'rp_' + Date.now() + Math.random().toString(36).slice(2, 5) }))
+      };
+      state.rooms.unshift(copy);
+      renderAll();
+      showToast(`Copied "${room.type}" — edit rent or beds anytime!`);
+    }
+
+    function deleteRoom(roomId) {
+      state.rooms = state.rooms.filter((r) => r.id !== roomId);
+      renderAll();
+      showToast('Room removed from your list', 'info');
+    }
+
+    function addPhotoToListedRoom(roomId, event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const room = state.rooms.find((r) => r.id === roomId);
+      if (!room || room.photos.length >= 3) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        room.photos.push({
+          id: 'rp_' + Date.now(),
+          url: e.target.result
+        });
+        renderTabContent();
+        showToast('Room photo uploaded!');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function deleteListedRoomPhoto(roomId, photoId) {
+      const room = state.rooms.find((r) => r.id === roomId);
+      if (!room) return;
+      room.photos = room.photos.filter((p) => p.id !== photoId);
+      renderTabContent();
+    }
+
+    /* =========================================================================
+       7. TAB 2 — RULES & FACILITIES
+       ========================================================================= */
+    function renderRulesTab() {
+      const r = state.rules;
+
+      const renderOptionGroup = (label, options, currentVal, onSelectFn) => `
+        <div class="space-y-2.5">
+          <label class="block text-sm sm:text-base font-bold text-[#0F172A]">${label}</label>
+          <div class="flex flex-wrap gap-2.5">
+            ${options
+              .map((opt) => {
+                const active = currentVal === opt;
+                return `
+                  <button
+                    type="button"
+                    onclick="${onSelectFn}('${escapeHtml(opt)}')"
+                    class="min-h-[48px] px-4 py-2.5 rounded-xl border-2 font-bold text-sm sm:text-base transition cursor-pointer ${
+                      active
+                        ? 'bg-[#059669] border-[#059669] text-white shadow-xs'
+                        : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-400 hover:bg-[#ECFDF5]/60'
+                    }"
+                  >
+                    ${active ? '✓ ' : ''}${opt}
+                  </button>
+                `;
+              })
+              .join('')}
+          </div>
+        </div>
+      `;
+
+      return `
+        <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-7 space-y-7">
+          <div>
+            <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">Hostel Rules &amp; Facilities</h2>
+            <p class="text-sm text-slate-600 mt-0.5">Just tap the buttons that match your hostel. No complicated forms.</p>
+          </div>
+
+          ${renderOptionGroup('1. For Whom', ['Boys Only', 'Girls Only', 'Co-ed'], r.forWhom, 'setRuleForWhom')}
+
+          <!-- Security Deposit -->
+          <div class="space-y-3">
+            ${renderOptionGroup('2. Security Deposit', ['None', '1 Month Rent', '2 Months Rent', 'Fixed Amount'], r.depositType, 'setRuleDeposit')}
+            ${
+              r.depositType === 'Fixed Amount'
+                ? `
+                  <div class="sm:max-w-xs flex items-center pt-1">
+                    <span class="min-h-[50px] px-4 flex items-center rounded-l-xl bg-slate-100 border-2 border-r-0 border-slate-200 font-bold text-slate-700">₹</span>
+                    <input
+                      type="number"
+                      value="${escapeHtml(r.depositFixedAmount)}"
+                      placeholder="e.g. 5000"
+                      oninput="state.rules.depositFixedAmount = this.value"
+                      class="w-full min-h-[50px] px-4 py-2.5 rounded-r-xl bg-white border-2 border-slate-200 font-bold text-base focus:outline-none focus:border-[#059669]"
+                    />
+                  </div>
+                `
+                : ''
+            }
+          </div>
+
+          ${renderOptionGroup('3. Electricity Bill', ['Included in Rent', 'Separate (Per Unit)'], r.electricity, 'setRuleElectricity')}
+
+          <!-- Gate Closing Time -->
+          <div class="space-y-3">
+            ${renderOptionGroup('4. Gate Closing Time (Curfew)', ['No Curfew', '10:00 PM', '11:00 PM', 'Custom'], r.curfewType, 'setRuleCurfew')}
+            ${
+              r.curfewType === 'Custom'
+                ? `
+                  <input
+                    type="text"
+                    value="${escapeHtml(r.curfewCustom)}"
+                    placeholder="e.g. 9:30 PM"
+                    oninput="state.rules.curfewCustom = this.value"
+                    class="w-full sm:max-w-xs min-h-[50px] px-4 py-2.5 rounded-xl bg-white border-2 border-slate-200 font-bold text-base focus:outline-none focus:border-[#059669]"
+                  />
+                `
+                : ''
+            }
+          </div>
+
+          <!-- Tap-to-Select Facility Chips -->
+          <div class="space-y-3 pt-2 border-t border-slate-100">
+            <label class="block text-sm sm:text-base font-bold text-[#0F172A]">5. Tap Facilities Available in Your Hostel</label>
+            <div class="flex flex-wrap gap-2.5">
+              ${ALL_FACILITIES.map((fac) => {
+                const selected = r.facilities.includes(fac);
+                return `
+                  <button
+                    type="button"
+                    onclick="toggleFacility('${escapeHtml(fac)}')"
+                    class="min-h-[48px] px-4 py-2.5 rounded-full border-2 font-bold text-sm transition cursor-pointer flex items-center gap-2 ${
+                      selected
+                        ? 'bg-[#ECFDF5] border-[#059669] text-[#047857] shadow-2xs'
+                        : 'bg-white border-slate-200 text-slate-600 hover:border-emerald-300'
+                    }"
+                  >
+                    <span class="text-base leading-none">${selected ? '✓' : '+'}</span>
+                    <span>${fac}</span>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          </div>
+
+          <!-- Save Button -->
+          <div class="pt-4 border-t border-slate-100">
+            <button
+              type="button"
+              onclick="saveRulesAndFacilities()"
+              class="w-full sm:w-auto min-h-[54px] px-8 py-3.5 rounded-2xl bg-[#059669] hover:bg-[#047857] text-white font-extrabold text-base shadow-sm cursor-pointer"
+            >
+              ✓ Save Rules &amp; Facilities
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function setRuleForWhom(val) { state.rules.forWhom = val; renderHeaderSummary(); renderTabContent(); }
+    function setRuleDeposit(val) { state.rules.depositType = val; renderTabContent(); }
+    function setRuleElectricity(val) { state.rules.electricity = val; renderTabContent(); }
+    function setRuleCurfew(val) { state.rules.curfewType = val; renderTabContent(); }
+
+    function toggleFacility(fac) {
+      const idx = state.rules.facilities.indexOf(fac);
+      if (idx >= 0) state.rules.facilities.splice(idx, 1);
+      else state.rules.facilities.push(fac);
+      renderTabContent();
+    }
+
+    function saveRulesAndFacilities() {
+      renderHeaderSummary();
+      showToast('Rules & Facilities saved and updated for students!');
+    }
+
+    /* =========================================================================
+       8. TAB 3 — BUILDING PHOTOS & NOTICE
+       ========================================================================= */
+    function renderMediaAndNoticeTab() {
+      const isMicActive = state.listeningField === 'noticeText';
+
+      return `
+        <div class="space-y-6">
+          <!-- Building & Common Area Photos -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-6 space-y-5">
+            <div>
+              <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">Building &amp; Common Area Photos</h2>
+              <p class="text-sm text-slate-600 mt-0.5">Add clear photos of your front gate, hallway, and mess/dining area.</p>
+            </div>
+
+            <div class="border-2 border-dashed border-emerald-300 rounded-2xl bg-[#ECFDF5]/40 p-6 text-center space-y-3">
+              <div class="text-3xl">🏢</div>
+              <label class="min-h-[50px] px-6 py-3 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-sm sm:text-base shadow-sm cursor-pointer inline-flex items-center gap-2">
+                <span>📷 Upload Building Photos</span>
+                <input type="file" accept="image/*" multiple class="hidden" onchange="handleBuildingPhotoUpload(event)" />
+              </label>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              ${state.buildingPhotos
+                .map(
+                  (p) => `
+                    <div class="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-2xs">
+                      <img
+                        src="${p.url}"
+                        alt="${escapeHtml(p.label)}"
+                        onerror="this.src='https://placehold.co/600x400/ECFDF5/047857?text=Hostel+Photo'"
+                        class="w-full h-44 object-cover bg-emerald-50"
+                      />
+                      <div class="p-3 flex items-center justify-between gap-2">
+                        <span class="text-sm font-bold text-slate-800 truncate">${escapeHtml(p.label)}</span>
+                        <button
+                          type="button"
+                          onclick="deleteBuildingPhoto('${p.id}')"
+                          class="min-h-[38px] px-3 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 font-bold text-xs cursor-pointer"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  `
+                )
+                .join('')}
+            </div>
+          </div>
+
+          <!-- Post a Notice for Students -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-6 space-y-5">
+            <div>
+              <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">Post a Notice for Students</h2>
+              <p class="text-sm text-slate-600 mt-0.5">Tap any ready-made message below or speak using the mic button.</p>
+            </div>
+
+            <!-- 3 One-Tap Ready Templates -->
+            <div class="space-y-2">
+              <p class="text-xs font-extrabold uppercase tracking-wider text-[#047857]">⚡ 1-Tap Ready Messages:</p>
+              <div class="grid grid-cols-1 gap-2.5">
+                ${NOTICE_TEMPLATES.map(
+                  (tpl, idx) => `
+                    <button
+                      type="button"
+                      onclick="applyNoticeTemplate(${idx})"
+                      class="text-left p-3.5 rounded-xl bg-[#ECFDF5]/80 hover:bg-emerald-100 border border-emerald-200 text-sm font-bold text-[#0F172A] flex items-center justify-between gap-3 cursor-pointer transition"
+                    >
+                      <span>"${tpl}"</span>
+                      <span class="px-2.5 py-1 rounded-lg bg-white text-[#047857] text-xs font-extrabold border border-emerald-200 shrink-0">Tap to Use</span>
+                    </button>
+                  `
+                ).join('')}
+              </div>
+            </div>
+
+            <!-- Textbox + Voice-to-Text Mic -->
+            <div class="space-y-2">
+              <label class="block text-sm font-bold text-[#0F172A]">Your Notice Message</label>
+              <div class="flex flex-col sm:flex-row gap-2.5">
+                <textarea
+                  rows="3"
+                  placeholder="Type or speak your announcement..."
+                  oninput="state.noticeDraft = this.value"
+                  class="flex-1 p-4 rounded-xl bg-white border-2 border-slate-200 text-base text-[#0F172A] focus:outline-none focus:border-[#059669]"
+                >${escapeHtml(state.noticeDraft)}</textarea>
+                <button
+                  type="button"
+                  onclick="startVoiceInput('noticeText')"
+                  class="min-h-[52px] sm:w-28 rounded-xl border-2 font-bold text-sm flex items-center justify-center gap-1.5 cursor-pointer transition ${
+                    isMicActive
+                      ? 'bg-red-600 border-red-600 text-white mic-pulse'
+                      : 'bg-[#ECFDF5] hover:bg-emerald-100 border-emerald-300 text-[#047857]'
+                  }"
+                >
+                  <span class="text-lg">🎙️</span>
+                  <span>${isMicActive ? 'Listening' : 'Speak'}</span>
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onclick="postNotice()"
+              class="w-full sm:w-auto min-h-[52px] px-7 py-3 rounded-2xl bg-[#059669] hover:bg-[#047857] text-white font-extrabold text-base shadow-sm cursor-pointer"
+            >
+              📢 Post Notice
+            </button>
+
+            <!-- Live Notices List -->
+            <div class="pt-4 border-t border-slate-100 space-y-3">
+              <h3 class="text-sm font-extrabold uppercase tracking-wider text-slate-500">Live Notices (${state.notices.length})</h3>
+              ${
+                state.notices.length === 0
+                  ? `<p class="text-sm text-slate-500">No notices posted yet.</p>`
+                  : state.notices
+                      .map(
+                        (n) => `
+                          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-start justify-between gap-3">
+                            <div>
+                              <p class="text-sm sm:text-base font-bold text-[#0F172A]">${escapeHtml(n.text)}</p>
+                              <p class="text-xs text-slate-500 mt-1">🕒 ${escapeHtml(n.time)}</p>
+                            </div>
+                            <button
+                              type="button"
+                              onclick="deleteNotice('${n.id}')"
+                              class="min-h-[40px] px-3 py-1.5 rounded-xl bg-white hover:bg-red-50 hover:text-red-700 border border-slate-200 text-xs font-bold text-slate-600 cursor-pointer shrink-0"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        `
+                      )
+                      .join('')
+              }
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function handleBuildingPhotoUpload(event) {
+      const files = Array.from(event.target.files || []);
+      files.forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          state.buildingPhotos.unshift({
+            id: 'bp_' + Date.now() + Math.random().toString(36).slice(2, 5),
+            label: file.name.replace(/\.[^/.]+$/, '').slice(0, 26) || 'Building Photo',
+            url: e.target.result
+          });
+          renderTabContent();
+          showToast('Building photo added!');
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function deleteBuildingPhoto(id) {
+      state.buildingPhotos = state.buildingPhotos.filter((p) => p.id !== id);
+      renderTabContent();
+      showToast('Photo removed', 'info');
+    }
+
+    function applyNoticeTemplate(idx) {
+      state.noticeDraft = NOTICE_TEMPLATES[idx];
+      renderTabContent();
+      showToast('Template filled! Tap "Post Notice" to publish.', 'info');
+    }
+
+    function postNotice() {
+      const text = state.noticeDraft.trim();
+      if (!text) {
+        showToast('Please tap a template or type a notice first', 'error');
+        return;
+      }
+      state.notices.unshift({
+        id: 'not_' + Date.now(),
+        text,
+        time: 'Just Now'
+      });
+      state.noticeDraft = '';
+      renderTabsBar();
+      renderTabContent();
+      showToast('Notice posted to nearby students!');
+    }
+
+    function deleteNotice(id) {
+      state.notices = state.notices.filter((n) => n.id !== id);
+      renderTabsBar();
+      renderTabContent();
+      showToast('Notice deleted', 'info');
+    }
+
+    /* =========================================================================
+       9. TAB 4 — SHOP INFO & INTERACTIVE MAP PIN PICKER
+       ========================================================================= */
+    function renderInfoAndGpsTab() {
+      const h = state.hostel;
+      const pin = h.mapPin;
+
+      return `
+        <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-7 space-y-6">
+          <div>
+            <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">Hostel Details &amp; Map GPS Pin</h2>
+            <p class="text-sm text-slate-600 mt-0.5">Keep your phone number and map pin accurate so students can walk straight to your gate.</p>
+          </div>
+
+          <!-- Basic Inputs -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-1.5">
+              <label class="block text-sm font-bold text-[#0F172A]">Hostel / PG Name</label>
+              <input
+                type="text"
+                value="${escapeHtml(h.name)}"
+                oninput="state.hostel.name = this.value; renderHeaderSummary();"
+                class="w-full min-h-[52px] px-4 py-3 rounded-xl bg-white border-2 border-slate-200 font-bold text-base text-[#0F172A] focus:outline-none focus:border-[#059669]"
+              />
+            </div>
+
+            <div class="space-y-1.5">
+              <label class="block text-sm font-bold text-[#0F172A]">Owner Phone / WhatsApp Number</label>
+              <div class="flex items-center">
+                <span class="min-h-[52px] px-3.5 flex items-center rounded-l-xl bg-slate-100 border-2 border-r-0 border-slate-200 font-extrabold text-slate-600">+91</span>
+                <input
+                  type="tel"
+                  value="${escapeHtml(h.phone)}"
+                  oninput="state.hostel.phone = this.value"
+                  class="w-full min-h-[52px] px-4 py-3 rounded-r-xl bg-white border-2 border-slate-200 font-bold text-base text-[#0F172A] focus:outline-none focus:border-[#059669]"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="block text-sm font-bold text-[#0F172A]">Full Address &amp; Nearby Landmark</label>
+            <input
+              type="text"
+              value="${escapeHtml(h.address)}"
+              oninput="state.hostel.address = this.value; renderHeaderSummary();"
+              class="w-full min-h-[52px] px-4 py-3 rounded-xl bg-white border-2 border-slate-200 font-bold text-base text-[#0F172A] focus:outline-none focus:border-[#059669]"
+            />
+          </div>
+
+          <!-- GPS Button -->
+          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-1">
+            <button
+              type="button"
+              onclick="useCurrentGps()"
+              class="min-h-[52px] px-5 py-3 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-sm sm:text-base shadow-sm flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <span>🎯</span>
+              <span>Use My Current GPS Location</span>
+            </button>
+            <span class="text-xs sm:text-sm text-slate-600">Or click / drag the green pin anywhere on the map below.</span>
+          </div>
+
+          <!-- Interactive Campus Map (Bholaram Ustad Marg, Indore) -->
+          <div class="rounded-2xl border-2 border-emerald-200 overflow-hidden bg-white">
+            <div class="px-4 py-2.5 bg-[#ECFDF5] border-b border-emerald-100 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
+              <span class="font-bold text-[#047857]">🗺️ Bholaram Ustad Marg, Indore</span>
+              <span id="mapCoordsLabel" class="font-mono text-xs font-bold text-[#047857]">${pin.lat.toFixed(4)}° N, ${pin.lng.toFixed(4)}° E</span>
+            </div>
+
+            <div id="hostelMapCanvas" class="relative w-full h-72 sm:h-80 campus-map-bg select-none touch-none overflow-hidden cursor-crosshair">
+              <!-- Stylized Roads -->
+              <svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 800 360" preserveAspectRatio="none">
+                <path d="M 0 175 Q 250 155 460 172 T 800 142" stroke="#FFFFFF" stroke-width="26" fill="none" />
+                <path d="M 0 175 Q 250 155 460 172 T 800 142" stroke="#CBD5E1" stroke-width="2" stroke-dasharray="8 8" fill="none" />
+                <path d="M 185 0 L 230 360" stroke="#FFFFFF" stroke-width="20" fill="none" />
+                <path d="M 550 158 L 580 360" stroke="#FFFFFF" stroke-width="14" fill="none" />
+                <path d="M 620 0 L 605 155" stroke="#FFFFFF" stroke-width="16" fill="none" />
+                <rect x="640" y="22" width="135" height="90" rx="18" fill="#BBF7D0" opacity="0.65" />
+              </svg>
+
+              <!-- Landmark Markers -->
+              ${CAMPUS_LANDMARKS.map(
+                (lm) => `
+                  <div class="absolute -translate-x-1/2 -translate-y-1/2 pointer-events-none flex flex-col items-center" style="left: ${lm.x}%; top: ${lm.y}%;">
+                    <span class="w-2.5 h-2.5 rounded-full bg-slate-500/80 ring-2 ring-white"></span>
+                    <span class="mt-1 px-2 py-0.5 rounded-md bg-white/95 text-[10px] sm:text-[11px] font-bold text-slate-700 shadow-2xs whitespace-nowrap border border-slate-200">${lm.name}</span>
+                  </div>
+                `
+              ).join('')}
+
+              <!-- Draggable Hostel Pin -->
+              <div id="hostelMapPin" class="absolute z-20 -translate-x-1/2 -translate-y-full cursor-grab active:cursor-grabbing" style="left: ${pin.x}%; top: ${pin.y}%;">
+                <div class="flex flex-col items-center">
+                  <div class="px-3 py-1 rounded-xl bg-[#047857] text-white text-xs font-extrabold shadow-lg whitespace-nowrap border-2 border-white">
+                    🏠 Your Hostel
+                  </div>
+                  <div class="w-3.5 h-3.5 bg-[#047857] rotate-45 -mt-2 border-r-2 border-b-2 border-white"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="px-4 py-3 bg-slate-50 border-t border-emerald-100 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
+              <span id="mapLandmarkLabel" class="font-semibold text-slate-700">📍 ${escapeHtml(pin.landmark)}</span>
+              <button
+                type="button"
+                onclick="showToast('Hostel Info & GPS Pin saved!')"
+                class="min-h-[42px] px-4 py-2 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs sm:text-sm cursor-pointer"
+              >
+                ✓ Save Shop Info &amp; GPS
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function attachMapInteractions() {
+      const canvas = document.getElementById('hostelMapCanvas');
+      const pinEl = document.getElementById('hostelMapPin');
+      if (!canvas || !pinEl) return;
+
+      let dragging = false;
+
+      const movePin = (clientX, clientY) => {
+        const rect = canvas.getBoundingClientRect();
+        const xPct = Math.max(8, Math.min(92, ((clientX - rect.left) / rect.width) * 100));
+        const yPct = Math.max(14, Math.min(92, ((clientY - rect.top) / rect.height) * 100));
+
+        const lat = 22.6975 - (yPct / 100) * 0.012;
+        const lng = 75.8590 + (xPct / 100) * 0.018;
+
+        let nearest = CAMPUS_LANDMARKS[0];
+        let minDist = Infinity;
+        CAMPUS_LANDMARKS.forEach((lm) => {
+          const d = Math.hypot(lm.x - xPct, lm.y - yPct);
+          if (d < minDist) { minDist = d; nearest = lm; }
+        });
+
+        state.hostel.mapPin = {
+          x: Math.round(xPct),
+          y: Math.round(yPct),
+          lat,
+          lng,
+          landmark: `Near ${nearest.name}`
+        };
+
+        pinEl.style.left = state.hostel.mapPin.x + '%';
+        pinEl.style.top = state.hostel.mapPin.y + '%';
+
+        const coordsEl = document.getElementById('mapCoordsLabel');
+        if (coordsEl) coordsEl.textContent = `${lat.toFixed(4)}° N, ${lng.toFixed(4)}° E`;
+        const lmEl = document.getElementById('mapLandmarkLabel');
+        if (lmEl) lmEl.textContent = `📍 ${state.hostel.mapPin.landmark}`;
+      };
+
+      canvas.addEventListener('pointerdown', (e) => {
+        dragging = true;
+        canvas.setPointerCapture(e.pointerId);
+        movePin(e.clientX, e.clientY);
+      });
+      canvas.addEventListener('pointermove', (e) => {
+        if (dragging) movePin(e.clientX, e.clientY);
+      });
+      canvas.addEventListener('pointerup', () => { dragging = false; });
+      canvas.addEventListener('pointercancel', () => { dragging = false; });
+    }
+
+    function useCurrentGps() {
+      state.hostel.mapPin = {
+        x: 49,
+        y: 48,
+        lat: 22.6915,
+        lng: 75.8678,
+        landmark: 'Near Bholaram Ustad Marg Main Gate (GPS Locked)'
+      };
+      renderTabContent();
+      showToast('GPS location locked near Bholaram Ustad Marg, Indore!', 'info');
+    }
+
+    /* =========================================================================
+       10. LIVE STUDENT PREVIEW MODAL (INDIGO & BLUE THEME)
+       ========================================================================= */
+    function openStudentPreview() {
+      const h = state.hostel;
+      const r = state.rules;
+      const curfewDisplay = r.curfewType === 'Custom' ? r.curfewCustom : r.curfewType;
+      const depositDisplay = r.depositType === 'Fixed Amount' ? `₹${r.depositFixedAmount} Deposit` : `${r.depositType} Deposit`;
+
+      document.getElementById('studentPreviewBody').innerHTML = `
+        <!-- Hostel Overview Card -->
+        <div class="bg-white rounded-2xl border border-indigo-100 shadow-sm p-5 space-y-4">
+          <div class="flex items-start gap-3.5">
+            <div class="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-3xl shrink-0">
+              🏠
+            </div>
+            <div class="min-w-0">
+              <div class="flex flex-wrap items-center gap-1.5">
+                <span class="px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-xs font-extrabold">Hostels &amp; PGs</span>
+                <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-extrabold">✓ Verified</span>
+                <span class="text-xs font-semibold text-slate-500">• 300 m away</span>
+              </div>
+              <h3 class="text-xl font-extrabold text-slate-900 mt-1">${escapeHtml(h.name)}</h3>
+              <p class="text-sm text-slate-600">📍 ${escapeHtml(h.address)}</p>
+            </div>
+          </div>
+
+          <!-- Rules Badges -->
+          <div class="flex flex-wrap gap-2 pt-2 border-t border-slate-100">
+            <span class="px-3 py-1 rounded-xl bg-blue-50 text-blue-800 text-xs font-bold">👤 ${escapeHtml(r.forWhom)}</span>
+            <span class="px-3 py-1 rounded-xl bg-indigo-50 text-indigo-800 text-xs font-bold">🌙 Curfew: ${escapeHtml(curfewDisplay)}</span>
+            <span class="px-3 py-1 rounded-xl bg-amber-50 text-amber-800 text-xs font-bold">⚡ Electricity: ${escapeHtml(r.electricity)}</span>
+            <span class="px-3 py-1 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold">🔐 ${escapeHtml(depositDisplay)}</span>
+          </div>
+
+          <!-- Student Action Buttons -->
+          <div class="grid grid-cols-3 gap-2.5 pt-1">
+            <div class="min-h-[46px] rounded-xl bg-indigo-600 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5">
+              📞 Call
+            </div>
+            <div class="min-h-[46px] rounded-xl bg-emerald-600 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5">
+              💬 WhatsApp
+            </div>
+            <div class="min-h-[46px] rounded-xl bg-blue-50 text-blue-800 border border-blue-200 font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5">
+              🗺️ Directions
+            </div>
+          </div>
+
+          <!-- Facility Chips -->
+          ${
+            r.facilities.length
+              ? `
+                <div class="flex flex-wrap gap-1.5 pt-1">
+                  ${r.facilities
+                    .map((f) => `<span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold">✓ ${escapeHtml(f)}</span>`)
+                    .join('')}
+                </div>
+              `
+              : ''
+          }
+        </div>
+
+        <!-- Active Notices -->
+        ${
+          state.notices.length
+            ? `
+              <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 space-y-1">
+                <span class="text-[11px] font-extrabold uppercase tracking-wider text-amber-800">📢 Owner Notice</span>
+                <p class="text-sm font-bold text-slate-900">${escapeHtml(state.notices[0].text)}</p>
+              </div>
+            `
+            : ''
+        }
+
+        <!-- Rooms & Live Availability -->
+        <div class="space-y-3">
+          <h4 class="text-base font-extrabold text-slate-900 px-1">🛏️ Available Rooms &amp; Monthly Rent</h4>
+          ${state.rooms
+            .map((room) => {
+              const isFull = room.vacantBeds <= 0;
+              return `
+                <div class="bg-white rounded-2xl border border-indigo-100 shadow-xs p-4 space-y-3">
+                  <div class="flex items-start justify-between gap-3">
+                    <div>
+                      <div class="flex flex-wrap items-center gap-1.5">
+                        <span class="font-extrabold text-slate-900 text-base">${escapeHtml(room.type)}</span>
+                        <span class="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold">${escapeHtml(room.cooling)}</span>
+                      </div>
+                      ${room.note ? `<p class="text-xs text-slate-600 mt-1">${escapeHtml(room.note)}</p>` : ''}
+                    </div>
+                    <div class="text-right shrink-0">
+                      <div class="text-lg font-extrabold text-indigo-700">₹${Number(room.rent).toLocaleString('en-IN')}</div>
+                      <div class="text-[11px] text-slate-500">per month</div>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center justify-between gap-2 pt-2 border-t border-slate-100">
+                    <span class="px-2.5 py-1 rounded-lg text-xs font-extrabold ${
+                      isFull ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-800'
+                    }">
+                      ${isFull ? '🔴 Full' : `🟢 ${room.vacantBeds} ${room.vacantBeds === 1 ? 'Bed' : 'Beds'} Vacant`}
+                    </span>
+                    ${
+                      room.photos.length
+                        ? `
+                          <div class="flex items-center gap-1.5">
+                            ${room.photos
+                              .map((p) => `<img src="${p.url}" alt="Room" class="w-12 h-10 rounded-lg object-cover border border-slate-200" />`)
+                              .join('')}
+                          </div>
+                        `
+                        : ''
+                    }
+                  </div>
+                </div>
+              `;
+            })
+            .join('')}
+        </div>
+      `;
+
+      const modal = document.getElementById('studentPreviewModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeStudentPreview() {
+      const modal = document.getElementById('studentPreviewModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    /* =========================================================================
+       11. INITIALIZE
+       ========================================================================= */
+    renderAll();
+  </script>
+</body>
+</html>

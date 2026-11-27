@@ -3,6 +3,7 @@ package com.studentseva.businesses;
 import com.studentseva.businesses.dto.BusinessResponse;
 import com.studentseva.businesses.dto.CreateBusinessRequest;
 import com.studentseva.businesses.dto.NearbyBusinessResponse;
+import com.studentseva.businesses.dto.UpdateBusinessMetadataRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -53,6 +54,15 @@ public class BusinessController {
             Authentication authentication
     ) {
         return ResponseEntity.ok(businessService.updateMyBusiness(request, authentication.getName()));
+    }
+
+    @PatchMapping("/my/metadata")
+    @Operation(summary = "Merge category-specific rules, facilities, or settings into the vendor's business metadata")
+    public ResponseEntity<BusinessResponse> updateMyBusinessMetadata(
+            @Valid @RequestBody UpdateBusinessMetadataRequest request,
+            Authentication authentication
+    ) {
+        return ResponseEntity.ok(businessService.updateMyBusinessMetadata(request.metadata(), authentication.getName()));
     }
 
     @GetMapping

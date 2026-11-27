@@ -1,0 +1,1868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NearBuzz — Mess &amp; Tiffin Vendor Portal (2/6)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: #F4FBF7;
+      color: #0F172A;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .campus-map-bg {
+      background-color: #E8F5EE;
+      background-image:
+        linear-gradient(to right, rgba(5, 150, 105, 0.09) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(5, 150, 105, 0.09) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+    .fade-in {
+      animation: fadeIn 0.2s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .mic-pulse {
+      animation: micPulse 1.2s infinite;
+    }
+    @keyframes micPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.45); }
+      50% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-emerald-200 selection:text-emerald-950">
+
+  <!-- ==================== TOP NAVIGATION BAR ==================== -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-emerald-100 shadow-xs">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+      <!-- Brand Identity -->
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-2xl bg-[#059669] text-white font-extrabold text-base flex items-center justify-center shadow-sm shrink-0">
+          NB
+        </div>
+        <div>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-lg sm:text-xl font-extrabold tracking-tight text-[#0F172A]">NearBuzz</span>
+            <span class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-[#ECFDF5] text-[#047857] border border-emerald-200">
+              🍛 2/6 Mess &amp; Tiffin
+            </span>
+          </div>
+          <p class="text-xs text-slate-500 hidden sm:block mt-0.5">Simple daily manager for mess &amp; tiffin owners</p>
+        </div>
+      </div>
+
+      <!-- Right Controls: Open/Closed Toggle + Student Preview -->
+      <div class="flex items-center gap-2 sm:gap-2.5 flex-wrap">
+        <button
+          id="topShopStatusBtn"
+          onclick="toggleShopOpenToday()"
+          class="min-h-[46px] px-3.5 sm:px-4 py-2 rounded-2xl font-bold text-xs sm:text-sm border-2 transition flex items-center gap-2 cursor-pointer"
+        >
+          <!-- Populated dynamically -->
+        </button>
+
+        <button
+          onclick="openStudentPreview()"
+          class="min-h-[46px] px-3.5 sm:px-5 py-2 rounded-2xl bg-[#059669] hover:bg-[#047857] active:scale-[0.99] text-white font-bold text-xs sm:text-sm shadow-sm transition flex items-center gap-2 cursor-pointer"
+        >
+          <span class="text-base">👀</span>
+          <span class="hidden sm:inline">Preview What Students See</span>
+          <span class="sm:hidden">Preview</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN WORKSPACE ==================== -->
+  <main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-5 sm:py-7 space-y-6">
+
+    <!-- ==================== MESS SUMMARY STRIP ==================== -->
+    <section id="headerSummaryStrip" class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-6">
+      <!-- Populated dynamically -->
+    </section>
+
+    <!-- ==================== 5 LARGE CLEAR NAVIGATION TABS ==================== -->
+    <nav class="bg-white rounded-2xl border border-emerald-100 shadow-xs p-2 overflow-x-auto no-scrollbar" aria-label="Mess dashboard navigation">
+      <div id="tabsBar" class="flex items-center gap-2 min-w-max lg:min-w-0 lg:grid lg:grid-cols-5">
+        <!-- Populated dynamically -->
+      </div>
+    </nav>
+
+    <!-- ==================== ACTIVE TAB PANEL ==================== -->
+    <section id="tabContent" class="fade-in">
+      <!-- Populated dynamically -->
+    </section>
+
+  </main>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="mt-auto border-t border-emerald-100 bg-white py-5">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
+      <span><strong>NearBuzz Mess &amp; Tiffin Portal (2/6)</strong> — Bholaram Ustad Marg, Indore</span>
+      <span class="text-[#047857] font-semibold">Owner Helpdesk (WhatsApp): +91 98260 00112</span>
+    </div>
+  </footer>
+
+  <!-- ==================== STUDENT PREVIEW MODAL (INDIGO & BLUE #4F46E5) ==================== -->
+  <div id="studentPreviewModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/65 backdrop-blur-xs p-3 sm:p-6 overflow-y-auto">
+    <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl border border-indigo-100 overflow-hidden my-auto max-h-[92vh] flex flex-col fade-in">
+      <!-- Indigo Header -->
+      <div class="bg-gradient-to-r from-[#4F46E5] to-blue-600 text-white px-5 py-4 flex items-center justify-between gap-3">
+        <div>
+          <span class="inline-block text-[11px] font-bold uppercase tracking-wider bg-white/20 px-2.5 py-0.5 rounded-full">
+            Student App View
+          </span>
+          <h2 class="text-lg sm:text-xl font-extrabold mt-1">How Students See Your Mess &amp; Tiffin</h2>
+        </div>
+        <button
+          onclick="closeStudentPreview()"
+          aria-label="Close student preview"
+          class="w-11 h-11 rounded-xl bg-white/15 hover:bg-white/25 text-white font-bold text-lg flex items-center justify-center cursor-pointer"
+        >
+          ✕
+        </button>
+      </div>
+
+      <!-- Dynamic Preview Body -->
+      <div id="studentPreviewBody" class="p-4 sm:p-6 overflow-y-auto space-y-5 bg-slate-50">
+        <!-- Populated dynamically -->
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-5 py-3.5 bg-white border-t border-slate-200 flex items-center justify-between gap-3">
+        <span class="text-xs text-slate-500">Every menu &amp; photo edit updates this student view live.</span>
+        <button
+          onclick="closeStudentPreview()"
+          class="min-h-[46px] px-5 py-2.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-sm cursor-pointer"
+        >
+          Back to Owner Portal
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== TOAST NOTIFICATION CONTAINER ==================== -->
+  <div id="toastContainer" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none flex flex-col gap-2 items-center w-[92%] max-w-md"></div>
+
+  <!-- ==================== APPLICATION SCRIPT ==================== -->
+  <script>
+    /* =========================================================================
+       1. CONSTANTS, QUICK TAGS, TIMING SLOTS & LANDMARKS
+       ========================================================================= */
+    const SPECIAL_DISH_CHIPS = [
+      'Shahi Paneer',
+      'Gulab Jamun',
+      'Chole Bhature',
+      'Dal Baati',
+      'Kheer / Halwa',
+      'Veg Biryani'
+    ];
+
+    const BILLING_CYCLES = ['Per Month', 'Per Week', 'Per Plate'];
+
+    const ALL_FACILITIES = [
+      'Free Hostel Delivery',
+      'Unlimited Roti',
+      'Home-Style Food',
+      'Pause Plan on Holidays',
+      'Sunday Special',
+      'RO Drinking Water',
+      'Clean Dining Hall',
+      'UPI Accepted'
+    ];
+
+    const NOTICE_TEMPLATES = [
+      'Sunday Special: Paneer Butter Masala + Gulab Jamun in Lunch!',
+      'Mess will remain closed for Sunday Dinner.',
+      'New month tiffin registrations open — call to book.'
+    ];
+
+    const LUNCH_SLOTS = ['11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM', '01:00 PM', '02:00 PM', '02:30 PM', '03:00 PM', '03:30 PM'];
+    const DINNER_SLOTS = ['06:30 PM', '07:00 PM', '07:30 PM', '08:00 PM', '09:00 PM', '09:30 PM', '10:00 PM', '10:30 PM', '11:00 PM'];
+
+    const CAMPUS_LANDMARKS = [
+      { name: 'Bholaram Ustad Marg Main Gate', x: 48, y: 48, lat: 22.6914, lng: 75.8676 },
+      { name: 'Bhawarkua Square', x: 22, y: 28, lat: 22.6948, lng: 75.8622 },
+      { name: 'DAVV Takshashila Gate', x: 76, y: 34, lat: 22.6889, lng: 75.8734 },
+      { name: 'Holkar College Road', x: 28, y: 74, lat: 22.6961, lng: 75.8651 },
+      { name: 'Vishnupuri Lane 2', x: 70, y: 72, lat: 22.6897, lng: 75.8708 }
+    ];
+
+    const DAYS_LIST = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+    /* =========================================================================
+       2. APPLICATION STATE (PRE-LOADED WITH REALISTIC INDORE MESS DATA)
+       ========================================================================= */
+    const state = {
+      activeTab: 'menu', // 'menu' | 'plans' | 'facilities' | 'timings' | 'info'
+      addPlanExpanded: true,
+      listeningField: null, // 'lunchMenu' | 'dinnerMenu' | 'planName' | 'noticeText' | null
+
+      shop: {
+        name: 'Maa Annapurna Pure Veg Mess & Tiffin',
+        ownerName: 'Smt. Sunita Sharma',
+        phone: '98265 77219',
+        address: 'Shop 4, Ground Floor, Near Bholaram Ustad Marg, Indore',
+        isOpenToday: true,
+        bookingStatus: 'Taking Orders Now', // 'Taking Orders Now' | 'Lunch Sold Out' | 'Dinner Sold Out'
+        mapPin: {
+          x: 52,
+          y: 49,
+          lat: 22.6912,
+          lng: 75.8680,
+          landmark: 'Near Bholaram Ustad Marg Main Gate'
+        }
+      },
+
+      todayMenu: {
+        lunch: {
+          items: 'Dal Tadka, Jeera Rice, Aloo Gobhi, 5 Butter Roti, Green Salad & Chaas',
+          specialDish: 'Shahi Paneer',
+          photoUrl: 'https://placehold.co/640x400/ECFDF5/047857?text=Today+Lunch+Veg+Thali',
+          photoTime: 'Uploaded Today, 12:15 PM',
+          publishedAt: 'Published Today, 12:15 PM'
+        },
+        dinner: {
+          items: 'Matar Paneer, Mix Dal, 5 Tawa Roti, Steamed Rice & Suji Halwa',
+          specialDish: 'Gulab Jamun',
+          photoUrl: 'https://placehold.co/640x400/D1FAE5/065F46?text=Today+Dinner+Special+Thali',
+          photoTime: 'Uploaded Today, 6:50 PM',
+          publishedAt: 'Published Today, 6:50 PM'
+        }
+      },
+
+      plans: [
+        {
+          id: 'plan_1',
+          name: 'Full Month (Lunch + Dinner)',
+          price: 3200,
+          cycle: 'Per Month',
+          included: 'Unlimited Roti, 2 Sabzi, Dal, Rice, Sunday Special',
+          popular: true,
+          active: true
+        },
+        {
+          id: 'plan_2',
+          name: 'Only Dinner Tiffin',
+          price: 1800,
+          cycle: 'Per Month',
+          included: '5 Roti, 1 Dry Sabzi, Dal, Rice, Free Hostel Delivery',
+          popular: false,
+          active: true
+        },
+        {
+          id: 'plan_3',
+          name: 'Single Trial Thali',
+          price: 70,
+          cycle: 'Per Plate',
+          included: '5 Roti, Dal, Sabzi, Rice, Salad',
+          popular: false,
+          active: true
+        }
+      ],
+
+      newPlan: {
+        name: '',
+        price: '',
+        cycle: 'Per Month',
+        included: '',
+        popular: false
+      },
+
+      settings: {
+        foodType: 'Pure Veg',
+        serviceMode: 'Both',
+        weeklyOff: 'Sunday Dinner Off',
+        trialAvailable: 'Yes',
+        trialPrice: '70',
+        facilities: [
+          'Free Hostel Delivery',
+          'Unlimited Roti',
+          'Home-Style Food',
+          'Pause Plan on Holidays',
+          'Sunday Special',
+          'RO Drinking Water',
+          'Clean Dining Hall',
+          'UPI Accepted'
+        ]
+      },
+
+      schedule: DAYS_LIST.map((day, idx) => ({
+        day,
+        lunchOpen: true,
+        lunchFrom: '12:00 PM',
+        lunchTo: '02:30 PM',
+        dinnerOpen: idx === 6 ? false : true, // Sunday dinner off by default
+        dinnerFrom: '07:30 PM',
+        dinnerTo: '10:00 PM'
+      })),
+
+      notices: [
+        {
+          id: 'not_1',
+          text: 'Sunday Special: Paneer Butter Masala + Gulab Jamun in Lunch!',
+          time: 'Today, 10:30 AM'
+        }
+      ],
+      noticeDraft: '',
+
+      shopPhotos: [
+        { id: 'sp_1', label: 'Paper Rate Card / Menu Board', url: 'https://placehold.co/600x400/ECFDF5/047857?text=Mess+Rate+Card+Board' },
+        { id: 'sp_2', label: 'Clean Hygienic Kitchen', url: 'https://placehold.co/600x400/D1FAE5/065F46?text=Hygienic+Kitchen+%26+Hall' }
+      ]
+    };
+
+    /* =========================================================================
+       3. UTILITIES (ESCAPE, TIME FORMAT, TOASTS)
+       ========================================================================= */
+    function escapeHtml(str) {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function getCurrentTimeLabel() {
+      const now = new Date();
+      return now.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true });
+    }
+
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const el = document.createElement('div');
+      const palette =
+        type === 'error'
+          ? 'bg-red-700 text-white border-red-800'
+          : type === 'info'
+          ? 'bg-slate-900 text-white border-slate-700'
+          : 'bg-[#047857] text-white border-emerald-900';
+
+      el.className = `pointer-events-auto px-4 py-3 rounded-2xl shadow-lg border text-sm font-semibold flex items-center gap-2.5 fade-in ${palette}`;
+      el.innerHTML = `<span>${type === 'error' ? '⚠️' : type === 'info' ? 'ℹ️' : '✅'}</span><span>${escapeHtml(message)}</span>`;
+      container.appendChild(el);
+
+      setTimeout(() => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(8px)';
+        el.style.transition = 'all 0.25s ease';
+        setTimeout(() => el.remove(), 260);
+      }, 2800);
+    }
+
+    /* =========================================================================
+       4. WEB SPEECH API — VOICE TO TEXT (WITH GRACEFUL FALLBACK)
+       ========================================================================= */
+    function startVoiceInput(targetField) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        showToast('Voice typing is not supported in this browser. Please type normally.', 'info');
+        return;
+      }
+
+      try {
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'en-IN';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        state.listeningField = targetField;
+        renderTabContent();
+        showToast('Listening... Speak clearly now', 'info');
+
+        recognition.onresult = (event) => {
+          const spoken = event.results[0][0].transcript;
+          if (targetField === 'lunchMenu') {
+            state.todayMenu.lunch.items = state.todayMenu.lunch.items
+              ? `${state.todayMenu.lunch.items}, ${spoken}`
+              : spoken;
+          } else if (targetField === 'dinnerMenu') {
+            state.todayMenu.dinner.items = state.todayMenu.dinner.items
+              ? `${state.todayMenu.dinner.items}, ${spoken}`
+              : spoken;
+          } else if (targetField === 'planName') {
+            state.newPlan.name = state.newPlan.name ? `${state.newPlan.name} ${spoken}` : spoken;
+          } else if (targetField === 'noticeText') {
+            state.noticeDraft = state.noticeDraft ? `${state.noticeDraft} ${spoken}` : spoken;
+          }
+          state.listeningField = null;
+          renderTabContent();
+          showToast('Voice text added!');
+        };
+
+        recognition.onerror = () => {
+          state.listeningField = null;
+          renderTabContent();
+          showToast('Could not hear clearly. Tap mic again or type normally.', 'error');
+        };
+
+        recognition.onend = () => {
+          if (state.listeningField === targetField) {
+            state.listeningField = null;
+            renderTabContent();
+          }
+        };
+
+        recognition.start();
+      } catch (e) {
+        state.listeningField = null;
+        renderTabContent();
+        showToast('Microphone unavailable. Please type instead.', 'info');
+      }
+    }
+
+    /* =========================================================================
+       5. MASTER RENDER FUNCTIONS
+       ========================================================================= */
+    function renderAll() {
+      renderTopStatusButton();
+      renderHeaderSummary();
+      renderTabsBar();
+      renderTabContent();
+    }
+
+    function renderTopStatusButton() {
+      const btn = document.getElementById('topShopStatusBtn');
+      const isOpen = state.shop.isOpenToday;
+      btn.className = `min-h-[46px] px-3.5 sm:px-4 py-2 rounded-2xl font-bold text-xs sm:text-sm border-2 transition flex items-center gap-2 cursor-pointer ${
+        isOpen
+          ? 'bg-[#ECFDF5] hover:bg-emerald-100 border-[#059669] text-[#047857]'
+          : 'bg-amber-50 hover:bg-amber-100 border-amber-400 text-amber-900'
+      }`;
+      btn.innerHTML = `
+        <span class="w-2.5 h-2.5 rounded-full ${isOpen ? 'bg-[#059669] animate-pulse' : 'bg-amber-500'}"></span>
+        <span>${isOpen ? 'Open Today' : 'Closed Today'}</span>
+      `;
+    }
+
+    function toggleShopOpenToday() {
+      state.shop.isOpenToday = !state.shop.isOpenToday;
+      renderTopStatusButton();
+      renderHeaderSummary();
+      showToast(
+        state.shop.isOpenToday ? 'Your Mess is marked Open Today!' : 'Your Mess is marked Closed Today.',
+        state.shop.isOpenToday ? 'success' : 'info'
+      );
+    }
+
+    function renderHeaderSummary() {
+      const activePlansCount = state.plans.filter((p) => p.active).length;
+
+      document.getElementById('headerSummaryStrip').innerHTML = `
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div class="flex items-start gap-4">
+            <div class="w-16 h-16 rounded-2xl bg-[#ECFDF5] border border-emerald-200 flex items-center justify-center text-3xl shrink-0">
+              🍛
+            </div>
+            <div class="min-w-0">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold ${
+                  state.shop.isOpenToday
+                    ? 'bg-[#ECFDF5] text-[#047857] border border-emerald-200'
+                    : 'bg-amber-100 text-amber-900 border border-amber-300'
+                }">
+                  ${state.shop.isOpenToday ? '🟢 Serving Today' : '🟠 Closed Today'}
+                </span>
+                <span class="px-2.5 py-0.5 rounded-full bg-emerald-600/10 text-[#047857] text-xs font-bold">
+                  🌿 ${escapeHtml(state.settings.foodType)}
+                </span>
+                <span class="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-xs font-bold">
+                  ${escapeHtml(state.shop.bookingStatus)}
+                </span>
+              </div>
+              <h1 class="text-xl sm:text-2xl font-extrabold text-[#0F172A] mt-1.5 break-words">
+                ${escapeHtml(state.shop.name)}
+              </h1>
+              <p class="text-sm text-slate-600 mt-0.5 flex items-center gap-1.5">
+                <span>📍</span>
+                <span>${escapeHtml(state.shop.address)}</span>
+              </p>
+            </div>
+          </div>
+
+          <!-- Quick Stats -->
+          <div class="grid grid-cols-2 gap-3 shrink-0">
+            <div class="rounded-2xl bg-[#ECFDF5] border border-emerald-200 px-4 py-3 text-center min-w-[132px]">
+              <div class="text-xl font-extrabold text-[#047857]">${activePlansCount}</div>
+              <div class="text-xs font-bold text-[#047857] mt-0.5">Active Meal Plans</div>
+            </div>
+            <div class="rounded-2xl bg-slate-50 border border-slate-200 px-4 py-3 text-center min-w-[132px]">
+              <div class="text-xl font-extrabold text-[#0F172A]">
+                ${state.settings.trialAvailable === 'Yes' ? '₹' + escapeHtml(state.settings.trialPrice) : 'No'}
+              </div>
+              <div class="text-xs font-bold text-slate-600 mt-0.5">Trial Thali</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderTabsBar() {
+      const tabs = [
+        { id: 'menu', icon: '🍲', label: "Today's Menu & Food Photos" },
+        { id: 'plans', icon: '🍽️', label: 'Meal Plans & Rates' },
+        { id: 'facilities', icon: '🥗', label: 'Food Type & Facilities' },
+        { id: 'timings', icon: '⏰', label: 'Timings & Notices' },
+        { id: 'info', icon: '📍', label: 'Shop Info, Photos & GPS' }
+      ];
+
+      document.getElementById('tabsBar').innerHTML = tabs
+        .map((t) => {
+          const active = state.activeTab === t.id;
+          return `
+            <button
+              onclick="switchTab('${t.id}')"
+              class="min-h-[52px] px-3.5 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap ${
+                active
+                  ? 'bg-[#059669] text-white shadow-sm'
+                  : 'bg-white text-slate-700 hover:bg-[#ECFDF5] hover:text-[#047857]'
+              }"
+            >
+              <span class="text-base">${t.icon}</span>
+              <span>${t.label}</span>
+            </button>
+          `;
+        })
+        .join('');
+    }
+
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+      renderTabsBar();
+      renderTabContent();
+    }
+
+    function renderTabContent() {
+      const container = document.getElementById('tabContent');
+      if (state.activeTab === 'menu') {
+        container.innerHTML = renderTodayMenuTab();
+      } else if (state.activeTab === 'plans') {
+        container.innerHTML = renderMealPlansTab();
+      } else if (state.activeTab === 'facilities') {
+        container.innerHTML = renderFacilitiesTab();
+      } else if (state.activeTab === 'timings') {
+        container.innerHTML = renderTimingsAndNoticesTab();
+      } else if (state.activeTab === 'info') {
+        container.innerHTML = renderShopInfoTab();
+        attachMapInteractions();
+      }
+    }
+
+    /* =========================================================================
+       6. TAB 1 — TODAY'S MENU & FOOD PHOTOS (30-SECOND DAILY UPDATE)
+       ========================================================================= */
+    function renderTodayMenuTab() {
+      const bookingOptions = [
+        { label: 'Taking Orders Now', icon: '🟢' },
+        { label: 'Lunch Sold Out', icon: '🟠' },
+        { label: 'Dinner Sold Out', icon: '🔴' }
+      ];
+
+      const renderMealCard = (mealKey, title, icon, timeHint) => {
+        const meal = state.todayMenu[mealKey];
+        const micKey = mealKey === 'lunch' ? 'lunchMenu' : 'dinnerMenu';
+        const isMicActive = state.listeningField === micKey;
+
+        return `
+          <div class="bg-white rounded-2xl border-2 border-emerald-100 shadow-sm p-5 sm:p-6 flex flex-col justify-between space-y-5">
+            <div class="space-y-5">
+              <!-- Card Title -->
+              <div class="flex items-center justify-between gap-2 pb-3 border-b border-slate-100">
+                <div class="flex items-center gap-2.5">
+                  <span class="w-11 h-11 rounded-xl bg-[#ECFDF5] text-2xl flex items-center justify-center">${icon}</span>
+                  <div>
+                    <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">${title}</h2>
+                    <p class="text-xs font-semibold text-slate-500">${timeHint}</p>
+                  </div>
+                </div>
+                <span class="px-2.5 py-1 rounded-full bg-[#ECFDF5] text-[#047857] text-[11px] font-bold">
+                  ✓ ${escapeHtml(meal.publishedAt)}
+                </span>
+              </div>
+
+              <!-- Menu Items Input + Voice Mic -->
+              <div class="space-y-2">
+                <label class="block text-sm font-bold text-[#0F172A]">What's in ${title}?</label>
+                <div class="flex items-start gap-2">
+                  <textarea
+                    rows="3"
+                    placeholder="e.g. Dal Tadka, Jeera Rice, Aloo Gobhi, 5 Butter Roti, Salad"
+                    oninput="state.todayMenu.${mealKey}.items = this.value"
+                    class="flex-1 p-3.5 rounded-xl bg-white border-2 border-slate-200 text-sm sm:text-base font-medium text-[#0F172A] focus:outline-none focus:border-[#059669]"
+                  >${escapeHtml(meal.items)}</textarea>
+                  <button
+                    type="button"
+                    onclick="startVoiceInput('${micKey}')"
+                    aria-label="Speak menu items"
+                    title="Speak to type"
+                    class="min-w-[52px] h-[52px] px-3 rounded-xl border-2 font-bold text-xs flex flex-col items-center justify-center cursor-pointer transition ${
+                      isMicActive
+                        ? 'bg-red-600 border-red-600 text-white mic-pulse'
+                        : 'bg-[#ECFDF5] hover:bg-emerald-100 border-emerald-300 text-[#047857]'
+                    }"
+                  >
+                    <span class="text-lg leading-none">🎙️</span>
+                    <span class="text-[10px] mt-0.5">${isMicActive ? 'Live' : 'Speak'}</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Special Dish Today + 1-Tap Quick-Fill Chips -->
+              <div class="space-y-2.5">
+                <label class="block text-sm font-bold text-[#0F172A]">⭐ Special Dish Today (Optional)</label>
+                <input
+                  type="text"
+                  value="${escapeHtml(meal.specialDish)}"
+                  placeholder="e.g. Shahi Paneer, Gulab Jamun"
+                  oninput="state.todayMenu.${mealKey}.specialDish = this.value"
+                  class="w-full min-h-[48px] px-4 py-2.5 rounded-xl bg-white border-2 border-slate-200 text-sm sm:text-base font-bold text-[#047857] focus:outline-none focus:border-[#059669]"
+                />
+                <div class="flex flex-wrap gap-1.5">
+                  ${SPECIAL_DISH_CHIPS.map((dish) => {
+                    const selected = meal.specialDish === dish;
+                    return `
+                      <button
+                        type="button"
+                        onclick="setSpecialDish('${mealKey}', '${escapeHtml(dish)}')"
+                        class="min-h-[38px] px-3 py-1 rounded-full text-xs font-bold border transition cursor-pointer ${
+                          selected
+                            ? 'bg-[#059669] border-[#059669] text-white'
+                            : 'bg-[#ECFDF5] hover:bg-emerald-100 border-emerald-200 text-[#047857]'
+                        }"
+                      >
+                        + ${dish}
+                      </button>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
+
+              <!-- Daily Food Photo Upload -->
+              <div class="space-y-2.5">
+                <label class="block text-sm font-bold text-[#0F172A]">📸 Today's Thali / Food Photo</label>
+                ${
+                  meal.photoUrl
+                    ? `
+                      <div class="rounded-2xl border-2 border-emerald-200 overflow-hidden bg-slate-50">
+                        <div class="relative">
+                          <img
+                            src="${meal.photoUrl}"
+                            alt="${title} photo"
+                            onerror="this.src='https://placehold.co/640x400/ECFDF5/047857?text=Fresh+Thali+Photo'"
+                            class="w-full h-44 object-cover"
+                          />
+                          <span class="absolute bottom-2.5 left-2.5 px-3 py-1 rounded-full bg-slate-900/80 text-white text-xs font-bold backdrop-blur-xs">
+                            🕒 ${escapeHtml(meal.photoTime)}
+                          </span>
+                        </div>
+                        <div class="p-3 bg-white flex items-center justify-between gap-2">
+                          <label class="min-h-[42px] px-3.5 py-2 rounded-xl bg-[#ECFDF5] hover:bg-emerald-100 border border-emerald-200 text-[#047857] font-bold text-xs sm:text-sm cursor-pointer inline-flex items-center gap-1.5">
+                            <span>📷 Change Photo</span>
+                            <input type="file" accept="image/*" class="hidden" onchange="handleDailyFoodPhoto('${mealKey}', event)" />
+                          </label>
+                          <button
+                            type="button"
+                            onclick="removeDailyFoodPhoto('${mealKey}')"
+                            class="min-h-[42px] px-3.5 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 font-bold text-xs sm:text-sm cursor-pointer"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </div>
+                    `
+                    : `
+                      <div class="border-2 border-dashed border-emerald-300 rounded-2xl bg-[#ECFDF5]/40 p-6 text-center space-y-2.5">
+                        <div class="text-3xl">📸</div>
+                        <p class="text-xs sm:text-sm font-semibold text-slate-600">Snap a quick photo of today's fresh thali or tiffin</p>
+                        <label class="min-h-[48px] px-5 py-2.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-sm cursor-pointer inline-flex items-center gap-2 shadow-sm">
+                          <span>📷 Upload Food Photo</span>
+                          <input type="file" accept="image/*" class="hidden" onchange="handleDailyFoodPhoto('${mealKey}', event)" />
+                        </label>
+                      </div>
+                    `
+                }
+              </div>
+            </div>
+
+            <!-- Save & Publish Button -->
+            <button
+              type="button"
+              onclick="publishMealMenu('${mealKey}')"
+              class="w-full min-h-[52px] px-5 py-3 rounded-2xl bg-[#059669] hover:bg-[#047857] active:scale-[0.99] text-white font-extrabold text-sm sm:text-base shadow-sm transition cursor-pointer"
+            >
+              ✓ Save &amp; Publish ${title}
+            </button>
+          </div>
+        `;
+      };
+
+      return `
+        <div class="space-y-6">
+          <!-- Quick Tiffin Booking Status Bar -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div>
+              <h2 class="text-base font-extrabold text-[#0F172A]">📦 Tiffin Booking Status Right Now</h2>
+              <p class="text-xs sm:text-sm text-slate-600">Tap one button so students know if tiffins are still available today.</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              ${bookingOptions
+                .map((opt) => {
+                  const active = state.shop.bookingStatus === opt.label;
+                  return `
+                    <button
+                      type="button"
+                      onclick="setBookingStatus('${opt.label}')"
+                      class="min-h-[46px] px-4 py-2 rounded-xl border-2 font-bold text-xs sm:text-sm transition cursor-pointer flex items-center gap-1.5 ${
+                        active
+                          ? 'bg-[#059669] border-[#059669] text-white shadow-xs'
+                          : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-400 hover:bg-[#ECFDF5]/60'
+                      }"
+                    >
+                      <span>${opt.icon}</span>
+                      <span>${opt.label}</span>
+                    </button>
+                  `;
+                })
+                .join('')}
+            </div>
+          </div>
+
+          <!-- Two Side-by-Side Cards: Today's Lunch & Today's Dinner -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            ${renderMealCard('lunch', "Today's Lunch", '☀️', 'Serving 12:00 PM – 2:30 PM')}
+            ${renderMealCard('dinner', "Today's Dinner", '🌙', 'Serving 7:30 PM – 10:00 PM')}
+          </div>
+        </div>
+      `;
+    }
+
+    function setBookingStatus(status) {
+      state.shop.bookingStatus = status;
+      renderHeaderSummary();
+      renderTabContent();
+      showToast(`Tiffin status updated to: ${status}`);
+    }
+
+    function setSpecialDish(mealKey, dish) {
+      state.todayMenu[mealKey].specialDish = dish;
+      renderTabContent();
+    }
+
+    function handleDailyFoodPhoto(mealKey, event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        state.todayMenu[mealKey].photoUrl = e.target.result;
+        state.todayMenu[mealKey].photoTime = `Uploaded Today, ${getCurrentTimeLabel()}`;
+        renderTabContent();
+        showToast(`${mealKey === 'lunch' ? 'Lunch' : 'Dinner'} photo uploaded!`);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removeDailyFoodPhoto(mealKey) {
+      state.todayMenu[mealKey].photoUrl = '';
+      state.todayMenu[mealKey].photoTime = '';
+      renderTabContent();
+      showToast('Food photo removed', 'info');
+    }
+
+    function publishMealMenu(mealKey) {
+      const label = mealKey === 'lunch' ? "Today's Lunch" : "Today's Dinner";
+      state.todayMenu[mealKey].publishedAt = `Published Today, ${getCurrentTimeLabel()}`;
+      renderTabContent();
+      showToast(`${label} menu saved & published to students!`);
+    }
+
+    /* =========================================================================
+       7. TAB 2 — MEAL PLANS & RATES
+       ========================================================================= */
+    function renderMealPlansTab() {
+      const np = state.newPlan;
+      const isMicActive = state.listeningField === 'planName';
+
+      const addPlanCard = `
+        <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm overflow-hidden mb-6">
+          <button
+            type="button"
+            onclick="state.addPlanExpanded = !state.addPlanExpanded; renderTabContent();"
+            class="w-full px-5 sm:px-6 py-4 bg-[#ECFDF5]/80 hover:bg-[#ECFDF5] flex items-center justify-between gap-3 text-left cursor-pointer border-b border-emerald-100"
+          >
+            <div>
+              <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A] flex items-center gap-2">
+                <span>➕</span> Add New Meal Plan
+              </h2>
+              <p class="text-xs sm:text-sm text-slate-600 mt-0.5">Add monthly tiffin, weekly trial, or single thali rates</p>
+            </div>
+            <span class="min-h-[40px] px-3.5 rounded-xl bg-white border border-emerald-200 text-[#047857] font-bold text-sm flex items-center">
+              ${state.addPlanExpanded ? 'Hide ▲' : 'Open ▼'}
+            </span>
+          </button>
+
+          ${
+            state.addPlanExpanded
+              ? `
+                <div class="p-5 sm:p-6 space-y-5">
+                  <!-- Plan Name + Voice Mic -->
+                  <div class="space-y-2">
+                    <label class="block text-sm sm:text-base font-bold text-[#0F172A]">1. Plan Name</label>
+                    <div class="flex items-center gap-2.5">
+                      <input
+                        type="text"
+                        value="${escapeHtml(np.name)}"
+                        placeholder="e.g. Full Month — Lunch + Dinner"
+                        oninput="state.newPlan.name = this.value"
+                        class="flex-1 min-h-[52px] px-4 py-3 rounded-xl bg-white border-2 border-slate-200 text-sm sm:text-base font-bold text-[#0F172A] focus:outline-none focus:border-[#059669]"
+                      />
+                      <button
+                        type="button"
+                        onclick="startVoiceInput('planName')"
+                        aria-label="Speak plan name"
+                        class="min-w-[52px] h-[52px] px-3.5 rounded-xl border-2 font-bold text-sm flex items-center justify-center gap-1.5 cursor-pointer transition ${
+                          isMicActive
+                            ? 'bg-red-600 border-red-600 text-white mic-pulse'
+                            : 'bg-[#ECFDF5] hover:bg-emerald-100 border-emerald-300 text-[#047857]'
+                        }"
+                      >
+                        <span class="text-lg">🎙️</span>
+                        <span class="hidden sm:inline">${isMicActive ? 'Listening' : 'Speak'}</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Price & Billing Cycle Pills -->
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div class="space-y-2">
+                      <label class="block text-sm sm:text-base font-bold text-[#0F172A]">2. Price (₹)</label>
+                      <div class="flex items-center">
+                        <span class="min-h-[52px] px-4 flex items-center rounded-l-xl bg-slate-100 border-2 border-r-0 border-slate-200 font-extrabold text-lg text-slate-700">₹</span>
+                        <input
+                          type="number"
+                          min="0"
+                          value="${escapeHtml(np.price)}"
+                          placeholder="e.g. 3200"
+                          oninput="state.newPlan.price = this.value"
+                          class="w-full min-h-[52px] px-4 py-3 rounded-r-xl bg-white border-2 border-slate-200 text-lg font-extrabold text-[#0F172A] focus:outline-none focus:border-[#059669]"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="space-y-2">
+                      <label class="block text-sm sm:text-base font-bold text-[#0F172A]">3. Billing Cycle</label>
+                      <div class="grid grid-cols-3 gap-2">
+                        ${BILLING_CYCLES.map((c) => {
+                          const active = np.cycle === c;
+                          return `
+                            <button
+                              type="button"
+                              onclick="state.newPlan.cycle = '${c}'; renderTabContent();"
+                              class="min-h-[52px] px-2.5 py-2 rounded-xl border-2 font-bold text-xs sm:text-sm transition cursor-pointer ${
+                                active
+                                  ? 'bg-[#059669] border-[#059669] text-white'
+                                  : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-400'
+                              }"
+                            >
+                              ${active ? '✓ ' : ''}${c}
+                            </button>
+                          `;
+                        }).join('')}
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- What's Included -->
+                  <div class="space-y-2">
+                    <label class="block text-sm sm:text-base font-bold text-[#0F172A]">4. What's Included in This Plan?</label>
+                    <input
+                      type="text"
+                      value="${escapeHtml(np.included)}"
+                      placeholder="e.g. 5 Roti, Dal, 2 Sabzi, Rice, Salad"
+                      oninput="state.newPlan.included = this.value"
+                      class="w-full min-h-[52px] px-4 py-3 rounded-xl bg-white border-2 border-slate-200 text-sm sm:text-base font-medium text-[#0F172A] focus:outline-none focus:border-[#059669]"
+                    />
+                  </div>
+
+                  <!-- Popular Plan Toggle + Add Button -->
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
+                    <button
+                      type="button"
+                      onclick="state.newPlan.popular = !state.newPlan.popular; renderTabContent();"
+                      class="min-h-[48px] px-4 py-2.5 rounded-xl border-2 font-bold text-sm transition cursor-pointer flex items-center gap-2 ${
+                        np.popular
+                          ? 'bg-amber-50 border-amber-400 text-amber-900'
+                          : 'bg-white border-slate-200 text-slate-600 hover:border-amber-300'
+                      }"
+                    >
+                      <span>${np.popular ? '⭐' : '☆'}</span>
+                      <span>Mark as "Popular Plan" Badge</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onclick="addNewMealPlan()"
+                      class="min-h-[52px] px-8 py-3 rounded-2xl bg-[#059669] hover:bg-[#047857] text-white font-extrabold text-base shadow-sm cursor-pointer"
+                    >
+                      + Add Meal Plan
+                    </button>
+                  </div>
+                </div>
+              `
+              : ''
+          }
+        </div>
+      `;
+
+      const plansListHtml = `
+        <div class="space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2 px-1">
+            <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">Your Meal Plans &amp; Rates (${state.plans.length})</h2>
+            <span class="text-xs sm:text-sm text-slate-500">Tap Active/Paused anytime to hide or show a plan</span>
+          </div>
+
+          ${state.plans
+            .map(
+              (p) => `
+                <div class="bg-white rounded-2xl border-2 ${
+                  p.active ? 'border-emerald-100' : 'border-slate-200 bg-slate-50/70'
+                } shadow-sm p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div class="space-y-1.5 flex-1 min-w-0">
+                    <div class="flex flex-wrap items-center gap-2">
+                      <h3 class="text-lg font-extrabold text-[#0F172A]">${escapeHtml(p.name)}</h3>
+                      ${
+                        p.popular
+                          ? `<span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 text-xs font-extrabold">⭐ Popular Plan</span>`
+                          : ''
+                      }
+                      ${
+                        !p.active
+                          ? `<span class="px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-700 text-xs font-bold">Paused</span>`
+                          : ''
+                      }
+                    </div>
+                    <div class="text-xl sm:text-2xl font-extrabold text-[#047857]">
+                      ₹${Number(p.price).toLocaleString('en-IN')}
+                      <span class="text-xs font-semibold text-slate-500">/ ${escapeHtml(p.cycle)}</span>
+                    </div>
+                    <p class="text-sm text-slate-600">${escapeHtml(p.included)}</p>
+                  </div>
+
+                  <!-- Controls: Active/Paused, Copy, Delete -->
+                  <div class="flex flex-wrap items-center gap-2 shrink-0">
+                    <button
+                      type="button"
+                      onclick="togglePlanActive('${p.id}')"
+                      class="min-h-[48px] px-4 py-2 rounded-xl border-2 font-bold text-sm transition cursor-pointer ${
+                        p.active
+                          ? 'bg-[#059669] hover:bg-[#047857] border-[#059669] text-white'
+                          : 'bg-amber-100 hover:bg-amber-200 border-amber-400 text-amber-900'
+                      }"
+                    >
+                      ${p.active ? '✓ Active' : '⏸ Paused'}
+                    </button>
+                    <button
+                      type="button"
+                      onclick="copyMealPlan('${p.id}')"
+                      class="min-h-[48px] px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-emerald-50 hover:text-[#047857] text-slate-700 font-bold text-sm cursor-pointer"
+                    >
+                      📋 Copy
+                    </button>
+                    <button
+                      type="button"
+                      onclick="deleteMealPlan('${p.id}')"
+                      aria-label="Delete plan"
+                      class="min-h-[48px] px-3.5 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 font-bold text-sm cursor-pointer"
+                    >
+                      🗑️
+                    </button>
+                  </div>
+                </div>
+              `
+            )
+            .join('')}
+        </div>
+      `;
+
+      return addPlanCard + plansListHtml;
+    }
+
+    function addNewMealPlan() {
+      const np = state.newPlan;
+      const priceNum = parseFloat(np.price);
+      if (!np.name.trim()) {
+        showToast('Please enter a Plan Name', 'error');
+        return;
+      }
+      if (isNaN(priceNum) || priceNum <= 0) {
+        showToast('Please enter a valid Price in ₹', 'error');
+        return;
+      }
+
+      state.plans.unshift({
+        id: 'plan_' + Date.now(),
+        name: np.name.trim(),
+        price: priceNum,
+        cycle: np.cycle,
+        included: np.included.trim() || 'Fresh home-style meal',
+        popular: np.popular,
+        active: true
+      });
+
+      state.newPlan = { name: '', price: '', cycle: 'Per Month', included: '', popular: false };
+      renderHeaderSummary();
+      renderTabContent();
+      showToast('New meal plan added!');
+    }
+
+    function togglePlanActive(id) {
+      const plan = state.plans.find((p) => p.id === id);
+      if (!plan) return;
+      plan.active = !plan.active;
+      renderHeaderSummary();
+      renderTabContent();
+      showToast(plan.active ? 'Plan is now Active' : 'Plan Paused', 'info');
+    }
+
+    function copyMealPlan(id) {
+      const plan = state.plans.find((p) => p.id === id);
+      if (!plan) return;
+      state.plans.unshift({
+        ...plan,
+        id: 'plan_' + Date.now(),
+        name: plan.name + ' (Copy)',
+        popular: false
+      });
+      renderHeaderSummary();
+      renderTabContent();
+      showToast('Meal plan copied!');
+    }
+
+    function deleteMealPlan(id) {
+      state.plans = state.plans.filter((p) => p.id !== id);
+      renderHeaderSummary();
+      renderTabContent();
+      showToast('Meal plan deleted', 'info');
+    }
+
+    /* =========================================================================
+       8. TAB 3 — FOOD TYPE & FACILITIES
+       ========================================================================= */
+    function renderFacilitiesTab() {
+      const s = state.settings;
+
+      const renderGroup = (label, options, currentVal, fnName) => `
+        <div class="space-y-2.5">
+          <label class="block text-sm sm:text-base font-bold text-[#0F172A]">${label}</label>
+          <div class="flex flex-wrap gap-2.5">
+            ${options
+              .map((opt) => {
+                const active = currentVal === opt;
+                return `
+                  <button
+                    type="button"
+                    onclick="${fnName}('${escapeHtml(opt)}')"
+                    class="min-h-[48px] px-4 py-2.5 rounded-xl border-2 font-bold text-sm sm:text-base transition cursor-pointer ${
+                      active
+                        ? 'bg-[#059669] border-[#059669] text-white shadow-xs'
+                        : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-400 hover:bg-[#ECFDF5]/60'
+                    }"
+                  >
+                    ${active ? '✓ ' : ''}${opt}
+                  </button>
+                `;
+              })
+              .join('')}
+          </div>
+        </div>
+      `;
+
+      return `
+        <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-7 space-y-7">
+          <div>
+            <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">Food Type &amp; Mess Facilities</h2>
+            <p class="text-sm text-slate-600 mt-0.5">Tap the options that match your mess &amp; tiffin service.</p>
+          </div>
+
+          ${renderGroup('1. Food Type', ['Pure Veg', 'Veg & Egg', 'Veg & Non-Veg', 'Jain Available'], s.foodType, 'setFoodType')}
+          ${renderGroup('2. Service Mode', ['Dine-in Mess', 'Tiffin Delivery', 'Both'], s.serviceMode, 'setServiceMode')}
+          ${renderGroup('3. Weekly Off', ['Open All Days', 'Sunday Dinner Off', 'Full Sunday Off'], s.weeklyOff, 'setWeeklyOff')}
+
+          <!-- Trial Meal Available -->
+          <div class="space-y-3">
+            ${renderGroup('4. Trial Meal Available?', ['Yes', 'No'], s.trialAvailable, 'setTrialAvailable')}
+            ${
+              s.trialAvailable === 'Yes'
+                ? `
+                  <div class="sm:max-w-xs space-y-1.5 pt-1">
+                    <label class="block text-xs font-bold text-slate-600">Trial Meal Price (₹)</label>
+                    <div class="flex items-center">
+                      <span class="min-h-[48px] px-4 flex items-center rounded-l-xl bg-slate-100 border-2 border-r-0 border-slate-200 font-bold text-slate-700">₹</span>
+                      <input
+                        type="number"
+                        value="${escapeHtml(s.trialPrice)}"
+                        placeholder="e.g. 70"
+                        oninput="state.settings.trialPrice = this.value; renderHeaderSummary();"
+                        class="w-full min-h-[48px] px-4 py-2 rounded-r-xl bg-white border-2 border-slate-200 font-bold text-base focus:outline-none focus:border-[#059669]"
+                      />
+                    </div>
+                  </div>
+                `
+                : ''
+            }
+          </div>
+
+          <!-- Tap-to-Select Feature Chips -->
+          <div class="space-y-3 pt-3 border-t border-slate-100">
+            <label class="block text-sm sm:text-base font-bold text-[#0F172A]">5. Tap Facilities You Offer</label>
+            <div class="flex flex-wrap gap-2.5">
+              ${ALL_FACILITIES.map((fac) => {
+                const selected = s.facilities.includes(fac);
+                return `
+                  <button
+                    type="button"
+                    onclick="toggleMessFacility('${escapeHtml(fac)}')"
+                    class="min-h-[48px] px-4 py-2.5 rounded-full border-2 font-bold text-sm transition cursor-pointer flex items-center gap-2 ${
+                      selected
+                        ? 'bg-[#ECFDF5] border-[#059669] text-[#047857]'
+                        : 'bg-white border-slate-200 text-slate-600 hover:border-emerald-300'
+                    }"
+                  >
+                    <span class="text-base leading-none">${selected ? '✓' : '+'}</span>
+                    <span>${fac}</span>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-slate-100">
+            <button
+              type="button"
+              onclick="showToast('Food Type & Facilities saved!')"
+              class="w-full sm:w-auto min-h-[52px] px-8 py-3 rounded-2xl bg-[#059669] hover:bg-[#047857] text-white font-extrabold text-base shadow-sm cursor-pointer"
+            >
+              ✓ Save Settings
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function setFoodType(v) { state.settings.foodType = v; renderHeaderSummary(); renderTabContent(); }
+    function setServiceMode(v) { state.settings.serviceMode = v; renderTabContent(); }
+    function setWeeklyOff(v) { state.settings.weeklyOff = v; renderTabContent(); }
+    function setTrialAvailable(v) { state.settings.trialAvailable = v; renderHeaderSummary(); renderTabContent(); }
+
+    function toggleMessFacility(fac) {
+      const idx = state.settings.facilities.indexOf(fac);
+      if (idx >= 0) state.settings.facilities.splice(idx, 1);
+      else state.settings.facilities.push(fac);
+      renderTabContent();
+    }
+
+    /* =========================================================================
+       9. TAB 4 — TIMINGS & NOTICES
+       ========================================================================= */
+    function renderTimingsAndNoticesTab() {
+      const isMicActive = state.listeningField === 'noticeText';
+
+      return `
+        <div class="space-y-6">
+          <!-- Weekly Lunch & Dinner Timings -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-6 space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">Serving &amp; Tiffin Delivery Timings</h2>
+                <p class="text-sm text-slate-600 mt-0.5">Set clear Lunch &amp; Dinner timings for students.</p>
+              </div>
+              <button
+                type="button"
+                onclick="copyMondayScheduleToAll()"
+                class="min-h-[46px] px-4 py-2.5 rounded-xl bg-[#ECFDF5] hover:bg-emerald-100 text-[#047857] border border-emerald-200 font-bold text-sm cursor-pointer"
+              >
+                📋 Copy Monday to All Days
+              </button>
+            </div>
+
+            <div class="space-y-3">
+              ${state.schedule
+                .map(
+                  (row, idx) => `
+                    <div class="p-4 rounded-2xl border-2 border-emerald-100 bg-white space-y-3">
+                      <div class="flex flex-wrap items-center justify-between gap-2">
+                        <span class="text-base font-extrabold text-[#0F172A]">${row.day}</span>
+                        <div class="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onclick="toggleMealDayOpen(${idx}, 'lunchOpen')"
+                            class="min-h-[38px] px-3 py-1 rounded-full text-xs font-bold cursor-pointer ${
+                              row.lunchOpen ? 'bg-[#059669] text-white' : 'bg-slate-200 text-slate-700'
+                            }"
+                          >
+                            ☀️ Lunch: ${row.lunchOpen ? 'Open' : 'Off'}
+                          </button>
+                          <button
+                            type="button"
+                            onclick="toggleMealDayOpen(${idx}, 'dinnerOpen')"
+                            class="min-h-[38px] px-3 py-1 rounded-full text-xs font-bold cursor-pointer ${
+                              row.dinnerOpen ? 'bg-[#059669] text-white' : 'bg-slate-200 text-slate-700'
+                            }"
+                          >
+                            🌙 Dinner: ${row.dinnerOpen ? 'Open' : 'Off'}
+                          </button>
+                        </div>
+                      </div>
+
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs sm:text-sm">
+                        <div class="flex items-center gap-2 flex-wrap bg-slate-50 rounded-xl p-2.5">
+                          <span class="font-bold text-slate-700 w-16">☀️ Lunch:</span>
+                          ${
+                            row.lunchOpen
+                              ? `
+                                <select onchange="updateScheduleTime(${idx}, 'lunchFrom', this.value)" class="min-h-[40px] px-2.5 rounded-lg bg-white border border-slate-300 font-semibold">
+                                  ${LUNCH_SLOTS.map((t) => `<option value="${t}" ${row.lunchFrom === t ? 'selected' : ''}>${t}</option>`).join('')}
+                                </select>
+                                <span class="font-bold text-slate-400">to</span>
+                                <select onchange="updateScheduleTime(${idx}, 'lunchTo', this.value)" class="min-h-[40px] px-2.5 rounded-lg bg-white border border-slate-300 font-semibold">
+                                  ${LUNCH_SLOTS.map((t) => `<option value="${t}" ${row.lunchTo === t ? 'selected' : ''}>${t}</option>`).join('')}
+                                </select>
+                              `
+                              : `<span class="text-slate-400 font-semibold">Closed for Lunch</span>`
+                          }
+                        </div>
+
+                        <div class="flex items-center gap-2 flex-wrap bg-slate-50 rounded-xl p-2.5">
+                          <span class="font-bold text-slate-700 w-16">🌙 Dinner:</span>
+                          ${
+                            row.dinnerOpen
+                              ? `
+                                <select onchange="updateScheduleTime(${idx}, 'dinnerFrom', this.value)" class="min-h-[40px] px-2.5 rounded-lg bg-white border border-slate-300 font-semibold">
+                                  ${DINNER_SLOTS.map((t) => `<option value="${t}" ${row.dinnerFrom === t ? 'selected' : ''}>${t}</option>`).join('')}
+                                </select>
+                                <span class="font-bold text-slate-400">to</span>
+                                <select onchange="updateScheduleTime(${idx}, 'dinnerTo', this.value)" class="min-h-[40px] px-2.5 rounded-lg bg-white border border-slate-300 font-semibold">
+                                  ${DINNER_SLOTS.map((t) => `<option value="${t}" ${row.dinnerTo === t ? 'selected' : ''}>${t}</option>`).join('')}
+                                </select>
+                              `
+                              : `<span class="text-slate-400 font-semibold">Closed for Dinner</span>`
+                          }
+                        </div>
+                      </div>
+                    </div>
+                  `
+                )
+                .join('')}
+            </div>
+          </div>
+
+          <!-- Post Notice to Students -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-6 space-y-5">
+            <div>
+              <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">Post Notice to Students</h2>
+              <p class="text-sm text-slate-600 mt-0.5">Tap a ready-made message or speak using the mic button.</p>
+            </div>
+
+            <div class="space-y-2">
+              <p class="text-xs font-extrabold uppercase tracking-wider text-[#047857]">⚡ 1-Tap Ready Messages:</p>
+              <div class="grid grid-cols-1 gap-2.5">
+                ${NOTICE_TEMPLATES.map(
+                  (tpl, idx) => `
+                    <button
+                      type="button"
+                      onclick="applyNoticeTemplate(${idx})"
+                      class="text-left p-3.5 rounded-xl bg-[#ECFDF5]/80 hover:bg-emerald-100 border border-emerald-200 text-sm font-bold text-[#0F172A] flex items-center justify-between gap-3 cursor-pointer"
+                    >
+                      <span>"${tpl}"</span>
+                      <span class="px-2.5 py-1 rounded-lg bg-white text-[#047857] text-xs font-extrabold border border-emerald-200 shrink-0">Tap to Use</span>
+                    </button>
+                  `
+                ).join('')}
+              </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-2.5">
+              <textarea
+                rows="3"
+                placeholder="Type or speak your notice..."
+                oninput="state.noticeDraft = this.value"
+                class="flex-1 p-4 rounded-xl bg-white border-2 border-slate-200 text-base text-[#0F172A] focus:outline-none focus:border-[#059669]"
+              >${escapeHtml(state.noticeDraft)}</textarea>
+              <button
+                type="button"
+                onclick="startVoiceInput('noticeText')"
+                class="min-h-[52px] sm:w-28 rounded-xl border-2 font-bold text-sm flex items-center justify-center gap-1.5 cursor-pointer transition ${
+                  isMicActive
+                    ? 'bg-red-600 border-red-600 text-white mic-pulse'
+                    : 'bg-[#ECFDF5] hover:bg-emerald-100 border-emerald-300 text-[#047857]'
+                }"
+              >
+                <span class="text-lg">🎙️</span>
+                <span>${isMicActive ? 'Listening' : 'Speak'}</span>
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onclick="postNotice()"
+              class="w-full sm:w-auto min-h-[52px] px-7 py-3 rounded-2xl bg-[#059669] hover:bg-[#047857] text-white font-extrabold text-base shadow-sm cursor-pointer"
+            >
+              📢 Post Notice Now
+            </button>
+
+            <div class="pt-4 border-t border-slate-100 space-y-3">
+              <h3 class="text-sm font-extrabold uppercase tracking-wider text-slate-500">Posted Notices (${state.notices.length})</h3>
+              ${
+                state.notices.length === 0
+                  ? `<p class="text-sm text-slate-500">No notices posted yet.</p>`
+                  : state.notices
+                      .map(
+                        (n) => `
+                          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-start justify-between gap-3">
+                            <div>
+                              <p class="text-sm sm:text-base font-bold text-[#0F172A]">${escapeHtml(n.text)}</p>
+                              <p class="text-xs text-slate-500 mt-1">🕒 ${escapeHtml(n.time)}</p>
+                            </div>
+                            <button
+                              type="button"
+                              onclick="deleteNotice('${n.id}')"
+                              class="min-h-[40px] px-3 py-1.5 rounded-xl bg-white hover:bg-red-50 hover:text-red-700 border border-slate-200 text-xs font-bold text-slate-600 cursor-pointer shrink-0"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        `
+                      )
+                      .join('')
+              }
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function toggleMealDayOpen(idx, key) {
+      state.schedule[idx][key] = !state.schedule[idx][key];
+      renderTabContent();
+    }
+
+    function updateScheduleTime(idx, key, val) {
+      state.schedule[idx][key] = val;
+      showToast('Timing updated');
+    }
+
+    function copyMondayScheduleToAll() {
+      const mon = state.schedule[0];
+      state.schedule = state.schedule.map((row) => ({
+        ...row,
+        lunchOpen: mon.lunchOpen,
+        lunchFrom: mon.lunchFrom,
+        lunchTo: mon.lunchTo,
+        dinnerOpen: mon.dinnerOpen,
+        dinnerFrom: mon.dinnerFrom,
+        dinnerTo: mon.dinnerTo
+      }));
+      renderTabContent();
+      showToast('Monday timings copied to all 7 days!');
+    }
+
+    function applyNoticeTemplate(idx) {
+      state.noticeDraft = NOTICE_TEMPLATES[idx];
+      renderTabContent();
+      showToast('Template filled! Tap "Post Notice Now" to publish.', 'info');
+    }
+
+    function postNotice() {
+      const text = state.noticeDraft.trim();
+      if (!text) {
+        showToast('Please tap a template or type a notice first', 'error');
+        return;
+      }
+      state.notices.unshift({
+        id: 'not_' + Date.now(),
+        text,
+        time: `Today, ${getCurrentTimeLabel()}`
+      });
+      state.noticeDraft = '';
+      renderTabContent();
+      showToast('Notice posted to students!');
+    }
+
+    function deleteNotice(id) {
+      state.notices = state.notices.filter((n) => n.id !== id);
+      renderTabContent();
+      showToast('Notice deleted', 'info');
+    }
+
+    /* =========================================================================
+       10. TAB 5 — SHOP INFO, PAPER RATE CARD PHOTOS & GPS MAP PICKER
+       ========================================================================= */
+    function renderShopInfoTab() {
+      const s = state.shop;
+      const pin = s.mapPin;
+
+      return `
+        <div class="space-y-6">
+          <!-- Shop Details -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-7 space-y-5">
+            <div>
+              <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">Mess &amp; Tiffin Details</h2>
+              <p class="text-sm text-slate-600 mt-0.5">Keep your contact number and address updated for new students.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="space-y-1.5">
+                <label class="block text-sm font-bold text-[#0F172A]">Mess / Tiffin Name</label>
+                <input
+                  type="text"
+                  value="${escapeHtml(s.name)}"
+                  oninput="state.shop.name = this.value; renderHeaderSummary();"
+                  class="w-full min-h-[50px] px-4 py-2.5 rounded-xl bg-white border-2 border-slate-200 font-bold text-base focus:outline-none focus:border-[#059669]"
+                />
+              </div>
+              <div class="space-y-1.5">
+                <label class="block text-sm font-bold text-[#0F172A]">Owner Name</label>
+                <input
+                  type="text"
+                  value="${escapeHtml(s.ownerName)}"
+                  oninput="state.shop.ownerName = this.value"
+                  class="w-full min-h-[50px] px-4 py-2.5 rounded-xl bg-white border-2 border-slate-200 font-bold text-base focus:outline-none focus:border-[#059669]"
+                />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="space-y-1.5">
+                <label class="block text-sm font-bold text-[#0F172A]">Phone / WhatsApp Number</label>
+                <div class="flex items-center">
+                  <span class="min-h-[50px] px-3.5 flex items-center rounded-l-xl bg-slate-100 border-2 border-r-0 border-slate-200 font-extrabold text-slate-600">+91</span>
+                  <input
+                    type="tel"
+                    value="${escapeHtml(s.phone)}"
+                    oninput="state.shop.phone = this.value"
+                    class="w-full min-h-[50px] px-4 py-2.5 rounded-r-xl bg-white border-2 border-slate-200 font-bold text-base focus:outline-none focus:border-[#059669]"
+                  />
+                </div>
+              </div>
+              <div class="space-y-1.5">
+                <label class="block text-sm font-bold text-[#0F172A]">Full Address &amp; Landmark</label>
+                <input
+                  type="text"
+                  value="${escapeHtml(s.address)}"
+                  oninput="state.shop.address = this.value; renderHeaderSummary();"
+                  class="w-full min-h-[50px] px-4 py-2.5 rounded-xl bg-white border-2 border-slate-200 font-bold text-base focus:outline-none focus:border-[#059669]"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Snap Photo of Paper Rate Card / Kitchen Photos -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-7 space-y-5">
+            <div>
+              <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">📄 Paper Rate Card &amp; Kitchen Photos</h2>
+              <p class="text-sm text-slate-600 mt-0.5">Snap a photo of your printed menu board, dining hall, or clean kitchen.</p>
+            </div>
+
+            <div class="border-2 border-dashed border-emerald-300 rounded-2xl bg-[#ECFDF5]/40 p-6 text-center space-y-3">
+              <div class="text-3xl">📷</div>
+              <label class="min-h-[50px] px-6 py-3 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-sm sm:text-base shadow-sm cursor-pointer inline-flex items-center gap-2">
+                <span>Upload Rate Card / Kitchen Photos</span>
+                <input type="file" accept="image/*" multiple class="hidden" onchange="handleShopPhotoUpload(event)" />
+              </label>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              ${state.shopPhotos
+                .map(
+                  (p) => `
+                    <div class="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-2xs">
+                      <img
+                        src="${p.url}"
+                        alt="${escapeHtml(p.label)}"
+                        onerror="this.src='https://placehold.co/600x400/ECFDF5/047857?text=Mess+Photo'"
+                        class="w-full h-44 object-cover bg-emerald-50"
+                      />
+                      <div class="p-3 flex items-center justify-between gap-2">
+                        <span class="text-sm font-bold text-slate-800 truncate">${escapeHtml(p.label)}</span>
+                        <button
+                          type="button"
+                          onclick="deleteShopPhoto('${p.id}')"
+                          class="min-h-[38px] px-3 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 font-bold text-xs cursor-pointer"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  `
+                )
+                .join('')}
+            </div>
+          </div>
+
+          <!-- Interactive Draggable Map Pin Picker -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-7 space-y-5">
+            <div>
+              <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">📍 Shop Location on Campus Map</h2>
+              <p class="text-sm text-slate-600 mt-0.5">Tap a nearby street button, use GPS, or drag the green pin to your exact shop spot.</p>
+            </div>
+
+            <!-- GPS + Street Quick-Jump Buttons -->
+            <div class="space-y-3">
+              <button
+                type="button"
+                onclick="useCurrentGps()"
+                class="min-h-[50px] px-5 py-3 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-sm sm:text-base shadow-sm inline-flex items-center gap-2 cursor-pointer"
+              >
+                <span>🎯</span>
+                <span>Use My Current GPS Location</span>
+              </button>
+
+              <div class="flex flex-wrap gap-2">
+                ${CAMPUS_LANDMARKS.map(
+                  (lm, i) => `
+                    <button
+                      type="button"
+                      onclick="jumpToLandmark(${i})"
+                      class="min-h-[40px] px-3 py-1.5 rounded-xl bg-[#ECFDF5] hover:bg-emerald-100 border border-emerald-200 text-[#047857] text-xs font-bold cursor-pointer"
+                    >
+                      📍 ${lm.name}
+                    </button>
+                  `
+                ).join('')}
+              </div>
+            </div>
+
+            <!-- Interactive Map -->
+            <div class="rounded-2xl border-2 border-emerald-200 overflow-hidden bg-white">
+              <div class="px-4 py-2.5 bg-[#ECFDF5] border-b border-emerald-100 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
+                <span class="font-bold text-[#047857]">🗺️ Bholaram Ustad Marg, Indore</span>
+                <span id="mapCoordsLabel" class="font-mono text-xs font-bold text-[#047857]">${pin.lat.toFixed(4)}° N, ${pin.lng.toFixed(4)}° E</span>
+              </div>
+
+              <div id="messMapCanvas" class="relative w-full h-72 sm:h-80 campus-map-bg select-none touch-none overflow-hidden cursor-crosshair">
+                <svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 800 360" preserveAspectRatio="none">
+                  <path d="M 0 175 Q 250 155 460 172 T 800 142" stroke="#FFFFFF" stroke-width="26" fill="none" />
+                  <path d="M 0 175 Q 250 155 460 172 T 800 142" stroke="#CBD5E1" stroke-width="2" stroke-dasharray="8 8" fill="none" />
+                  <path d="M 185 0 L 230 360" stroke="#FFFFFF" stroke-width="20" fill="none" />
+                  <path d="M 550 158 L 580 360" stroke="#FFFFFF" stroke-width="14" fill="none" />
+                  <path d="M 620 0 L 605 155" stroke="#FFFFFF" stroke-width="16" fill="none" />
+                  <rect x="640" y="22" width="135" height="90" rx="18" fill="#BBF7D0" opacity="0.65" />
+                </svg>
+
+                ${CAMPUS_LANDMARKS.map(
+                  (lm) => `
+                    <div class="absolute -translate-x-1/2 -translate-y-1/2 pointer-events-none flex flex-col items-center" style="left: ${lm.x}%; top: ${lm.y}%;">
+                      <span class="w-2.5 h-2.5 rounded-full bg-slate-500/80 ring-2 ring-white"></span>
+                      <span class="mt-1 px-2 py-0.5 rounded-md bg-white/95 text-[10px] sm:text-[11px] font-bold text-slate-700 shadow-2xs whitespace-nowrap border border-slate-200">${lm.name}</span>
+                    </div>
+                  `
+                ).join('')}
+
+                <div id="messMapPin" class="absolute z-20 -translate-x-1/2 -translate-y-full cursor-grab active:cursor-grabbing" style="left: ${pin.x}%; top: ${pin.y}%;">
+                  <div class="flex flex-col items-center">
+                    <div class="px-3 py-1 rounded-xl bg-[#047857] text-white text-xs font-extrabold shadow-lg whitespace-nowrap border-2 border-white">
+                      🍛 Your Mess
+                    </div>
+                    <div class="w-3.5 h-3.5 bg-[#047857] rotate-45 -mt-2 border-r-2 border-b-2 border-white"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="px-4 py-3 bg-slate-50 border-t border-emerald-100 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
+                <span id="mapLandmarkLabel" class="font-semibold text-slate-700">📍 ${escapeHtml(pin.landmark)}</span>
+                <button
+                  type="button"
+                  onclick="showToast('Shop Info & GPS Location saved!')"
+                  class="min-h-[42px] px-4 py-2 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs sm:text-sm cursor-pointer"
+                >
+                  ✓ Save Info &amp; GPS
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function handleShopPhotoUpload(event) {
+      const files = Array.from(event.target.files || []);
+      files.forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          state.shopPhotos.unshift({
+            id: 'sp_' + Date.now() + Math.random().toString(36).slice(2, 5),
+            label: file.name.replace(/\.[^/.]+$/, '').slice(0, 26) || 'Shop Photo',
+            url: e.target.result
+          });
+          renderTabContent();
+          showToast('Photo uploaded!');
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function deleteShopPhoto(id) {
+      state.shopPhotos = state.shopPhotos.filter((p) => p.id !== id);
+      renderTabContent();
+      showToast('Photo removed', 'info');
+    }
+
+    function attachMapInteractions() {
+      const canvas = document.getElementById('messMapCanvas');
+      const pinEl = document.getElementById('messMapPin');
+      if (!canvas || !pinEl) return;
+
+      let dragging = false;
+
+      const movePin = (clientX, clientY) => {
+        const rect = canvas.getBoundingClientRect();
+        const xPct = Math.max(8, Math.min(92, ((clientX - rect.left) / rect.width) * 100));
+        const yPct = Math.max(14, Math.min(92, ((clientY - rect.top) / rect.height) * 100));
+
+        const lat = 22.6975 - (yPct / 100) * 0.012;
+        const lng = 75.8590 + (xPct / 100) * 0.018;
+
+        let nearest = CAMPUS_LANDMARKS[0];
+        let minDist = Infinity;
+        CAMPUS_LANDMARKS.forEach((lm) => {
+          const d = Math.hypot(lm.x - xPct, lm.y - yPct);
+          if (d < minDist) { minDist = d; nearest = lm; }
+        });
+
+        state.shop.mapPin = {
+          x: Math.round(xPct),
+          y: Math.round(yPct),
+          lat,
+          lng,
+          landmark: `Near ${nearest.name}`
+        };
+
+        pinEl.style.left = state.shop.mapPin.x + '%';
+        pinEl.style.top = state.shop.mapPin.y + '%';
+
+        const coordsEl = document.getElementById('mapCoordsLabel');
+        if (coordsEl) coordsEl.textContent = `${lat.toFixed(4)}° N, ${lng.toFixed(4)}° E`;
+        const lmEl = document.getElementById('mapLandmarkLabel');
+        if (lmEl) lmEl.textContent = `📍 ${state.shop.mapPin.landmark}`;
+      };
+
+      canvas.addEventListener('pointerdown', (e) => {
+        dragging = true;
+        canvas.setPointerCapture(e.pointerId);
+        movePin(e.clientX, e.clientY);
+      });
+      canvas.addEventListener('pointermove', (e) => {
+        if (dragging) movePin(e.clientX, e.clientY);
+      });
+      canvas.addEventListener('pointerup', () => { dragging = false; });
+      canvas.addEventListener('pointercancel', () => { dragging = false; });
+    }
+
+    function useCurrentGps() {
+      state.shop.mapPin = {
+        x: 49,
+        y: 48,
+        lat: 22.6915,
+        lng: 75.8678,
+        landmark: 'Near Bholaram Ustad Marg Main Gate (GPS Locked)'
+      };
+      renderTabContent();
+      showToast('GPS location locked near Bholaram Ustad Marg, Indore!', 'info');
+    }
+
+    function jumpToLandmark(idx) {
+      const lm = CAMPUS_LANDMARKS[idx];
+      if (!lm) return;
+      state.shop.mapPin = {
+        x: lm.x,
+        y: lm.y,
+        lat: lm.lat,
+        lng: lm.lng,
+        landmark: `Near ${lm.name}`
+      };
+      renderTabContent();
+      showToast(`Pin moved to ${lm.name}`, 'info');
+    }
+
+    /* =========================================================================
+       11. LIVE STUDENT PREVIEW MODAL (INDIGO & BLUE #4F46E5)
+       ========================================================================= */
+    function openStudentPreview() {
+      const s = state.shop;
+      const cfg = state.settings;
+      const lunch = state.todayMenu.lunch;
+      const dinner = state.todayMenu.dinner;
+      const activePlans = state.plans.filter((p) => p.active);
+
+      document.getElementById('studentPreviewBody').innerHTML = `
+        <!-- Mess Header Card -->
+        <div class="bg-white rounded-2xl border border-indigo-100 shadow-sm p-5 space-y-4">
+          <div class="flex items-start gap-3.5">
+            <div class="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-3xl shrink-0">
+              🍛
+            </div>
+            <div class="min-w-0">
+              <div class="flex flex-wrap items-center gap-1.5">
+                <span class="px-2.5 py-0.5 rounded-full bg-indigo-50 text-[#4F46E5] text-xs font-extrabold">Mess &amp; Tiffin</span>
+                <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-extrabold">✓ Verified</span>
+                <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">🌿 ${escapeHtml(cfg.foodType)}</span>
+              </div>
+              <h3 class="text-xl font-extrabold text-slate-900 mt-1">${escapeHtml(s.name)}</h3>
+              <p class="text-sm text-slate-600">📍 ${escapeHtml(s.address)}</p>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100">
+            <span class="px-3 py-1 rounded-xl text-xs font-extrabold ${
+              s.isOpenToday ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-900'
+            }">
+              ${s.isOpenToday ? '🟢 Open Today' : '🟠 Closed Today'}
+            </span>
+            <span class="px-3 py-1 rounded-xl bg-blue-50 text-blue-800 text-xs font-bold">
+              📦 ${escapeHtml(s.bookingStatus)}
+            </span>
+            <span class="px-3 py-1 rounded-xl bg-indigo-50 text-indigo-800 text-xs font-bold">
+              🍽️ ${escapeHtml(cfg.serviceMode)}
+            </span>
+          </div>
+
+          <!-- Call / WhatsApp / Directions -->
+          <div class="grid grid-cols-3 gap-2.5">
+            <div class="min-h-[46px] rounded-xl bg-[#4F46E5] text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5">
+              📞 Call
+            </div>
+            <div class="min-h-[46px] rounded-xl bg-emerald-600 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5">
+              💬 WhatsApp
+            </div>
+            <div class="min-h-[46px] rounded-xl bg-blue-50 text-blue-800 border border-blue-200 font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5">
+              🗺️ Directions
+            </div>
+          </div>
+
+          <!-- Facilities -->
+          <div class="flex flex-wrap gap-1.5">
+            ${cfg.facilities
+              .map((f) => `<span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold">✓ ${escapeHtml(f)}</span>`)
+              .join('')}
+          </div>
+        </div>
+
+        <!-- Posted Notice -->
+        ${
+          state.notices.length
+            ? `
+              <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 space-y-1">
+                <span class="text-[11px] font-extrabold uppercase tracking-wider text-amber-800">📢 Latest Notice</span>
+                <p class="text-sm font-bold text-slate-900">${escapeHtml(state.notices[0].text)}</p>
+              </div>
+            `
+            : ''
+        }
+
+        <!-- Today's Lunch & Dinner Menus with Food Photos -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          ${[
+            { title: "☀️ Today's Lunch", data: lunch },
+            { title: "🌙 Today's Dinner", data: dinner }
+          ]
+            .map(
+              (m) => `
+                <div class="bg-white rounded-2xl border border-indigo-100 overflow-hidden shadow-xs flex flex-col">
+                  ${
+                    m.data.photoUrl
+                      ? `
+                        <div class="relative">
+                          <img src="${m.data.photoUrl}" alt="${m.title}" class="w-full h-36 object-cover" />
+                          <span class="absolute bottom-2 left-2 px-2.5 py-0.5 rounded-full bg-slate-900/75 text-white text-[10px] font-bold">
+                            🕒 ${escapeHtml(m.data.photoTime)}
+                          </span>
+                        </div>
+                      `
+                      : ''
+                  }
+                  <div class="p-4 space-y-2 flex-1">
+                    <h4 class="font-extrabold text-slate-900 text-sm">${m.title}</h4>
+                    ${
+                      m.data.specialDish
+                        ? `<span class="inline-block px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 text-xs font-extrabold">⭐ Special: ${escapeHtml(m.data.specialDish)}</span>`
+                        : ''
+                    }
+                    <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">${escapeHtml(m.data.items)}</p>
+                  </div>
+                </div>
+              `
+            )
+            .join('')}
+        </div>
+
+        <!-- Meal Plans -->
+        <div class="bg-white rounded-2xl border border-indigo-100 p-4 space-y-3">
+          <h4 class="font-extrabold text-slate-900 text-base">🍽️ Meal Plans &amp; Tiffin Rates</h4>
+          <div class="divide-y divide-slate-100">
+            ${activePlans
+              .map(
+                (p) => `
+                  <div class="py-3 first:pt-0 last:pb-0 flex items-start justify-between gap-3">
+                    <div>
+                      <div class="flex items-center gap-1.5 flex-wrap">
+                        <span class="font-bold text-slate-900 text-sm">${escapeHtml(p.name)}</span>
+                        ${p.popular ? `<span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[10px] font-extrabold">⭐ Popular</span>` : ''}
+                      </div>
+                      <p class="text-xs text-slate-600 mt-0.5">${escapeHtml(p.included)}</p>
+                    </div>
+                    <div class="text-right shrink-0">
+                      <span class="text-base font-extrabold text-[#4F46E5]">₹${Number(p.price).toLocaleString('en-IN')}</span>
+                      <span class="block text-[11px] text-slate-500">${escapeHtml(p.cycle)}</span>
+                    </div>
+                  </div>
+                `
+              )
+              .join('')}
+          </div>
+        </div>
+      `;
+
+      const modal = document.getElementById('studentPreviewModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeStudentPreview() {
+      const modal = document.getElementById('studentPreviewModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    /* =========================================================================
+       12. INITIALIZE
+       ========================================================================= */
+    renderAll();
+  </script>
+</body>
+</html>

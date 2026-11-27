@@ -27,9 +27,17 @@ export default function App() {
         }
       />
 
-      {/* Vendor Portal */}
+      {/* Vendor Onboarding & Type-Specific Dashboard Routes */}
       <Route
         path="/vendor"
+        element={
+          <ProtectedRoute allowedRoles={['VENDOR']}>
+            <VendorPortalPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/vendor/:businessType"
         element={
           <ProtectedRoute allowedRoles={['VENDOR']}>
             <VendorPortalPage />

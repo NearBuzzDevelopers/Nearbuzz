@@ -1,0 +1,2243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NearBuzz — Books &amp; Stationery Vendor Portal (4/6)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: #F4FBF7;
+      color: #0F172A;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .campus-map-bg {
+      background-color: #E8F5EE;
+      background-image:
+        linear-gradient(to right, rgba(5, 150, 105, 0.09) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(5, 150, 105, 0.09) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+    .fade-in {
+      animation: fadeIn 0.2s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .mic-pulse {
+      animation: micPulse 1.2s infinite;
+    }
+    @keyframes micPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.45); }
+      50% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-emerald-200 selection:text-emerald-950">
+
+  <!-- ==================== STICKY TOP NAVIGATION BAR ==================== -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-emerald-100 shadow-xs">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+      <!-- Brand + Shop Name Badge -->
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="w-11 h-11 rounded-2xl bg-[#059669] text-white font-extrabold text-base flex items-center justify-center shadow-sm shrink-0">
+          NB
+        </div>
+        <div class="min-w-0">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-lg sm:text-xl font-extrabold tracking-tight text-[#0F172A]">NearBuzz</span>
+            <span class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-[#ECFDF5] text-[#065F46] border border-emerald-200">
+              📚 4/6 Books &amp; Stationery
+            </span>
+          </div>
+          <p id="navShopName" class="text-xs font-semibold text-slate-600 truncate mt-0.5">
+            Vidya Book Depot &amp; Stationery
+          </p>
+        </div>
+      </div>
+
+      <!-- Prominent Indigo/Blue Preview Button -->
+      <button
+        onclick="openStudentPreview()"
+        class="min-h-[48px] px-4 sm:px-5 py-2.5 rounded-2xl bg-[#4F46E5] hover:bg-indigo-700 active:scale-[0.99] text-white font-bold text-xs sm:text-sm shadow-sm transition flex items-center gap-2 cursor-pointer"
+      >
+        <span class="text-base">👀</span>
+        <span>Preview What Students See</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN WORKSPACE ==================== -->
+  <main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-5 sm:py-7 space-y-6">
+
+    <!-- ==================== HORIZONTAL SCROLLABLE 5-TAB BAR ==================== -->
+    <nav class="bg-white rounded-2xl border border-emerald-100 shadow-xs p-2 overflow-x-auto no-scrollbar" aria-label="Books and stationery dashboard tabs">
+      <div id="tabsBar" class="flex items-center gap-2 min-w-max lg:min-w-0 lg:grid lg:grid-cols-5">
+        <!-- Populated dynamically -->
+      </div>
+    </nav>
+
+    <!-- ==================== ACTIVE TAB CONTENT ==================== -->
+    <section id="tabContent" class="fade-in">
+      <!-- Populated dynamically -->
+    </section>
+
+  </main>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="mt-auto border-t border-emerald-100 bg-white py-5">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
+      <span><strong>NearBuzz Books &amp; Stationery Portal (4/6)</strong> — Bholaram Ustad Marg, Near Campus Gate 1, Indore</span>
+      <span class="text-[#065F46] font-semibold">Owner Helpdesk (WhatsApp): +91 98260 00112</span>
+    </div>
+  </footer>
+
+  <!-- ==================== QUICK ADD COMMON STATIONERY MODAL ==================== -->
+  <div id="quickAddModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 backdrop-blur-xs p-3 sm:p-6 overflow-y-auto">
+    <div class="bg-white w-full max-w-xl rounded-2xl shadow-2xl border border-emerald-100 overflow-hidden my-auto max-h-[90vh] flex flex-col fade-in">
+      <div class="bg-[#059669] text-white px-5 py-4 flex items-center justify-between gap-3">
+        <div>
+          <span class="text-[11px] font-bold uppercase tracking-wider bg-white/20 px-2.5 py-0.5 rounded-full">1-Tap Starter Checklist</span>
+          <h2 class="text-lg sm:text-xl font-extrabold mt-1">⚡ Quick Add Common Stationery</h2>
+        </div>
+        <button
+          onclick="closeQuickAddModal()"
+          aria-label="Close quick add modal"
+          class="w-10 h-10 rounded-xl bg-white/15 hover:bg-white/25 text-white font-bold text-lg flex items-center justify-center cursor-pointer"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div id="quickAddBody" class="p-4 sm:p-5 overflow-y-auto space-y-2.5 bg-slate-50">
+        <!-- Populated dynamically -->
+      </div>
+
+      <div class="px-5 py-4 bg-white border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <span id="quickAddCountLabel" class="text-xs sm:text-sm font-bold text-slate-600">0 items selected</span>
+        <div class="flex items-center gap-2.5 w-full sm:w-auto">
+          <button
+            type="button"
+            onclick="closeQuickAddModal()"
+            class="flex-1 sm:flex-none min-h-[46px] px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm cursor-pointer"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onclick="confirmQuickAddStationery()"
+            class="flex-1 sm:flex-none min-h-[46px] px-6 py-2 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-extrabold text-sm shadow-sm cursor-pointer"
+          >
+            + Add Selected Items
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== LIVE STUDENT PREVIEW MODAL (INDIGO & BLUE #4F46E5) ==================== -->
+  <div id="studentPreviewModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/65 backdrop-blur-xs p-3 sm:p-6 overflow-y-auto">
+    <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl border border-indigo-100 overflow-hidden my-auto max-h-[92vh] flex flex-col fade-in">
+      <!-- Indigo Header -->
+      <div class="bg-gradient-to-r from-[#4F46E5] to-blue-600 text-white px-5 py-4 flex items-center justify-between gap-3">
+        <div>
+          <span class="inline-block text-[11px] font-bold uppercase tracking-wider bg-white/20 px-2.5 py-0.5 rounded-full">
+            Student App View
+          </span>
+          <h2 class="text-lg sm:text-xl font-extrabold mt-1">How Students See Your Bookstore</h2>
+        </div>
+        <button
+          onclick="closeStudentPreview()"
+          aria-label="Close student preview"
+          class="w-11 h-11 rounded-xl bg-white/15 hover:bg-white/25 text-white font-bold text-lg flex items-center justify-center cursor-pointer"
+        >
+          ✕
+        </button>
+      </div>
+
+      <!-- Dynamic Student Preview Content -->
+      <div id="studentPreviewBody" class="p-4 sm:p-6 overflow-y-auto space-y-5 bg-slate-50">
+        <!-- Populated dynamically -->
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-5 py-3.5 bg-white border-t border-slate-200 flex items-center justify-between gap-3">
+        <span class="text-xs text-slate-500">All books, stationery, print rates &amp; policies reflect live here.</span>
+        <button
+          onclick="closeStudentPreview()"
+          class="min-h-[46px] px-5 py-2.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-sm cursor-pointer"
+        >
+          Back to Owner Portal
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== FLOATING TOAST CONTAINER ==================== -->
+  <div id="toastContainer" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none flex flex-col gap-2 items-center w-[92%] max-w-md"></div>
+
+  <!-- ==================== APPLICATION SCRIPT ==================== -->
+  <script>
+    /* =========================================================================
+       1. CONSTANTS, COURSE TAGS, QUICK-ADD STARTER & CAMPUS LANDMARKS
+       ========================================================================= */
+    const COURSE_TAGS = [
+      'Engineering / B.Tech',
+      'Medical',
+      'Competitive (GATE/SSC/UPSC)',
+      'General College'
+    ];
+
+    const BOOK_CONDITIONS = ['New Book', 'Second-Hand (Used)'];
+
+    const SELL_AS_OPTIONS = [
+      { key: 'Single Item', label: 'Single Item' },
+      { key: 'Pack', label: 'Pack (e.g. Pack of 6)' },
+      { key: 'Combo Bundle', label: 'Combo Bundle' }
+    ];
+
+    const QUICK_ADD_STARTER = [
+      { id: 'qa1', name: 'Classmate Register Pack of 6', sellAs: 'Pack', packSize: 'Pack of 6 Notebooks', price: 320, checked: false },
+      { id: 'qa2', name: 'Blue/Black Pens Pack of 10', sellAs: 'Pack', packSize: 'Pack of 10 Pens', price: 85, checked: false },
+      { id: 'qa3', name: 'Practical Lab File', sellAs: 'Single Item', packSize: '1 Hardbound File', price: 45, checked: false },
+      { id: 'qa4', name: 'Scientific Calculator fx-991EX', sellAs: 'Single Item', packSize: 'Original with Warranty', price: 1150, checked: false },
+      { id: 'qa5', name: 'Mini Drafter + Sheet Tube', sellAs: 'Combo Bundle', packSize: 'Drafter + Plastic Container', price: 420, checked: false },
+      { id: 'qa6', name: 'Lab Coat / Apron', sellAs: 'Single Item', packSize: 'White Cotton (M/L/XL)', price: 280, checked: false },
+      { id: 'qa7', name: 'Sticky Notes + Highlighter Combo', sellAs: 'Combo Bundle', packSize: '4 Highlighters + 2 Pads', price: 140, checked: false },
+      { id: 'qa8', name: 'Exam Writing Pad', sellAs: 'Single Item', packSize: 'Transparent Clip Board', price: 80, checked: false }
+    ];
+
+    const ALL_FACILITIES = [
+      'Buyback Guarantee',
+      'Exam Guides & Notes',
+      'Drafting & Drawing Tools',
+      'Lab Coats / Aprons',
+      'Home Delivery',
+      'WhatsApp Order',
+      'UPI Accepted'
+    ];
+
+    const NOTICE_TEMPLATES = [
+      'New Semester Books Arrived! 50% Buyback on Old Books',
+      'We Buy Second-Hand B.Tech & Exam Books Today',
+      'Exam Combo: 6 Registers + 5 Pens for ₹299'
+    ];
+
+    const CAMPUS_LANDMARKS = [
+      { name: 'Campus Gate 1 (Bholaram)', x: 46, y: 45, lat: 22.6915, lng: 75.8674 },
+      { name: 'Bholaram Ustad Marg Center', x: 58, y: 52, lat: 22.6911, lng: 75.8691 },
+      { name: 'Bhawarkua Square', x: 22, y: 28, lat: 22.6948, lng: 75.8622 },
+      { name: 'DAVV Takshashila Gate', x: 76, y: 34, lat: 22.6889, lng: 75.8734 },
+      { name: 'Holkar College Road', x: 28, y: 74, lat: 22.6961, lng: 75.8651 }
+    ];
+
+    const DAYS_LIST = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+    /* =========================================================================
+       2. APPLICATION STATE (PRE-LOADED WITH VIDYA BOOK DEPOT & STATIONERY)
+       ========================================================================= */
+    const state = {
+      activeTab: 'books', // 'books' | 'stationery' | 'print' | 'policies' | 'info'
+      addBookExpanded: false,
+      addStationeryExpanded: false,
+      bookSearch: '',
+      bookFilter: 'All', // 'All' | 'New' | 'Second-Hand' | 'Out of Stock Only'
+      stationerySearch: '',
+      stationeryOutOfStockOnly: false,
+      studentPreviewSearch: '',
+      listeningField: null, // 'bookTitle' | 'stationeryName' | 'noticeText' | null
+
+      shop: {
+        name: 'Vidya Book Depot & Stationery',
+        ownerName: 'Mahesh Agarwal',
+        phone: '98931 60412',
+        address: 'Shop 3, Bholaram Ustad Marg, Near Campus Gate 1, Indore',
+        mapPin: {
+          x: 46,
+          y: 45,
+          lat: 22.6915,
+          lng: 75.8674,
+          landmark: 'Near Campus Gate 1 (Bholaram)'
+        }
+      },
+
+      books: [
+        {
+          id: 'bk_1',
+          title: 'Engineering Mathematics Vol. 1 (H.K. Dass)',
+          courseTag: 'Engineering / B.Tech',
+          condition: 'Second-Hand (Used)',
+          price: 220,
+          qty: 6,
+          inStock: true,
+          buyback: true
+        },
+        {
+          id: 'bk_2',
+          title: 'Data Structures & Algorithms in Java',
+          courseTag: 'Engineering / B.Tech',
+          condition: 'New Book',
+          price: 480,
+          qty: 12,
+          inStock: true,
+          buyback: true
+        },
+        {
+          id: 'bk_3',
+          title: 'GATE CS 2027 Solved Papers',
+          courseTag: 'Competitive (GATE/SSC/UPSC)',
+          condition: 'New Book',
+          price: 650,
+          qty: 8,
+          inStock: true,
+          buyback: false
+        },
+        {
+          id: 'bk_4',
+          title: 'Engineering Drawing (N.D. Bhatt)',
+          courseTag: 'Engineering / B.Tech',
+          condition: 'Second-Hand (Used)',
+          price: 180,
+          qty: 4,
+          inStock: true,
+          buyback: true
+        }
+      ],
+
+      newBook: {
+        title: '',
+        courseTag: 'Engineering / B.Tech',
+        condition: 'New Book',
+        price: '',
+        qty: 1,
+        buyback: true
+      },
+
+      stationery: [
+        {
+          id: 'st_1',
+          name: 'Classmate Spiral Register Bundle',
+          sellAs: 'Pack',
+          packSize: 'Pack of 6 Notebooks (200pg)',
+          price: 320,
+          inStock: true
+        },
+        {
+          id: 'st_2',
+          name: 'Casio Scientific Calculator fx-991EX',
+          sellAs: 'Single Item',
+          packSize: 'Original Box + 3-Yr Warranty',
+          price: 1150,
+          inStock: true
+        },
+        {
+          id: 'st_3',
+          name: 'Engineering Drawing Starter Combo',
+          sellAs: 'Combo Bundle',
+          packSize: 'Mini Drafter + Sheet Tube + Clips',
+          price: 420,
+          inStock: true
+        },
+        {
+          id: 'st_4',
+          name: 'Practical Lab File + Graph Sheets',
+          sellAs: 'Pack',
+          packSize: 'Pack of 2 Files',
+          price: 85,
+          inStock: false
+        }
+      ],
+
+      newStationery: {
+        name: '',
+        sellAs: 'Single Item',
+        packSize: '',
+        price: ''
+      },
+
+      quickAddItems: JSON.parse(JSON.stringify(QUICK_ADD_STARTER)),
+
+      printAddon: {
+        enabled: true,
+        whatsappPdfAccepted: true,
+        rates: [
+          { id: 'pr_1', name: 'B&W Print / Xerox (Single Side)', price: 2, unit: 'Per Page' },
+          { id: 'pr_2', name: 'B&W Print / Xerox (Back-to-Back)', price: 3, unit: 'Per Page' },
+          { id: 'pr_3', name: 'Color Print', price: 10, unit: 'Per Page' },
+          { id: 'pr_4', name: 'Spiral Binding', price: 35, unit: 'Per Copy' },
+          { id: 'pr_5', name: 'A4 Lamination', price: 20, unit: 'Per Sheet' }
+        ]
+      },
+
+      policies: {
+        mainFocus: 'Engineering',
+        secondHand: 'Buy & Sell Both',
+        buybackPolicy: '50% Buyback After Semester',
+        facilities: [
+          'Buyback Guarantee',
+          'Exam Guides & Notes',
+          'Drafting & Drawing Tools',
+          'Lab Coats / Aprons',
+          'WhatsApp Order',
+          'UPI Accepted'
+        ]
+      },
+
+      hours: DAYS_LIST.map((day, idx) => ({
+        day,
+        open: idx === 6 ? false : true,
+        from: '09:00',
+        to: '21:00'
+      })),
+
+      notices: [
+        {
+          id: 'not_1',
+          text: 'New Semester Books Arrived! 50% Buyback on Old Books',
+          time: 'Today, 10:00 AM'
+        }
+      ],
+      noticeDraft: '',
+
+      shopPhotos: [
+        { id: 'sp_1', label: 'Vidya Book Depot Front', url: 'https://placehold.co/600x400/ECFDF5/065F46?text=Vidya+Book+Depot+Front' },
+        { id: 'sp_2', label: 'Second-Hand B.Tech Shelves', url: 'https://placehold.co/600x400/D1FAE5/065F46?text=Engineering+%26+GATE+Books' }
+      ]
+    };
+
+    /* =========================================================================
+       3. UTILITIES (ESCAPE, TIME FORMAT, TOASTS)
+       ========================================================================= */
+    function escapeHtml(str) {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function getCurrentTimeLabel() {
+      return new Date().toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true });
+    }
+
+    function formatTime24To12(t24) {
+      if (!t24) return '';
+      const [hStr, mStr] = t24.split(':');
+      let h = parseInt(hStr, 10);
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12 || 12;
+      return `${h}:${mStr} ${ampm}`;
+    }
+
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const el = document.createElement('div');
+      const palette =
+        type === 'error'
+          ? 'bg-red-700 text-white border-red-800'
+          : type === 'info'
+          ? 'bg-slate-900 text-white border-slate-700'
+          : 'bg-[#065F46] text-white border-emerald-900';
+
+      el.className = `pointer-events-auto px-4 py-3 rounded-2xl shadow-lg border text-sm font-semibold flex items-center gap-2.5 fade-in ${palette}`;
+      el.innerHTML = `<span>${type === 'error' ? '⚠️' : type === 'info' ? 'ℹ️' : '✅'}</span><span>${escapeHtml(message)}</span>`;
+      container.appendChild(el);
+
+      setTimeout(() => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(8px)';
+        el.style.transition = 'all 0.25s ease';
+        setTimeout(() => el.remove(), 260);
+      }, 2800);
+    }
+
+    /* =========================================================================
+       4. WEB SPEECH API — VOICE TO TEXT (WITH GRACEFUL FALLBACK TOAST)
+       ========================================================================= */
+    function startVoiceInput(targetField) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        showToast('Voice typing is not supported in this browser. Please type normally.', 'info');
+        return;
+      }
+
+      try {
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'en-IN';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        state.listeningField = targetField;
+        renderTabContent();
+        showToast('Listening... Speak clearly now', 'info');
+
+        recognition.onresult = (event) => {
+          const spoken = event.results[0][0].transcript;
+          if (targetField === 'bookTitle') {
+            state.newBook.title = state.newBook.title ? `${state.newBook.title} ${spoken}` : spoken;
+          } else if (targetField === 'stationeryName') {
+            state.newStationery.name = state.newStationery.name ? `${state.newStationery.name} ${spoken}` : spoken;
+          } else if (targetField === 'noticeText') {
+            state.noticeDraft = state.noticeDraft ? `${state.noticeDraft} ${spoken}` : spoken;
+          }
+          state.listeningField = null;
+          renderTabContent();
+          showToast('Voice text added!');
+        };
+
+        recognition.onerror = () => {
+          state.listeningField = null;
+          renderTabContent();
+          showToast('Could not hear clearly. Tap mic again or type normally.', 'error');
+        };
+
+        recognition.onend = () => {
+          if (state.listeningField === targetField) {
+            state.listeningField = null;
+            renderTabContent();
+          }
+        };
+
+        recognition.start();
+      } catch (e) {
+        state.listeningField = null;
+        renderTabContent();
+        showToast('Microphone unavailable. Please type instead.', 'info');
+      }
+    }
+
+    /* =========================================================================
+       5. MASTER RENDER FUNCTIONS
+       ========================================================================= */
+    function renderAll() {
+      document.getElementById('navShopName').textContent = state.shop.name;
+      renderTabsBar();
+      renderTabContent();
+    }
+
+    function renderTabsBar() {
+      const tabs = [
+        { id: 'books', icon: '📚', label: 'Books Catalog' },
+        { id: 'stationery', icon: '✏️', label: 'Stationery & Bundles' },
+        { id: 'print', icon: '🖨️', label: 'Print Add-On' },
+        { id: 'policies', icon: '⚙️', label: 'Policies & Hours' },
+        { id: 'info', icon: '📍', label: 'Shop Info & GPS' }
+      ];
+
+      document.getElementById('tabsBar').innerHTML = tabs
+        .map((t) => {
+          const active = state.activeTab === t.id;
+          return `
+            <button
+              onclick="switchTab('${t.id}')"
+              class="min-h-[52px] px-3.5 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap ${
+                active
+                  ? 'bg-[#059669] text-white shadow-sm'
+                  : 'bg-white text-slate-700 hover:bg-[#ECFDF5] hover:text-[#065F46]'
+              }"
+            >
+              <span class="text-base">${t.icon}</span>
+              <span>${t.label}</span>
+            </button>
+          `;
+        })
+        .join('');
+    }
+
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+      renderTabsBar();
+      renderTabContent();
+    }
+
+    function renderTabContent() {
+      const container = document.getElementById('tabContent');
+      if (state.activeTab === 'books') {
+        container.innerHTML = renderBooksTab();
+      } else if (state.activeTab === 'stationery') {
+        container.innerHTML = renderStationeryTab();
+      } else if (state.activeTab === 'print') {
+        container.innerHTML = renderPrintAddonTab();
+      } else if (state.activeTab === 'policies') {
+        container.innerHTML = renderPoliciesAndHoursTab();
+      } else if (state.activeTab === 'info') {
+        container.innerHTML = renderShopInfoTab();
+        attachMapInteractions();
+      }
+    }
+
+    /* =========================================================================
+       6. TAB 1 — BOOKS CATALOG (DEFAULT TAB)
+       ========================================================================= */
+    function renderBooksTab() {
+      const totalBooks = state.books.length;
+      const inStockBooks = state.books.filter((b) => b.inStock && b.qty > 0).length;
+      const secondHandBooks = state.books.filter((b) => b.condition.startsWith('Second-Hand')).length;
+
+      const nb = state.newBook;
+      const isMicActive = state.listeningField === 'bookTitle';
+
+      const q = state.bookSearch.trim().toLowerCase();
+      const filteredBooks = state.books.filter((b) => {
+        const matchesSearch =
+          !q || b.title.toLowerCase().includes(q) || b.courseTag.toLowerCase().includes(q);
+        if (!matchesSearch) return false;
+        if (state.bookFilter === 'New') return b.condition === 'New Book';
+        if (state.bookFilter === 'Second-Hand') return b.condition.startsWith('Second-Hand');
+        if (state.bookFilter === 'Out of Stock Only') return !b.inStock || b.qty <= 0;
+        return true;
+      });
+
+      const filterPills = ['All', 'New', 'Second-Hand', 'Out of Stock Only'];
+
+      return `
+        <div class="space-y-6">
+          <!-- Top Summary Strip -->
+          <div class="grid grid-cols-3 gap-3 sm:gap-4">
+            <div class="bg-white rounded-2xl border border-emerald-100 shadow-xs p-4 text-center">
+              <div class="text-2xl sm:text-3xl font-extrabold text-[#0F172A]">${totalBooks}</div>
+              <div class="text-xs sm:text-sm font-bold text-slate-600 mt-0.5">Total Books</div>
+            </div>
+            <div class="bg-[#ECFDF5] rounded-2xl border border-emerald-200 shadow-xs p-4 text-center">
+              <div class="text-2xl sm:text-3xl font-extrabold text-[#065F46]">${inStockBooks}</div>
+              <div class="text-xs sm:text-sm font-bold text-[#065F46] mt-0.5">In Stock</div>
+            </div>
+            <div class="bg-amber-50 rounded-2xl border border-amber-200 shadow-xs p-4 text-center">
+              <div class="text-2xl sm:text-3xl font-extrabold text-amber-900">${secondHandBooks}</div>
+              <div class="text-xs sm:text-sm font-bold text-amber-800 mt-0.5">Second-Hand</div>
+            </div>
+          </div>
+
+          <!-- Search Bar + Quick Filter Pills -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-4 sm:p-5 space-y-3.5">
+            <input
+              type="text"
+              value="${escapeHtml(state.bookSearch)}"
+              placeholder="🔍 Search book title or course (e.g. Maths, Java, GATE)..."
+              oninput="state.bookSearch = this.value; renderTabContent();"
+              class="w-full min-h-[50px] px-4 py-2.5 rounded-xl bg-slate-50 border-2 border-slate-200 text-sm sm:text-base font-medium focus:outline-none focus:border-[#059669]"
+            />
+            <div class="flex flex-wrap gap-2">
+              ${filterPills
+                .map((fp) => {
+                  const active = state.bookFilter === fp;
+                  return `
+                    <button
+                      type="button"
+                      onclick="state.bookFilter = '${fp}'; renderTabContent();"
+                      class="min-h-[44px] px-4 py-2 rounded-full border-2 font-bold text-xs sm:text-sm transition cursor-pointer ${
+                        active
+                          ? fp === 'Out of Stock Only'
+                            ? 'bg-red-600 border-red-600 text-white'
+                            : 'bg-[#059669] border-[#059669] text-white'
+                          : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-400'
+                      }"
+                    >
+                      ${active ? '✓ ' : ''}${fp}
+                    </button>
+                  `;
+                })
+                .join('')}
+            </div>
+          </div>
+
+          <!-- Expandable "+ Add a New Book" Card -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm overflow-hidden">
+            <button
+              type="button"
+              onclick="state.addBookExpanded = !state.addBookExpanded; renderTabContent();"
+              class="w-full px-5 sm:px-6 py-4 bg-[#ECFDF5]/80 hover:bg-[#ECFDF5] flex items-center justify-between gap-3 text-left cursor-pointer border-b border-emerald-100"
+            >
+              <div>
+                <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">➕ Add a New Book</h2>
+                <p class="text-xs sm:text-sm text-slate-600">Add new or second-hand college textbooks &amp; exam guides</p>
+              </div>
+              <span class="min-h-[40px] px-3.5 rounded-xl bg-white border border-emerald-200 text-[#065F46] font-bold text-sm flex items-center">
+                ${state.addBookExpanded ? 'Hide ▲' : 'Open ▼'}
+              </span>
+            </button>
+
+            ${
+              state.addBookExpanded
+                ? `
+                  <div class="p-5 sm:p-6 space-y-5">
+                    <!-- Book Title + Voice Mic -->
+                    <div class="space-y-2">
+                      <label class="block text-sm sm:text-base font-bold text-[#0F172A]">1. Book Title &amp; Author</label>
+                      <div class="flex items-center gap-2.5">
+                        <input
+                          type="text"
+                          value="${escapeHtml(nb.title)}"
+                          placeholder="e.g. Engineering Mathematics Vol. 1 (H.K. Dass)"
+                          oninput="state.newBook.title = this.value"
+                          class="flex-1 min-h-[52px] px-4 py-3 rounded-xl bg-white border-2 border-slate-200 font-bold text-sm sm:text-base focus:outline-none focus:border-[#059669]"
+                        />
+                        <button
+                          type="button"
+                          onclick="startVoiceInput('bookTitle')"
+                          aria-label="Speak book title"
+                          class="min-w-[52px] h-[52px] px-3.5 rounded-xl border-2 font-bold text-sm flex items-center justify-center gap-1.5 cursor-pointer transition ${
+                            isMicActive
+                              ? 'bg-red-600 border-red-600 text-white mic-pulse'
+                              : 'bg-[#ECFDF5] hover:bg-emerald-100 border-emerald-300 text-[#065F46]'
+                          }"
+                        >
+                          <span class="text-lg">🎙️</span>
+                          <span class="hidden sm:inline">${isMicActive ? 'Listening' : 'Speak'}</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Course / Exam Tag Pills -->
+                    <div class="space-y-2">
+                      <label class="block text-sm sm:text-base font-bold text-[#0F172A]">2. Course / Exam Tag</label>
+                      <div class="flex flex-wrap gap-2">
+                        ${COURSE_TAGS.map((tag) => {
+                          const active = nb.courseTag === tag;
+                          return `
+                            <button
+                              type="button"
+                              onclick="state.newBook.courseTag = '${tag}'; renderTabContent();"
+                              class="min-h-[46px] px-4 py-2 rounded-xl border-2 font-bold text-xs sm:text-sm transition cursor-pointer ${
+                                active
+                                  ? 'bg-[#059669] border-[#059669] text-white shadow-xs'
+                                  : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-400 hover:bg-[#ECFDF5]/60'
+                              }"
+                            >
+                              ${active ? '✓ ' : ''}${tag}
+                            </button>
+                          `;
+                        }).join('')}
+                      </div>
+                    </div>
+
+                    <!-- Condition Large Tappable Buttons -->
+                    <div class="space-y-2">
+                      <label class="block text-sm sm:text-base font-bold text-[#0F172A]">3. Book Condition</label>
+                      <div class="grid grid-cols-2 gap-3 sm:max-w-md">
+                        ${BOOK_CONDITIONS.map((cond) => {
+                          const active = nb.condition === cond;
+                          return `
+                            <button
+                              type="button"
+                              onclick="state.newBook.condition = '${cond}'; renderTabContent();"
+                              class="min-h-[52px] px-4 py-3 rounded-xl border-2 font-extrabold text-sm transition cursor-pointer ${
+                                active
+                                  ? 'bg-[#059669] border-[#059669] text-white shadow-xs'
+                                  : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-400'
+                              }"
+                            >
+                              ${active ? '✓ ' : ''}${cond}
+                            </button>
+                          `;
+                        }).join('')}
+                      </div>
+                    </div>
+
+                    <!-- Price & Stock Quantity Stepper -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div class="space-y-2">
+                        <label class="block text-sm sm:text-base font-bold text-[#0F172A]">4. Price (₹)</label>
+                        <div class="flex items-center">
+                          <span class="min-h-[52px] px-4 flex items-center rounded-l-xl bg-slate-100 border-2 border-r-0 border-slate-200 font-extrabold text-lg text-slate-700">₹</span>
+                          <input
+                            type="number"
+                            min="0"
+                            value="${escapeHtml(nb.price)}"
+                            placeholder="e.g. 250"
+                            oninput="state.newBook.price = this.value"
+                            class="w-full min-h-[52px] px-4 py-3 rounded-r-xl bg-white border-2 border-slate-200 text-lg font-extrabold focus:outline-none focus:border-[#059669]"
+                          />
+                        </div>
+                      </div>
+
+                      <div class="space-y-2">
+                        <label class="block text-sm sm:text-base font-bold text-[#0F172A]">5. Stock Quantity</label>
+                        <div class="flex items-center gap-2.5">
+                          <button
+                            type="button"
+                            onclick="state.newBook.qty = Math.max(0, state.newBook.qty - 1); renderTabContent();"
+                            class="w-14 h-[52px] rounded-xl bg-slate-100 hover:bg-slate-200 border-2 border-slate-200 text-2xl font-extrabold cursor-pointer"
+                          >−</button>
+                          <div class="flex-1 h-[52px] rounded-xl bg-[#ECFDF5] border-2 border-emerald-200 flex items-center justify-center text-xl font-extrabold text-[#065F46]">
+                            ${nb.qty}
+                          </div>
+                          <button
+                            type="button"
+                            onclick="state.newBook.qty += 1; renderTabContent();"
+                            class="w-14 h-[52px] rounded-xl bg-emerald-100 hover:bg-emerald-200 border-2 border-emerald-300 text-2xl font-extrabold text-[#065F46] cursor-pointer"
+                          >+</button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Buyback Pill + Submit -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
+                      <button
+                        type="button"
+                        onclick="state.newBook.buyback = !state.newBook.buyback; renderTabContent();"
+                        class="min-h-[48px] px-4 py-2.5 rounded-full border-2 font-bold text-sm transition cursor-pointer flex items-center gap-2 ${
+                          nb.buyback
+                            ? 'bg-[#ECFDF5] border-[#059669] text-[#065F46]'
+                            : 'bg-white border-slate-200 text-slate-600'
+                        }"
+                      >
+                        <span>${nb.buyback ? '✓' : '+'}</span>
+                        <span>♻️ 50% Buyback Available</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onclick="addNewBook()"
+                        class="min-h-[52px] px-8 py-3 rounded-2xl bg-[#059669] hover:bg-[#047857] text-white font-extrabold text-base shadow-sm cursor-pointer"
+                      >
+                        + Add Book to Catalog
+                      </button>
+                    </div>
+                  </div>
+                `
+                : ''
+            }
+          </div>
+
+          <!-- Books List -->
+          <div class="space-y-3.5">
+            <div class="flex items-center justify-between px-1">
+              <h3 class="text-lg font-extrabold text-[#0F172A]">Your Books (${filteredBooks.length})</h3>
+              <span class="text-xs text-slate-500">Use − / + to update copies live</span>
+            </div>
+
+            ${
+              filteredBooks.length === 0
+                ? `
+                  <div class="bg-white rounded-2xl border border-dashed border-emerald-300 p-10 text-center">
+                    <p class="text-3xl mb-2">📚</p>
+                    <p class="font-bold text-slate-800">No books match your filter</p>
+                    <p class="text-sm text-slate-500 mt-1">Try clearing the search box or tapping "All".</p>
+                  </div>
+                `
+                : filteredBooks
+                    .map((b) => {
+                      const isSecondHand = b.condition.startsWith('Second-Hand');
+                      const isAvailable = b.inStock && b.qty > 0;
+                      return `
+                        <div class="bg-white rounded-2xl border-2 ${
+                          isAvailable ? 'border-emerald-100' : 'border-red-200 bg-red-50/20'
+                        } shadow-xs p-4 sm:p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                          <!-- Book Info -->
+                          <div class="space-y-2 flex-1 min-w-0">
+                            <div class="flex flex-wrap items-center gap-2">
+                              <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold ${
+                                isSecondHand
+                                  ? 'bg-amber-100 text-amber-900'
+                                  : 'bg-sky-100 text-sky-800'
+                              }">
+                                ${isSecondHand ? '♻️ Second-Hand' : '✨ New Book'}
+                              </span>
+                              <span class="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-xs font-bold">
+                                ${escapeHtml(b.courseTag)}
+                              </span>
+                              ${
+                                b.buyback
+                                  ? `<span class="px-2.5 py-0.5 rounded-full bg-[#ECFDF5] text-[#065F46] border border-emerald-200 text-xs font-bold">50% Buyback</span>`
+                                  : ''
+                              }
+                            </div>
+
+                            <h4 class="text-base sm:text-lg font-extrabold text-[#0F172A]">${escapeHtml(b.title)}</h4>
+                            <div class="text-xl font-extrabold text-[#065F46]">₹${b.price}</div>
+                          </div>
+
+                          <!-- Controls: Live Qty Stepper + In Stock Toggle + Copy + Delete -->
+                          <div class="flex flex-wrap items-center gap-2.5 shrink-0">
+                            <div class="flex items-center gap-1.5 bg-slate-50 border-2 border-slate-200 rounded-xl p-1">
+                              <button
+                                type="button"
+                                onclick="adjustBookQty('${b.id}', -1)"
+                                aria-label="Decrease quantity"
+                                class="w-10 h-10 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-xl font-extrabold cursor-pointer"
+                              >−</button>
+                              <div class="px-2 text-center min-w-[54px]">
+                                <div class="text-base font-extrabold text-[#0F172A] leading-none">${b.qty}</div>
+                                <div class="text-[10px] font-bold text-slate-500 mt-0.5">Copies</div>
+                              </div>
+                              <button
+                                type="button"
+                                onclick="adjustBookQty('${b.id}', 1)"
+                                aria-label="Increase quantity"
+                                class="w-10 h-10 rounded-lg bg-[#ECFDF5] hover:bg-emerald-200 border border-emerald-300 text-xl font-extrabold text-[#065F46] cursor-pointer"
+                              >+</button>
+                            </div>
+
+                            <button
+                              type="button"
+                              onclick="toggleBookStock('${b.id}')"
+                              class="min-h-[46px] px-4 py-2 rounded-xl border-2 font-bold text-sm transition cursor-pointer ${
+                                isAvailable
+                                  ? 'bg-[#059669] hover:bg-[#047857] border-[#059669] text-white'
+                                  : 'bg-red-100 hover:bg-red-200 border-red-400 text-red-800'
+                              }"
+                            >
+                              ${isAvailable ? '✓ In Stock' : '✕ Out of Stock'}
+                            </button>
+
+                            <button
+                              type="button"
+                              onclick="copyBook('${b.id}')"
+                              class="min-h-[46px] px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-emerald-50 hover:text-[#065F46] text-slate-700 font-bold text-sm cursor-pointer"
+                            >
+                              📋 Copy
+                            </button>
+
+                            <button
+                              type="button"
+                              onclick="deleteBook('${b.id}')"
+                              aria-label="Delete book"
+                              class="min-h-[46px] px-3.5 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 font-bold text-sm cursor-pointer"
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                        </div>
+                      `;
+                    })
+                    .join('')
+            }
+          </div>
+        </div>
+      `;
+    }
+
+    function addNewBook() {
+      const nb = state.newBook;
+      const priceNum = parseFloat(nb.price);
+      if (!nb.title.trim()) {
+        showToast('Please enter the Book Title', 'error');
+        return;
+      }
+      if (isNaN(priceNum) || priceNum <= 0) {
+        showToast('Please enter a valid Price in ₹', 'error');
+        return;
+      }
+
+      state.books.unshift({
+        id: 'bk_' + Date.now(),
+        title: nb.title.trim(),
+        courseTag: nb.courseTag,
+        condition: nb.condition,
+        price: priceNum,
+        qty: nb.qty,
+        inStock: nb.qty > 0,
+        buyback: nb.buyback
+      });
+
+      state.newBook = {
+        title: '',
+        courseTag: 'Engineering / B.Tech',
+        condition: 'New Book',
+        price: '',
+        qty: 1,
+        buyback: true
+      };
+      renderTabContent();
+      showToast('Book added to your catalog!');
+    }
+
+    function adjustBookQty(id, delta) {
+      const b = state.books.find((x) => x.id === id);
+      if (!b) return;
+      b.qty = Math.max(0, b.qty + delta);
+      b.inStock = b.qty > 0;
+      renderTabContent();
+    }
+
+    function toggleBookStock(id) {
+      const b = state.books.find((x) => x.id === id);
+      if (!b) return;
+      b.inStock = !b.inStock;
+      if (b.inStock && b.qty === 0) b.qty = 1;
+      if (!b.inStock) b.qty = 0;
+      renderTabContent();
+      showToast(b.inStock ? 'Marked In Stock' : 'Marked Out of Stock', 'info');
+    }
+
+    function copyBook(id) {
+      const b = state.books.find((x) => x.id === id);
+      if (!b) return;
+      state.books.unshift({
+        ...b,
+        id: 'bk_' + Date.now(),
+        title: b.title + ' (Copy)'
+      });
+      renderTabContent();
+      showToast('Book copied for fast editing!');
+    }
+
+    function deleteBook(id) {
+      state.books = state.books.filter((x) => x.id !== id);
+      renderTabContent();
+      showToast('Book removed from catalog', 'info');
+    }
+
+    /* =========================================================================
+       7. TAB 2 — STATIONERY & BUNDLES
+       ========================================================================= */
+    function renderStationeryTab() {
+      const ns = state.newStationery;
+      const isMicActive = state.listeningField === 'stationeryName';
+
+      const q = state.stationerySearch.trim().toLowerCase();
+      const filtered = state.stationery.filter((item) => {
+        const matchesSearch =
+          !q || item.name.toLowerCase().includes(q) || item.packSize.toLowerCase().includes(q);
+        const matchesStock = !state.stationeryOutOfStockOnly || !item.inStock;
+        return matchesSearch && matchesStock;
+      });
+
+      return `
+        <div class="space-y-6">
+          <!-- Top Utility Bar -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-4 sm:p-5 flex flex-col lg:flex-row items-stretch lg:items-center gap-3">
+            <input
+              type="text"
+              value="${escapeHtml(state.stationerySearch)}"
+              placeholder="🔍 Search stationery, calculators, drafters, packs..."
+              oninput="state.stationerySearch = this.value; renderTabContent();"
+              class="flex-1 min-h-[48px] px-4 py-2.5 rounded-xl bg-slate-50 border-2 border-slate-200 text-sm sm:text-base font-medium focus:outline-none focus:border-[#059669]"
+            />
+            <div class="flex flex-wrap items-center gap-2.5">
+              <button
+                type="button"
+                onclick="state.stationeryOutOfStockOnly = !state.stationeryOutOfStockOnly; renderTabContent();"
+                class="min-h-[48px] px-4 py-2 rounded-xl border-2 font-bold text-xs sm:text-sm transition cursor-pointer ${
+                  state.stationeryOutOfStockOnly
+                    ? 'bg-red-600 border-red-600 text-white'
+                    : 'bg-white border-slate-200 text-slate-700 hover:border-red-300'
+                }"
+              >
+                ${state.stationeryOutOfStockOnly ? '✓ Out of Stock Only' : 'Out of Stock Only'}
+              </button>
+
+              <button
+                type="button"
+                onclick="openQuickAddModal()"
+                class="min-h-[48px] px-5 py-2.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-extrabold text-xs sm:text-sm shadow-sm cursor-pointer flex items-center gap-1.5"
+              >
+                <span>⚡</span>
+                <span>Quick Add Common Stationery</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Expandable "+ Add Stationery Item" Card -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm overflow-hidden">
+            <button
+              type="button"
+              onclick="state.addStationeryExpanded = !state.addStationeryExpanded; renderTabContent();"
+              class="w-full px-5 sm:px-6 py-4 bg-[#ECFDF5]/80 hover:bg-[#ECFDF5] flex items-center justify-between gap-3 text-left cursor-pointer border-b border-emerald-100"
+            >
+              <div>
+                <h2 class="text-lg font-extrabold text-[#0F172A]">➕ Add Stationery Item</h2>
+                <p class="text-xs sm:text-sm text-slate-600">List single items, packs (e.g. Pack of 6), or student combo bundles</p>
+              </div>
+              <span class="min-h-[40px] px-3.5 rounded-xl bg-white border border-emerald-200 text-[#065F46] font-bold text-sm flex items-center">
+                ${state.addStationeryExpanded ? 'Hide ▲' : 'Open ▼'}
+              </span>
+            </button>
+
+            ${
+              state.addStationeryExpanded
+                ? `
+                  <div class="p-5 sm:p-6 space-y-5">
+                    <div class="space-y-2">
+                      <label class="block text-sm font-bold text-[#0F172A]">1. Item Name</label>
+                      <div class="flex items-center gap-2.5">
+                        <input
+                          type="text"
+                          value="${escapeHtml(ns.name)}"
+                          placeholder="e.g. Classmate Register Pack, Scientific Calculator"
+                          oninput="state.newStationery.name = this.value"
+                          class="flex-1 min-h-[50px] px-4 py-2.5 rounded-xl bg-white border-2 border-slate-200 font-bold text-sm sm:text-base focus:outline-none focus:border-[#059669]"
+                        />
+                        <button
+                          type="button"
+                          onclick="startVoiceInput('stationeryName')"
+                          aria-label="Speak stationery item name"
+                          class="min-w-[52px] h-[50px] px-3.5 rounded-xl border-2 font-bold text-sm flex items-center justify-center gap-1.5 cursor-pointer transition ${
+                            isMicActive
+                              ? 'bg-red-600 border-red-600 text-white mic-pulse'
+                              : 'bg-[#ECFDF5] hover:bg-emerald-100 border-emerald-300 text-[#065F46]'
+                          }"
+                        >
+                          <span class="text-lg">🎙️</span>
+                          <span class="hidden sm:inline">${isMicActive ? 'Listening' : 'Speak'}</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="space-y-2">
+                      <label class="block text-sm font-bold text-[#0F172A]">2. Sell As</label>
+                      <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                        ${SELL_AS_OPTIONS.map((opt) => {
+                          const active = ns.sellAs === opt.key;
+                          return `
+                            <button
+                              type="button"
+                              onclick="state.newStationery.sellAs = '${opt.key}'; renderTabContent();"
+                              class="min-h-[50px] px-4 py-2.5 rounded-xl border-2 font-bold text-sm transition cursor-pointer ${
+                                active
+                                  ? 'bg-[#059669] border-[#059669] text-white shadow-xs'
+                                  : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-400'
+                              }"
+                            >
+                              ${active ? '✓ ' : ''}${opt.label}
+                            </button>
+                          `;
+                        }).join('')}
+                      </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div class="space-y-1.5">
+                        <label class="block text-sm font-bold text-[#0F172A]">3. Pack Size / Details</label>
+                        <input
+                          type="text"
+                          value="${escapeHtml(ns.packSize)}"
+                          placeholder="e.g. Pack of 6 Notebooks"
+                          oninput="state.newStationery.packSize = this.value"
+                          class="w-full min-h-[50px] px-4 py-2.5 rounded-xl bg-white border-2 border-slate-200 font-semibold text-sm sm:text-base focus:outline-none focus:border-[#059669]"
+                        />
+                      </div>
+
+                      <div class="space-y-1.5">
+                        <label class="block text-sm font-bold text-[#0F172A]">4. Price (₹)</label>
+                        <div class="flex items-center">
+                          <span class="min-h-[50px] px-4 flex items-center rounded-l-xl bg-slate-100 border-2 border-r-0 border-slate-200 font-extrabold text-slate-700">₹</span>
+                          <input
+                            type="number"
+                            min="0"
+                            value="${escapeHtml(ns.price)}"
+                            placeholder="e.g. 320"
+                            oninput="state.newStationery.price = this.value"
+                            class="w-full min-h-[50px] px-4 py-2.5 rounded-r-xl bg-white border-2 border-slate-200 font-extrabold text-base focus:outline-none focus:border-[#059669]"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onclick="addNewStationery()"
+                      class="w-full sm:w-auto min-h-[52px] px-8 py-3 rounded-2xl bg-[#059669] hover:bg-[#047857] text-white font-extrabold text-base shadow-sm cursor-pointer"
+                    >
+                      + Add Stationery Item
+                    </button>
+                  </div>
+                `
+                : ''
+            }
+          </div>
+
+          <!-- Stationery Items List -->
+          <div class="space-y-3.5">
+            <h3 class="text-lg font-extrabold text-[#0F172A] px-1">Your Stationery &amp; Bundles (${filtered.length})</h3>
+            ${
+              filtered.length === 0
+                ? `<div class="bg-white rounded-2xl border border-dashed border-emerald-300 p-10 text-center text-sm text-slate-500">No matching stationery items found.</div>`
+                : filtered
+                    .map(
+                      (item) => `
+                        <div class="bg-white rounded-2xl border-2 ${
+                          item.inStock ? 'border-emerald-100' : 'border-red-200 bg-red-50/20'
+                        } shadow-xs p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                          <div class="space-y-1.5 flex-1 min-w-0">
+                            <div class="flex flex-wrap items-center gap-2">
+                              <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold ${
+                                item.sellAs === 'Combo Bundle'
+                                  ? 'bg-purple-100 text-purple-800'
+                                  : item.sellAs === 'Pack'
+                                  ? 'bg-sky-100 text-sky-800'
+                                  : 'bg-slate-100 text-slate-700'
+                              }">
+                                ${escapeHtml(item.sellAs)}
+                              </span>
+                              <span class="text-xs font-semibold text-slate-500">${escapeHtml(item.packSize)}</span>
+                            </div>
+                            <h4 class="text-base sm:text-lg font-extrabold text-[#0F172A]">${escapeHtml(item.name)}</h4>
+                            <div class="text-xl font-extrabold text-[#065F46]">₹${item.price}</div>
+                          </div>
+
+                          <div class="flex flex-wrap items-center gap-2 shrink-0">
+                            <button
+                              type="button"
+                              onclick="toggleStationeryStock('${item.id}')"
+                              class="min-h-[46px] px-4 py-2 rounded-xl border-2 font-bold text-sm transition cursor-pointer ${
+                                item.inStock
+                                  ? 'bg-[#059669] hover:bg-[#047857] border-[#059669] text-white'
+                                  : 'bg-red-100 hover:bg-red-200 border-red-400 text-red-800'
+                              }"
+                            >
+                              ${item.inStock ? '✓ In Stock' : '✕ Out of Stock'}
+                            </button>
+                            <button
+                              type="button"
+                              onclick="copyStationery('${item.id}')"
+                              class="min-h-[46px] px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-emerald-50 hover:text-[#065F46] text-slate-700 font-bold text-sm cursor-pointer"
+                            >
+                              📋 Copy
+                            </button>
+                            <button
+                              type="button"
+                              onclick="deleteStationery('${item.id}')"
+                              aria-label="Delete stationery item"
+                              class="min-h-[46px] px-3.5 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 font-bold text-sm cursor-pointer"
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                        </div>
+                      `
+                    )
+                    .join('')
+            }
+          </div>
+        </div>
+      `;
+    }
+
+    function addNewStationery() {
+      const ns = state.newStationery;
+      const priceNum = parseFloat(ns.price);
+      if (!ns.name.trim()) {
+        showToast('Please enter the Item Name', 'error');
+        return;
+      }
+      if (isNaN(priceNum) || priceNum <= 0) {
+        showToast('Please enter a valid Price in ₹', 'error');
+        return;
+      }
+
+      state.stationery.unshift({
+        id: 'st_' + Date.now(),
+        name: ns.name.trim(),
+        sellAs: ns.sellAs,
+        packSize: ns.packSize.trim() || ns.sellAs,
+        price: priceNum,
+        inStock: true
+      });
+      state.newStationery = { name: '', sellAs: 'Single Item', packSize: '', price: '' };
+      renderTabContent();
+      showToast('Stationery item added!');
+    }
+
+    function toggleStationeryStock(id) {
+      const item = state.stationery.find((x) => x.id === id);
+      if (!item) return;
+      item.inStock = !item.inStock;
+      renderTabContent();
+      showToast(item.inStock ? 'Marked In Stock' : 'Marked Out of Stock', 'info');
+    }
+
+    function copyStationery(id) {
+      const item = state.stationery.find((x) => x.id === id);
+      if (!item) return;
+      state.stationery.unshift({ ...item, id: 'st_' + Date.now(), name: item.name + ' (Copy)' });
+      renderTabContent();
+      showToast('Stationery item copied!');
+    }
+
+    function deleteStationery(id) {
+      state.stationery = state.stationery.filter((x) => x.id !== id);
+      renderTabContent();
+      showToast('Stationery item deleted', 'info');
+    }
+
+    /* ---------- QUICK ADD MODAL ---------- */
+    function openQuickAddModal() {
+      renderQuickAddModalBody();
+      const modal = document.getElementById('quickAddModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeQuickAddModal() {
+      const modal = document.getElementById('quickAddModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function renderQuickAddModalBody() {
+      const selectedCount = state.quickAddItems.filter((i) => i.checked).length;
+      document.getElementById('quickAddCountLabel').textContent = `${selectedCount} item${selectedCount === 1 ? '' : 's'} selected`;
+
+      document.getElementById('quickAddBody').innerHTML = state.quickAddItems
+        .map(
+          (qa, idx) => `
+            <div class="p-3.5 rounded-2xl border-2 ${
+              qa.checked ? 'border-[#059669] bg-[#ECFDF5]/60' : 'border-slate-200 bg-white'
+            } flex items-center justify-between gap-3">
+              <label class="flex items-center gap-3 flex-1 cursor-pointer min-w-0">
+                <input
+                  type="checkbox"
+                  ${qa.checked ? 'checked' : ''}
+                  onchange="state.quickAddItems[${idx}].checked = this.checked; renderQuickAddModalBody();"
+                  class="w-5 h-5 accent-[#059669] rounded cursor-pointer shrink-0"
+                />
+                <div class="min-w-0">
+                  <div class="font-bold text-sm text-[#0F172A] truncate">${escapeHtml(qa.name)}</div>
+                  <div class="text-xs text-slate-500">${escapeHtml(qa.sellAs)} • ${escapeHtml(qa.packSize)}</div>
+                </div>
+              </label>
+              <div class="flex items-center shrink-0">
+                <span class="min-h-[40px] px-2.5 flex items-center rounded-l-xl bg-slate-100 border border-r-0 border-slate-300 font-bold text-xs text-slate-700">₹</span>
+                <input
+                  type="number"
+                  value="${qa.price}"
+                  oninput="state.quickAddItems[${idx}].price = parseFloat(this.value) || 0"
+                  class="w-20 min-h-[40px] px-2.5 py-1 rounded-r-xl bg-white border border-slate-300 font-extrabold text-sm text-[#065F46]"
+                />
+              </div>
+            </div>
+          `
+        )
+        .join('');
+    }
+
+    function confirmQuickAddStationery() {
+      const chosen = state.quickAddItems.filter((i) => i.checked);
+      if (!chosen.length) {
+        showToast('Please tick at least 1 item to add', 'error');
+        return;
+      }
+      chosen.forEach((c) => {
+        state.stationery.unshift({
+          id: 'st_' + Date.now() + Math.random().toString(36).slice(2, 5),
+          name: c.name,
+          sellAs: c.sellAs,
+          packSize: c.packSize,
+          price: c.price || 10,
+          inStock: true
+        });
+        c.checked = false;
+      });
+      closeQuickAddModal();
+      renderTabContent();
+      showToast(`Added ${chosen.length} stationery item${chosen.length === 1 ? '' : 's'}!`);
+    }
+
+    /* =========================================================================
+       8. TAB 3 — PRINT ADD-ON (COMBINED SHOP SUPPORT)
+       ========================================================================= */
+    function renderPrintAddonTab() {
+      const pa = state.printAddon;
+
+      return `
+        <div class="space-y-6">
+          <!-- Large Friendly Toggle Card -->
+          <div class="bg-white rounded-2xl border-2 ${
+            pa.enabled ? 'border-[#059669]' : 'border-slate-200'
+          } shadow-sm p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-start gap-4">
+              <div class="w-14 h-14 rounded-2xl ${
+                pa.enabled ? 'bg-[#ECFDF5]' : 'bg-slate-100'
+              } flex items-center justify-center text-3xl shrink-0">
+                🖨️
+              </div>
+              <div>
+                <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">Do you also do Printing &amp; Xerox?</h2>
+                <p class="text-sm text-slate-600 mt-0.5">
+                  Turn ON if your bookshop also offers photocopy, color print, or spiral binding.
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onclick="togglePrintAddon()"
+              class="min-h-[52px] px-6 py-3 rounded-2xl font-extrabold text-sm sm:text-base transition cursor-pointer shrink-0 ${
+                pa.enabled
+                  ? 'bg-[#059669] hover:bg-[#047857] text-white shadow-sm'
+                  : 'bg-slate-200 hover:bg-slate-300 text-slate-700'
+              }"
+            >
+              ${pa.enabled ? '✓ ON — Shown to Students' : 'OFF — Tap to Turn ON'}
+            </button>
+          </div>
+
+          ${
+            pa.enabled
+              ? `
+                <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-6 space-y-5">
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                      <h3 class="text-lg font-extrabold text-[#0F172A]">Quick Print &amp; Binding Rate Card</h3>
+                      <p class="text-sm text-slate-600">Tap any ₹ box to edit your price.</p>
+                    </div>
+                    <button
+                      type="button"
+                      onclick="toggleWhatsappPdf()"
+                      class="min-h-[48px] px-4 py-2 rounded-xl border-2 font-bold text-xs sm:text-sm transition cursor-pointer ${
+                        pa.whatsappPdfAccepted
+                          ? 'bg-[#ECFDF5] border-[#059669] text-[#065F46]'
+                          : 'bg-white border-slate-200 text-slate-600'
+                      }"
+                    >
+                      ${pa.whatsappPdfAccepted ? '✓ 💬 WhatsApp PDF Print Accepted' : '+ 💬 WhatsApp PDF Print Accepted'}
+                    </button>
+                  </div>
+
+                  <div class="divide-y divide-slate-100 border border-slate-200 rounded-2xl overflow-hidden">
+                    ${pa.rates
+                      .map(
+                        (r) => `
+                          <div class="p-4 bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div>
+                              <div class="font-bold text-sm sm:text-base text-[#0F172A]">${escapeHtml(r.name)}</div>
+                              <div class="text-xs text-slate-500">${escapeHtml(r.unit)}</div>
+                            </div>
+                            <div class="flex items-center shrink-0">
+                              <span class="min-h-[46px] px-3.5 flex items-center rounded-l-xl bg-slate-100 border-2 border-r-0 border-slate-200 font-extrabold text-slate-700">₹</span>
+                              <input
+                                type="number"
+                                step="0.5"
+                                min="0"
+                                value="${r.price}"
+                                onchange="updatePrintAddonRate('${r.id}', this.value)"
+                                class="w-24 min-h-[46px] px-3 py-2 rounded-r-xl bg-white border-2 border-slate-200 font-extrabold text-base text-[#065F46] focus:outline-none focus:border-[#059669]"
+                              />
+                            </div>
+                          </div>
+                        `
+                      )
+                      .join('')}
+                  </div>
+
+                  <button
+                    type="button"
+                    onclick="showToast('Print Add-On rates saved!')"
+                    class="w-full sm:w-auto min-h-[50px] px-7 py-3 rounded-2xl bg-[#059669] hover:bg-[#047857] text-white font-extrabold text-sm sm:text-base shadow-sm cursor-pointer"
+                  >
+                    ✓ Save Print Rates
+                  </button>
+                </div>
+              `
+              : `
+                <div class="bg-white rounded-2xl border border-dashed border-slate-300 p-10 text-center space-y-2">
+                  <div class="text-4xl">🖨️</div>
+                  <h3 class="text-lg font-extrabold text-slate-800">Printing &amp; Xerox is currently hidden from students</h3>
+                  <p class="text-sm text-slate-500 max-w-md mx-auto">
+                    Students will only see your Books &amp; Stationery catalog. You can turn Printing ON anytime above.
+                  </p>
+                </div>
+              `
+          }
+        </div>
+      `;
+    }
+
+    function togglePrintAddon() {
+      state.printAddon.enabled = !state.printAddon.enabled;
+      renderTabContent();
+      showToast(
+        state.printAddon.enabled
+          ? 'Print Add-On turned ON — students can now see your print rates!'
+          : 'Print Add-On turned OFF — hidden from students.',
+        'info'
+      );
+    }
+
+    function toggleWhatsappPdf() {
+      state.printAddon.whatsappPdfAccepted = !state.printAddon.whatsappPdfAccepted;
+      renderTabContent();
+    }
+
+    function updatePrintAddonRate(id, val) {
+      const r = state.printAddon.rates.find((x) => x.id === id);
+      const parsed = parseFloat(val);
+      if (!r || isNaN(parsed) || parsed < 0) return;
+      r.price = parsed;
+      showToast(`Updated "${r.name}" to ₹${parsed}`);
+    }
+
+    /* =========================================================================
+       9. TAB 4 — POLICIES, FACILITIES & HOURS
+       ========================================================================= */
+    function renderPoliciesAndHoursTab() {
+      const p = state.policies;
+      const isMicActive = state.listeningField === 'noticeText';
+
+      const renderGroup = (label, options, currentVal, fnName) => `
+        <div class="space-y-2.5">
+          <label class="block text-sm sm:text-base font-bold text-[#0F172A]">${label}</label>
+          <div class="flex flex-wrap gap-2.5">
+            ${options
+              .map((opt) => {
+                const active = currentVal === opt;
+                return `
+                  <button
+                    type="button"
+                    onclick="${fnName}('${escapeHtml(opt)}')"
+                    class="min-h-[48px] px-4 py-2.5 rounded-xl border-2 font-bold text-sm sm:text-base transition cursor-pointer ${
+                      active
+                        ? 'bg-[#059669] border-[#059669] text-white shadow-xs'
+                        : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-400 hover:bg-[#ECFDF5]/60'
+                    }"
+                  >
+                    ${active ? '✓ ' : ''}${opt}
+                  </button>
+                `;
+              })
+              .join('')}
+          </div>
+        </div>
+      `;
+
+      return `
+        <div class="space-y-6">
+          <!-- Business Policies & Facility Chips -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-7 space-y-6">
+            <div>
+              <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">⚙️ Bookstore Policies &amp; Facilities</h2>
+              <p class="text-sm text-slate-600 mt-0.5">Tap what applies to your store so students know your buyback &amp; book options.</p>
+            </div>
+
+            ${renderGroup('1. Main Focus', ['Engineering', 'Medical', 'Competitive Exams', 'All'], p.mainFocus, 'setPolicyFocus')}
+            ${renderGroup('2. Second-Hand Books', ['Buy & Sell Both', 'Sell Only', 'New Books Only'], p.secondHand, 'setPolicySecondHand')}
+            ${renderGroup('3. Buyback / Return Policy', ['50% Buyback After Semester', 'Book Rental Available', 'No Return'], p.buybackPolicy, 'setPolicyBuyback')}
+
+            <div class="space-y-3 pt-3 border-t border-slate-100">
+              <label class="block text-sm sm:text-base font-bold text-[#0F172A]">4. Tap Facilities Available</label>
+              <div class="flex flex-wrap gap-2.5">
+                ${ALL_FACILITIES.map((fac) => {
+                  const selected = p.facilities.includes(fac);
+                  return `
+                    <button
+                      type="button"
+                      onclick="toggleFacility('${escapeHtml(fac)}')"
+                      class="min-h-[48px] px-4 py-2.5 rounded-full border-2 font-bold text-sm transition cursor-pointer flex items-center gap-2 ${
+                        selected
+                          ? 'bg-[#ECFDF5] border-[#059669] text-[#065F46]'
+                          : 'bg-white border-slate-200 text-slate-600 hover:border-emerald-300'
+                      }"
+                    >
+                      <span class="text-base leading-none">${selected ? '✓' : '+'}</span>
+                      <span>${fac}</span>
+                    </button>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          </div>
+
+          <!-- Weekly Opening Hours -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-6 space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">🕒 Weekly Opening Hours</h2>
+                <p class="text-sm text-slate-600">Set your shop timings for students.</p>
+              </div>
+              <button
+                type="button"
+                onclick="copyMondayHoursToAll()"
+                class="min-h-[46px] px-4 py-2.5 rounded-xl bg-[#ECFDF5] hover:bg-emerald-100 text-[#065F46] border border-emerald-200 font-bold text-sm cursor-pointer"
+              >
+                📋 Copy Monday to All Days
+              </button>
+            </div>
+
+            <div class="space-y-2.5">
+              ${state.hours
+                .map(
+                  (h, idx) => `
+                    <div class="p-3.5 sm:p-4 rounded-2xl border-2 ${
+                      h.open ? 'border-emerald-100 bg-white' : 'border-slate-200 bg-slate-50'
+                    } flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div class="flex items-center justify-between sm:justify-start gap-4 min-w-[190px]">
+                        <span class="font-extrabold text-base text-[#0F172A] w-28">${h.day}</span>
+                        <button
+                          type="button"
+                          onclick="toggleDayOpen(${idx})"
+                          class="min-h-[40px] px-4 py-1.5 rounded-full font-bold text-xs sm:text-sm cursor-pointer ${
+                            h.open ? 'bg-[#059669] text-white' : 'bg-slate-200 text-slate-700'
+                          }"
+                        >
+                          ${h.open ? '✓ Open' : 'Closed'}
+                        </button>
+                      </div>
+
+                      ${
+                        h.open
+                          ? `
+                            <div class="flex items-center gap-2.5 flex-wrap">
+                              <input
+                                type="time"
+                                value="${h.from}"
+                                onchange="state.hours[${idx}].from = this.value; showToast('Hours saved');"
+                                class="min-h-[44px] px-3 py-2 rounded-xl bg-slate-50 border border-slate-300 font-bold text-sm"
+                              />
+                              <span class="text-sm font-bold text-slate-400">to</span>
+                              <input
+                                type="time"
+                                value="${h.to}"
+                                onchange="state.hours[${idx}].to = this.value; showToast('Hours saved');"
+                                class="min-h-[44px] px-3 py-2 rounded-xl bg-slate-50 border border-slate-300 font-bold text-sm"
+                              />
+                            </div>
+                          `
+                          : `<span class="text-sm font-semibold text-slate-400">Shop closed on ${h.day}</span>`
+                      }
+                    </div>
+                  `
+                )
+                .join('')}
+            </div>
+          </div>
+
+          <!-- Post a Shop Notice -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-6 space-y-5">
+            <div>
+              <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">📢 Post a Shop Notice</h2>
+              <p class="text-sm text-slate-600">Tap a ready-made message or speak using the mic button.</p>
+            </div>
+
+            <div class="space-y-2">
+              <p class="text-xs font-extrabold uppercase tracking-wider text-[#065F46]">⚡ 1-Tap Templates:</p>
+              <div class="grid grid-cols-1 gap-2.5">
+                ${NOTICE_TEMPLATES.map(
+                  (tpl, idx) => `
+                    <button
+                      type="button"
+                      onclick="applyNoticeTemplate(${idx})"
+                      class="text-left p-3.5 rounded-xl bg-[#ECFDF5]/80 hover:bg-emerald-100 border border-emerald-200 text-sm font-bold text-[#0F172A] flex items-center justify-between gap-3 cursor-pointer"
+                    >
+                      <span>"${tpl}"</span>
+                      <span class="px-2.5 py-1 rounded-lg bg-white text-[#065F46] text-xs font-extrabold border border-emerald-200 shrink-0">Tap to Use</span>
+                    </button>
+                  `
+                ).join('')}
+              </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-2.5">
+              <textarea
+                rows="3"
+                placeholder="Type or speak your notice..."
+                oninput="state.noticeDraft = this.value"
+                class="flex-1 p-4 rounded-xl bg-white border-2 border-slate-200 text-base text-[#0F172A] focus:outline-none focus:border-[#059669]"
+              >${escapeHtml(state.noticeDraft)}</textarea>
+              <button
+                type="button"
+                onclick="startVoiceInput('noticeText')"
+                class="min-h-[52px] sm:w-28 rounded-xl border-2 font-bold text-sm flex items-center justify-center gap-1.5 cursor-pointer transition ${
+                  isMicActive
+                    ? 'bg-red-600 border-red-600 text-white mic-pulse'
+                    : 'bg-[#ECFDF5] hover:bg-emerald-100 border-emerald-300 text-[#065F46]'
+                }"
+              >
+                <span class="text-lg">🎙️</span>
+                <span>${isMicActive ? 'Listening' : 'Speak'}</span>
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onclick="postNotice()"
+              class="w-full sm:w-auto min-h-[52px] px-7 py-3 rounded-2xl bg-[#059669] hover:bg-[#047857] text-white font-extrabold text-base shadow-sm cursor-pointer"
+            >
+              📢 Post Notice Now
+            </button>
+
+            <div class="pt-4 border-t border-slate-100 space-y-3">
+              <h3 class="text-sm font-extrabold uppercase tracking-wider text-slate-500">Posted Notices (${state.notices.length})</h3>
+              ${
+                state.notices.length === 0
+                  ? `<p class="text-sm text-slate-500">No notices posted yet.</p>`
+                  : state.notices
+                      .map(
+                        (n) => `
+                          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-start justify-between gap-3">
+                            <div>
+                              <p class="text-sm sm:text-base font-bold text-[#0F172A]">${escapeHtml(n.text)}</p>
+                              <p class="text-xs text-slate-500 mt-1">🕒 ${escapeHtml(n.time)}</p>
+                            </div>
+                            <button
+                              type="button"
+                              onclick="deleteNotice('${n.id}')"
+                              class="min-h-[40px] px-3 py-1.5 rounded-xl bg-white hover:bg-red-50 hover:text-red-700 border border-slate-200 text-xs font-bold text-slate-600 cursor-pointer shrink-0"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        `
+                      )
+                      .join('')
+              }
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function setPolicyFocus(v) { state.policies.mainFocus = v; renderTabContent(); }
+    function setPolicySecondHand(v) { state.policies.secondHand = v; renderTabContent(); }
+    function setPolicyBuyback(v) { state.policies.buybackPolicy = v; renderTabContent(); }
+
+    function toggleFacility(fac) {
+      const idx = state.policies.facilities.indexOf(fac);
+      if (idx >= 0) state.policies.facilities.splice(idx, 1);
+      else state.policies.facilities.push(fac);
+      renderTabContent();
+    }
+
+    function toggleDayOpen(idx) {
+      state.hours[idx].open = !state.hours[idx].open;
+      renderTabContent();
+    }
+
+    function copyMondayHoursToAll() {
+      const mon = state.hours[0];
+      state.hours = state.hours.map((d) => ({ ...d, open: mon.open, from: mon.from, to: mon.to }));
+      renderTabContent();
+      showToast('Monday timings copied to all 7 days!');
+    }
+
+    function applyNoticeTemplate(idx) {
+      state.noticeDraft = NOTICE_TEMPLATES[idx];
+      renderTabContent();
+      showToast('Template filled! Tap "Post Notice Now" to publish.', 'info');
+    }
+
+    function postNotice() {
+      const text = state.noticeDraft.trim();
+      if (!text) {
+        showToast('Please tap a template or type a notice first', 'error');
+        return;
+      }
+      state.notices.unshift({
+        id: 'not_' + Date.now(),
+        text,
+        time: `Today, ${getCurrentTimeLabel()}`
+      });
+      state.noticeDraft = '';
+      renderTabContent();
+      showToast('Notice posted to nearby students!');
+    }
+
+    function deleteNotice(id) {
+      state.notices = state.notices.filter((n) => n.id !== id);
+      renderTabContent();
+      showToast('Notice deleted', 'info');
+    }
+
+    /* =========================================================================
+       10. TAB 5 — SHOP INFO, PHOTOS & INTERACTIVE GPS MAP
+       ========================================================================= */
+    function renderShopInfoTab() {
+      const s = state.shop;
+      const pin = s.mapPin;
+
+      return `
+        <div class="space-y-6">
+          <!-- Shop Details -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-7 space-y-5">
+            <div>
+              <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">Shop Information &amp; Contact</h2>
+              <p class="text-sm text-slate-600 mt-0.5">Keep your phone/WhatsApp and address accurate for campus students.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="space-y-1.5">
+                <label class="block text-sm font-bold text-[#0F172A]">Shop Name</label>
+                <input
+                  type="text"
+                  value="${escapeHtml(s.name)}"
+                  oninput="state.shop.name = this.value; document.getElementById('navShopName').textContent = this.value;"
+                  class="w-full min-h-[50px] px-4 py-2.5 rounded-xl bg-white border-2 border-slate-200 font-bold text-base focus:outline-none focus:border-[#059669]"
+                />
+              </div>
+              <div class="space-y-1.5">
+                <label class="block text-sm font-bold text-[#0F172A]">Owner Phone / WhatsApp</label>
+                <div class="flex items-center">
+                  <span class="min-h-[50px] px-3.5 flex items-center rounded-l-xl bg-slate-100 border-2 border-r-0 border-slate-200 font-extrabold text-slate-600">+91</span>
+                  <input
+                    type="tel"
+                    value="${escapeHtml(s.phone)}"
+                    oninput="state.shop.phone = this.value"
+                    class="w-full min-h-[50px] px-4 py-2.5 rounded-r-xl bg-white border-2 border-slate-200 font-bold text-base focus:outline-none focus:border-[#059669]"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="space-y-1.5">
+              <label class="block text-sm font-bold text-[#0F172A]">Full Address &amp; Landmark</label>
+              <input
+                type="text"
+                value="${escapeHtml(s.address)}"
+                oninput="state.shop.address = this.value"
+                class="w-full min-h-[50px] px-4 py-2.5 rounded-xl bg-white border-2 border-slate-200 font-bold text-base focus:outline-none focus:border-[#059669]"
+              />
+            </div>
+          </div>
+
+          <!-- Paper Price List & Shop Photos -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-7 space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">📸 Snap Photo of Paper Price List / Shop Photos</h2>
+                <p class="text-sm text-slate-600 mt-0.5">Upload your shop front, book shelves, or printed price list.</p>
+              </div>
+              <label class="min-h-[48px] px-5 py-2.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-sm shadow-sm cursor-pointer inline-flex items-center justify-center gap-2 shrink-0">
+                <span>+ Upload Photos</span>
+                <input type="file" accept="image/*" multiple class="hidden" onchange="handleShopPhotoUpload(event)" />
+              </label>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              ${state.shopPhotos
+                .map(
+                  (p) => `
+                    <div class="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-2xs">
+                      <img
+                        src="${p.url}"
+                        alt="${escapeHtml(p.label)}"
+                        onerror="this.src='https://placehold.co/600x400/ECFDF5/065F46?text=Bookstore+Photo'"
+                        class="w-full h-44 object-cover bg-emerald-50"
+                      />
+                      <div class="p-3 flex items-center justify-between gap-2">
+                        <span class="text-sm font-bold text-slate-800 truncate">${escapeHtml(p.label)}</span>
+                        <button
+                          type="button"
+                          onclick="deleteShopPhoto('${p.id}')"
+                          class="min-h-[38px] px-3 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 font-bold text-xs cursor-pointer"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  `
+                )
+                .join('')}
+            </div>
+          </div>
+
+          <!-- Interactive Draggable GPS Pin Map -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-7 space-y-5">
+            <div>
+              <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">📍 Shop Location on Campus Map</h2>
+              <p class="text-sm text-slate-600 mt-0.5">Tap GPS, pick a nearby landmark, or drag the green pin onto your shop.</p>
+            </div>
+
+            <div class="space-y-3">
+              <button
+                type="button"
+                onclick="useCurrentGps()"
+                class="min-h-[50px] px-5 py-3 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-sm sm:text-base shadow-sm inline-flex items-center gap-2 cursor-pointer"
+              >
+                <span>🎯</span>
+                <span>Use My Current GPS Location</span>
+              </button>
+
+              <div class="flex flex-wrap gap-2">
+                ${CAMPUS_LANDMARKS.map(
+                  (lm, i) => `
+                    <button
+                      type="button"
+                      onclick="jumpToLandmark(${i})"
+                      class="min-h-[40px] px-3 py-1.5 rounded-xl bg-[#ECFDF5] hover:bg-emerald-100 border border-emerald-200 text-[#065F46] text-xs font-bold cursor-pointer"
+                    >
+                      📍 ${lm.name}
+                    </button>
+                  `
+                ).join('')}
+              </div>
+            </div>
+
+            <div class="rounded-2xl border-2 border-emerald-200 overflow-hidden bg-white">
+              <div class="px-4 py-2.5 bg-[#ECFDF5] border-b border-emerald-100 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
+                <span class="font-bold text-[#065F46]">🗺️ Bholaram Ustad Marg, Indore</span>
+                <span id="mapCoordsLabel" class="font-mono text-xs font-bold text-[#065F46]">${pin.lat.toFixed(4)}° N, ${pin.lng.toFixed(4)}° E</span>
+              </div>
+
+              <div id="booksMapCanvas" class="relative w-full h-72 sm:h-80 campus-map-bg select-none touch-none overflow-hidden cursor-crosshair">
+                <svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 800 360" preserveAspectRatio="none">
+                  <path d="M 0 175 Q 250 155 460 172 T 800 142" stroke="#FFFFFF" stroke-width="26" fill="none" />
+                  <path d="M 0 175 Q 250 155 460 172 T 800 142" stroke="#CBD5E1" stroke-width="2" stroke-dasharray="8 8" fill="none" />
+                  <path d="M 185 0 L 230 360" stroke="#FFFFFF" stroke-width="20" fill="none" />
+                  <path d="M 550 158 L 580 360" stroke="#FFFFFF" stroke-width="14" fill="none" />
+                  <path d="M 620 0 L 605 155" stroke="#FFFFFF" stroke-width="16" fill="none" />
+                  <rect x="640" y="22" width="135" height="90" rx="18" fill="#BBF7D0" opacity="0.65" />
+                </svg>
+
+                ${CAMPUS_LANDMARKS.map(
+                  (lm) => `
+                    <div class="absolute -translate-x-1/2 -translate-y-1/2 pointer-events-none flex flex-col items-center" style="left: ${lm.x}%; top: ${lm.y}%;">
+                      <span class="w-2.5 h-2.5 rounded-full bg-slate-500/80 ring-2 ring-white"></span>
+                      <span class="mt-1 px-2 py-0.5 rounded-md bg-white/95 text-[10px] sm:text-[11px] font-bold text-slate-700 shadow-2xs whitespace-nowrap border border-slate-200">${lm.name}</span>
+                    </div>
+                  `
+                ).join('')}
+
+                <div id="booksMapPin" class="absolute z-20 -translate-x-1/2 -translate-y-full cursor-grab active:cursor-grabbing" style="left: ${pin.x}%; top: ${pin.y}%;">
+                  <div class="flex flex-col items-center">
+                    <div class="px-3 py-1 rounded-xl bg-[#065F46] text-white text-xs font-extrabold shadow-lg whitespace-nowrap border-2 border-white">
+                      📚 Vidya Book Depot
+                    </div>
+                    <div class="w-3.5 h-3.5 bg-[#065F46] rotate-45 -mt-2 border-r-2 border-b-2 border-white"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="px-4 py-3 bg-slate-50 border-t border-emerald-100 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
+                <span id="mapLandmarkLabel" class="font-semibold text-slate-700">📍 ${escapeHtml(pin.landmark)}</span>
+                <button
+                  type="button"
+                  onclick="showToast('Shop Info & GPS Location saved!')"
+                  class="min-h-[42px] px-4 py-2 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs sm:text-sm cursor-pointer"
+                >
+                  ✓ Save Info &amp; GPS
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function handleShopPhotoUpload(event) {
+      const files = Array.from(event.target.files || []);
+      files.forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          state.shopPhotos.unshift({
+            id: 'sp_' + Date.now() + Math.random().toString(36).slice(2, 5),
+            label: file.name.replace(/\.[^/.]+$/, '').slice(0, 26) || 'Shop Photo',
+            url: e.target.result
+          });
+          renderTabContent();
+          showToast('Photo uploaded!');
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function deleteShopPhoto(id) {
+      state.shopPhotos = state.shopPhotos.filter((p) => p.id !== id);
+      renderTabContent();
+      showToast('Photo deleted', 'info');
+    }
+
+    function attachMapInteractions() {
+      const canvas = document.getElementById('booksMapCanvas');
+      const pinEl = document.getElementById('booksMapPin');
+      if (!canvas || !pinEl) return;
+
+      let dragging = false;
+
+      const movePin = (clientX, clientY) => {
+        const rect = canvas.getBoundingClientRect();
+        const xPct = Math.max(8, Math.min(92, ((clientX - rect.left) / rect.width) * 100));
+        const yPct = Math.max(14, Math.min(92, ((clientY - rect.top) / rect.height) * 100));
+
+        const lat = 22.6975 - (yPct / 100) * 0.012;
+        const lng = 75.8590 + (xPct / 100) * 0.018;
+
+        let nearest = CAMPUS_LANDMARKS[0];
+        let minDist = Infinity;
+        CAMPUS_LANDMARKS.forEach((lm) => {
+          const d = Math.hypot(lm.x - xPct, lm.y - yPct);
+          if (d < minDist) { minDist = d; nearest = lm; }
+        });
+
+        state.shop.mapPin = {
+          x: Math.round(xPct),
+          y: Math.round(yPct),
+          lat,
+          lng,
+          landmark: `Near ${nearest.name}`
+        };
+
+        pinEl.style.left = state.shop.mapPin.x + '%';
+        pinEl.style.top = state.shop.mapPin.y + '%';
+
+        const coordsEl = document.getElementById('mapCoordsLabel');
+        if (coordsEl) coordsEl.textContent = `${lat.toFixed(4)}° N, ${lng.toFixed(4)}° E`;
+        const lmEl = document.getElementById('mapLandmarkLabel');
+        if (lmEl) lmEl.textContent = `📍 ${state.shop.mapPin.landmark}`;
+      };
+
+      canvas.addEventListener('pointerdown', (e) => {
+        dragging = true;
+        canvas.setPointerCapture(e.pointerId);
+        movePin(e.clientX, e.clientY);
+      });
+      canvas.addEventListener('pointermove', (e) => {
+        if (dragging) movePin(e.clientX, e.clientY);
+      });
+      canvas.addEventListener('pointerup', () => { dragging = false; });
+      canvas.addEventListener('pointercancel', () => { dragging = false; });
+    }
+
+    function useCurrentGps() {
+      state.shop.mapPin = {
+        x: 46,
+        y: 45,
+        lat: 22.6915,
+        lng: 75.8674,
+        landmark: 'Near Campus Gate 1, Bholaram Ustad Marg (GPS Locked)'
+      };
+      renderTabContent();
+      showToast('GPS location locked near Campus Gate 1, Indore!', 'info');
+    }
+
+    function jumpToLandmark(idx) {
+      const lm = CAMPUS_LANDMARKS[idx];
+      if (!lm) return;
+      state.shop.mapPin = {
+        x: lm.x,
+        y: lm.y,
+        lat: lm.lat,
+        lng: lm.lng,
+        landmark: `Near ${lm.name}`
+      };
+      renderTabContent();
+      showToast(`Pin moved to ${lm.name}`, 'info');
+    }
+
+    /* =========================================================================
+       11. LIVE STUDENT PREVIEW MODAL (INDIGO & BLUE #4F46E5)
+       ========================================================================= */
+    function openStudentPreview() {
+      renderStudentPreviewContent();
+      const modal = document.getElementById('studentPreviewModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeStudentPreview() {
+      const modal = document.getElementById('studentPreviewModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function renderStudentPreviewContent() {
+      const s = state.shop;
+      const p = state.policies;
+      const mon = state.hours[0];
+      const q = state.studentPreviewSearch.trim().toLowerCase();
+
+      const filteredBooks = state.books.filter(
+        (b) => !q || b.title.toLowerCase().includes(q) || b.courseTag.toLowerCase().includes(q)
+      );
+      const filteredStat = state.stationery.filter(
+        (i) => !q || i.name.toLowerCase().includes(q) || i.packSize.toLowerCase().includes(q)
+      );
+
+      document.getElementById('studentPreviewBody').innerHTML = `
+        <!-- Shop Header Card -->
+        <div class="bg-white rounded-2xl border border-indigo-100 shadow-sm p-5 space-y-4">
+          <div class="flex items-start gap-3.5">
+            <div class="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-3xl shrink-0">
+              📚
+            </div>
+            <div class="min-w-0">
+              <div class="flex flex-wrap items-center gap-1.5">
+                <span class="px-2.5 py-0.5 rounded-full bg-indigo-50 text-[#4F46E5] text-xs font-extrabold">Books &amp; Stationery</span>
+                <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-extrabold">✓ Verified</span>
+                <span class="text-xs font-semibold text-slate-500">• 120 m away</span>
+              </div>
+              <h3 class="text-xl font-extrabold text-slate-900 mt-1">${escapeHtml(s.name)}</h3>
+              <p class="text-sm text-slate-600">📍 ${escapeHtml(s.address)}</p>
+            </div>
+          </div>
+
+          <!-- Buyback & Second-Hand Badges -->
+          <div class="flex flex-wrap gap-2 pt-2 border-t border-slate-100">
+            <span class="px-3 py-1 rounded-xl bg-amber-50 text-amber-900 border border-amber-200 text-xs font-extrabold">
+              ♻️ ${escapeHtml(p.secondHand)}
+            </span>
+            <span class="px-3 py-1 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-extrabold">
+              ✓ ${escapeHtml(p.buybackPolicy)}
+            </span>
+            <span class="px-3 py-1 rounded-xl bg-indigo-50 text-indigo-800 text-xs font-bold">
+              🎓 Focus: ${escapeHtml(p.mainFocus)}
+            </span>
+          </div>
+
+          <!-- Call / WhatsApp / Directions -->
+          <div class="grid grid-cols-3 gap-2.5">
+            <div class="min-h-[46px] rounded-xl bg-[#4F46E5] text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5">
+              📞 Call
+            </div>
+            <div class="min-h-[46px] rounded-xl bg-emerald-600 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5">
+              💬 WhatsApp
+            </div>
+            <div class="min-h-[46px] rounded-xl bg-blue-50 text-blue-800 border border-blue-200 font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5">
+              🗺️ Directions
+            </div>
+          </div>
+
+          <!-- Facilities -->
+          <div class="flex flex-wrap gap-1.5">
+            ${p.facilities
+              .map((f) => `<span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold">✓ ${escapeHtml(f)}</span>`)
+              .join('')}
+          </div>
+        </div>
+
+        <!-- Live Notice Banner -->
+        ${
+          state.notices.length
+            ? `
+              <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 space-y-1">
+                <span class="text-[11px] font-extrabold uppercase tracking-wider text-amber-800">📢 Latest Store Notice</span>
+                <p class="text-sm font-bold text-slate-900">${escapeHtml(state.notices[0].text)}</p>
+              </div>
+            `
+            : ''
+        }
+
+        <!-- Student Search Inside Store -->
+        <input
+          type="text"
+          value="${escapeHtml(state.studentPreviewSearch)}"
+          placeholder="🔍 Search books or stationery in this shop..."
+          oninput="state.studentPreviewSearch = this.value; renderStudentPreviewContent();"
+          class="w-full min-h-[46px] px-4 py-2 rounded-xl bg-white border-2 border-indigo-100 text-sm font-medium focus:outline-none focus:border-[#4F46E5]"
+        />
+
+        <!-- Books Catalog -->
+        <div class="bg-white rounded-2xl border border-indigo-100 p-4 space-y-3">
+          <h4 class="font-extrabold text-slate-900 text-base">📚 Books Available (${filteredBooks.length})</h4>
+          <div class="divide-y divide-slate-100">
+            ${
+              filteredBooks.length === 0
+                ? `<p class="text-xs text-slate-500">No matching books.</p>`
+                : filteredBooks
+                    .map((b) => {
+                      const avail = b.inStock && b.qty > 0;
+                      return `
+                        <div class="py-2.5 first:pt-0 last:pb-0 flex items-start justify-between gap-3 ${avail ? '' : 'opacity-60'}">
+                          <div>
+                            <p class="font-bold text-slate-900 text-sm">${escapeHtml(b.title)}</p>
+                            <div class="flex flex-wrap items-center gap-1.5 mt-1">
+                              <span class="text-[11px] font-bold px-2 py-0.5 rounded-full ${
+                                b.condition.startsWith('Second-Hand')
+                                  ? 'bg-amber-100 text-amber-900'
+                                  : 'bg-sky-100 text-sky-800'
+                              }">${escapeHtml(b.condition)}</span>
+                              ${b.buyback ? `<span class="text-[11px] font-bold text-emerald-700">• 50% Buyback</span>` : ''}
+                            </div>
+                          </div>
+                          <div class="text-right shrink-0">
+                            <span class="text-base font-extrabold text-[#4F46E5]">₹${b.price}</span>
+                            <span class="block text-[10px] font-extrabold ${avail ? 'text-emerald-700' : 'text-red-600'}">
+                              ${avail ? `In Stock (${b.qty})` : 'Out of Stock'}
+                            </span>
+                          </div>
+                        </div>
+                      `;
+                    })
+                    .join('')
+            }
+          </div>
+        </div>
+
+        <!-- Stationery & Bundles -->
+        <div class="bg-white rounded-2xl border border-indigo-100 p-4 space-y-3">
+          <h4 class="font-extrabold text-slate-900 text-base">✏️ Stationery &amp; Bundles (${filteredStat.length})</h4>
+          <div class="divide-y divide-slate-100">
+            ${
+              filteredStat.length === 0
+                ? `<p class="text-xs text-slate-500">No matching stationery items.</p>`
+                : filteredStat
+                    .map(
+                      (item) => `
+                        <div class="py-2.5 first:pt-0 last:pb-0 flex items-center justify-between gap-3 ${item.inStock ? '' : 'opacity-60'}">
+                          <div>
+                            <p class="font-bold text-slate-900 text-sm">${escapeHtml(item.name)}</p>
+                            <p class="text-xs text-slate-500">${escapeHtml(item.sellAs)} • ${escapeHtml(item.packSize)}</p>
+                          </div>
+                          <div class="text-right shrink-0">
+                            <span class="text-base font-extrabold text-[#4F46E5]">₹${item.price}</span>
+                            <span class="block text-[10px] font-extrabold ${item.inStock ? 'text-emerald-700' : 'text-red-600'}">
+                              ${item.inStock ? 'In Stock' : 'Out of Stock'}
+                            </span>
+                          </div>
+                        </div>
+                      `
+                    )
+                    .join('')
+            }
+          </div>
+        </div>
+
+        <!-- Print Add-On Rate Card (ONLY shown if Print Add-On is ON) -->
+        ${
+          state.printAddon.enabled
+            ? `
+              <div class="bg-white rounded-2xl border border-indigo-100 p-4 space-y-3">
+                <div class="flex items-center justify-between gap-2">
+                  <h4 class="font-extrabold text-slate-900 text-base">🖨️ Printing &amp; Xerox Rates</h4>
+                  ${
+                    state.printAddon.whatsappPdfAccepted
+                      ? `<span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold">💬 WhatsApp PDF Accepted</span>`
+                      : ''
+                  }
+                </div>
+                <div class="divide-y divide-slate-100">
+                  ${state.printAddon.rates
+                    .map(
+                      (r) => `
+                        <div class="py-2 first:pt-0 last:pb-0 flex items-center justify-between text-sm">
+                          <span class="font-semibold text-slate-800">${escapeHtml(r.name)} <span class="text-xs text-slate-500">(${r.unit})</span></span>
+                          <span class="font-extrabold text-[#4F46E5]">₹${r.price}</span>
+                        </div>
+                      `
+                    )
+                    .join('')}
+                </div>
+              </div>
+            `
+            : ''
+        }
+
+        <!-- Opening Hours -->
+        <div class="bg-white rounded-2xl border border-indigo-100 p-4 flex items-center justify-between text-xs sm:text-sm">
+          <span class="font-bold text-slate-700">🕒 Regular Hours (Mon–Sat)</span>
+          <span class="font-bold text-slate-900">${mon.open ? `${formatTime24To12(mon.from)} – ${formatTime24To12(mon.to)}` : 'Closed'}</span>
+        </div>
+      `;
+    }
+
+    /* =========================================================================
+       12. INITIALIZE
+       ========================================================================= */
+    renderAll();
+  </script>
+</body>
+</html>

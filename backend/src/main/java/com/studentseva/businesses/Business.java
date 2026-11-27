@@ -2,9 +2,13 @@ package com.studentseva.businesses;
 
 import com.studentseva.users.User;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.locationtech.jts.geom.Point;
 
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -64,6 +68,13 @@ public class Business {
     @Column(name = "verification_status", nullable = false, length = 30)
     private VerificationStatus verificationStatus;
 
+    /**
+     * Category-specific shop settings, rules, policies, and facilities stored as JSONB.
+     */
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "metadata", columnDefinition = "jsonb", nullable = false)
+    private Map<String, Object> metadata = new HashMap<>();
+
     @Column(name = "created_at", updatable = false, nullable = false)
     private Instant createdAt;
 
@@ -80,6 +91,9 @@ public class Business {
         if (this.verificationStatus == null) {
             this.verificationStatus = VerificationStatus.VERIFIED;
         }
+        if (this.metadata == null) {
+            this.metadata = new HashMap<>();
+        }
     }
 
     @PreUpdate
@@ -93,7 +107,39 @@ public class Business {
         PRINTING,
         BOOKS_STATIONERY,
         KIRANA,
-        LIBRARY
+        LIBRARY;
+
+        /**
+         * Canonical short slug used by frontend vendor dashboards (/vendor/{businessType}).
+         */
+        public String toBusinessType() {
+            return switch (this) {
+                case HOSTEL_PG -> "hostel";
+                case MESS_TIFFIN -> "mess";
+                case PRINTING -> "printing";
+                case BOOKS_STATIONERY -> "books";
+                case KIRANA -> "kirana";
+                case LIBRARY -> "library";
+            };
+        }
+
+        /**
+         * Resolves a Category from either the short frontend businessType slug or enum name.
+         */
+        public static Category fromBusinessType(String businessType) {
+            if (businessType == null || businessType.isBlank()) {
+                return null;
+            }
+            return switch (businessType.trim().toLowerCase()) {
+                case "hostel", "hostel_pg" -> HOSTEL_PG;
+                case "mess", "mess_tiffin" -> MESS_TIFFIN;
+                case "printing" -> PRINTING;
+                case "books", "books_stationery" -> BOOKS_STATIONERY;
+                case "kirana" -> KIRANA;
+                case "library" -> LIBRARY;
+                default -> throw new IllegalArgumentException("Unsupported businessType: " + businessType);
+            };
+        }
     }
 
     public enum Status {
@@ -197,6 +243,14 @@ public class Business {
 
     public void setVerificationStatus(VerificationStatus verificationStatus) {
         this.verificationStatus = verificationStatus;
+    }
+
+    public Map<String, Object> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Map<String, Object> metadata) {
+        this.metadata = metadata != null ? new HashMap<>(metadata) : new HashMap<>();
     }
 
     public Instant getCreatedAt() {

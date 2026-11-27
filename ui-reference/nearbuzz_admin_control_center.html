@@ -1,0 +1,2603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NearBuzz — Admin Control Center</title>
+  <style>
+    /* =========================================================================
+       1. DESIGN TOKENS — CLEAN SLATE & RED MODERATION THEME
+       ========================================================================= */
+    :root {
+      --slate-950: #020617;
+      --slate-900: #0f172a;
+      --slate-800: #1e293b;
+      --slate-700: #334155;
+      --slate-600: #475569;
+      --slate-500: #64748b;
+      --slate-400: #94a3b8;
+      --slate-300: #cbd5e1;
+      --slate-200: #e2e8f0;
+      --slate-100: #f1f5f9;
+      --slate-50: #f8fafc;
+
+      --red-700: #b91c1c;
+      --red-600: #dc2626;
+      --red-500: #ef4444;
+      --red-100: #fee2e2;
+      --red-50: #fef2f2;
+      --red-border: #fecaca;
+
+      --emerald-700: #047857;
+      --emerald-600: #059669;
+      --emerald-500: #10b981;
+      --emerald-50: #ecfdf5;
+      --emerald-border: #a7f3d0;
+
+      --amber-700: #b45309;
+      --amber-600: #d97706;
+      --amber-500: #f59e0b;
+      --amber-50: #fffbeb;
+      --amber-border: #fde68a;
+
+      --radius: 16px;
+      --radius-md: 12px;
+      --radius-sm: 10px;
+      --radius-pill: 999px;
+
+      --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.05);
+      --shadow-sm: 0 4px 12px rgba(15, 23, 42, 0.06);
+      --shadow-md: 0 10px 26px rgba(15, 23, 42, 0.10);
+      --shadow-lg: 0 22px 48px rgba(15, 23, 42, 0.22);
+
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: var(--slate-50);
+      color: var(--slate-900);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    button, input, select, textarea {
+      font-family: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    @media (min-width: 640px) {
+      .container {
+        padding: 0 24px;
+      }
+    }
+
+    /* =========================================================================
+       2. STICKY TOP NAVBAR
+       ========================================================================= */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--slate-200);
+      box-shadow: var(--shadow-xs);
+    }
+
+    .navbar-inner {
+      min-height: 68px;
+      padding: 10px 0;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+
+    .brand-logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--slate-900) 0%, #7f1d1d 100%);
+      color: #fff;
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.22);
+      flex-shrink: 0;
+    }
+
+    .brand-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .brand-name {
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--slate-900);
+    }
+
+    .admin-badge {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--red-700);
+      background: var(--red-50);
+      border: 1px solid var(--red-border);
+      padding: 3px 10px;
+      border-radius: var(--radius-pill);
+      white-space: nowrap;
+      letter-spacing: 0.01em;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-nav {
+      min-height: 40px;
+      padding: 8px 14px;
+      border-radius: 11px;
+      font-size: 13px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn-broadcast {
+      border: none;
+      background: var(--slate-900);
+      color: #fff;
+      box-shadow: var(--shadow-xs);
+    }
+
+    .btn-broadcast:hover {
+      background: var(--slate-800);
+      transform: translateY(-1px);
+    }
+
+    .btn-log {
+      border: 1px solid var(--slate-200);
+      background: #fff;
+      color: var(--slate-800);
+    }
+
+    .btn-log:hover {
+      border-color: var(--slate-400);
+      background: var(--slate-50);
+    }
+
+    .log-count {
+      background: var(--slate-900);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      min-width: 20px;
+      height: 20px;
+      padding: 0 6px;
+      border-radius: var(--radius-pill);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .admin-user-pill {
+      display: none;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 13px;
+      border-radius: var(--radius-pill);
+      background: var(--slate-100);
+      border: 1px solid var(--slate-200);
+      color: var(--slate-700);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    @media (min-width: 900px) {
+      .admin-user-pill {
+        display: inline-flex;
+      }
+    }
+
+    /* =========================================================================
+       3. OVERVIEW STAT CARDS (5 LIVE INTERACTIVE CARDS)
+       ========================================================================= */
+    .main-wrap {
+      flex: 1;
+      padding: 22px 0 48px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    @media (min-width: 768px) {
+      .stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .stats-grid {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 14px;
+      }
+    }
+
+    .stat-card {
+      background: #fff;
+      border: 1.5px solid var(--slate-200);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow-xs);
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+      border-color: var(--slate-400);
+    }
+
+    .stat-card.alert-red {
+      background: var(--red-50);
+      border-color: var(--red-border);
+    }
+
+    .stat-card.alert-red:hover {
+      border-color: var(--red-500);
+    }
+
+    .stat-card.accent-emerald {
+      border-color: var(--emerald-border);
+    }
+
+    .stat-card.accent-amber {
+      border-color: var(--amber-border);
+    }
+
+    .stat-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--slate-600);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .stat-card.alert-red .stat-label {
+      color: var(--red-700);
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      color: var(--slate-900);
+    }
+
+    .stat-card.alert-red .stat-value {
+      color: var(--red-600);
+    }
+
+    .stat-card.accent-emerald .stat-value {
+      color: var(--emerald-700);
+    }
+
+    .stat-card.accent-amber .stat-value {
+      color: var(--amber-700);
+    }
+
+    .stat-sub {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--slate-500);
+    }
+
+    /* =========================================================================
+       4. ACTIVE BROADCAST BANNER
+       ========================================================================= */
+    .broadcast-banner {
+      background: var(--slate-900);
+      color: #fff;
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: var(--shadow-sm);
+      border-left: 5px solid var(--red-500);
+      animation: fadeUp 0.2s ease-out;
+    }
+
+    .broadcast-banner.info-mode {
+      border-left-color: var(--emerald-500);
+    }
+
+    .broadcast-banner.hidden {
+      display: none;
+    }
+
+    .broadcast-dismiss {
+      border: none;
+      background: rgba(255, 255, 255, 0.14);
+      color: #fff;
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .broadcast-dismiss:hover {
+      background: rgba(255, 255, 255, 0.24);
+    }
+
+    /* =========================================================================
+       5. 3 MAIN SEGMENTED TABS
+       ========================================================================= */
+    .tabs-bar {
+      background: #fff;
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius);
+      padding: 6px;
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-xs);
+    }
+
+    .tabs-bar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .tab-btn {
+      flex: 1;
+      min-width: max-content;
+      min-height: 48px;
+      border: none;
+      background: transparent;
+      color: var(--slate-600);
+      font-size: 14px;
+      font-weight: 700;
+      padding: 10px 18px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.16s ease;
+    }
+
+    .tab-btn:hover {
+      background: var(--slate-100);
+      color: var(--slate-900);
+    }
+
+    .tab-btn.active {
+      background: var(--slate-900);
+      color: #fff;
+      box-shadow: var(--shadow-xs);
+    }
+
+    .tab-badge {
+      font-size: 11px;
+      font-weight: 800;
+      min-width: 22px;
+      height: 22px;
+      padding: 0 7px;
+      border-radius: var(--radius-pill);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tab-badge.red {
+      background: var(--red-600);
+      color: #fff;
+    }
+
+    .tab-badge.amber {
+      background: var(--amber-500);
+      color: #fff;
+    }
+
+    /* =========================================================================
+       6. FILTER TOOLBAR & SEARCH
+       ========================================================================= */
+    .panel-card {
+      background: #fff;
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow-xs);
+      margin-bottom: 16px;
+    }
+
+    .filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .pill-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .filter-pill {
+      min-height: 38px;
+      padding: 7px 14px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--slate-200);
+      background: #fff;
+      color: var(--slate-600);
+      font-size: 13px;
+      font-weight: 700;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .filter-pill:hover {
+      border-color: var(--slate-400);
+      color: var(--slate-900);
+    }
+
+    .filter-pill.active {
+      background: var(--slate-900);
+      border-color: var(--slate-900);
+      color: #fff;
+    }
+
+    .filter-pill.active-red {
+      background: var(--red-600);
+      border-color: var(--red-600);
+      color: #fff;
+    }
+
+    .search-input {
+      width: 100%;
+      max-width: 340px;
+      min-height: 42px;
+      padding: 9px 14px;
+      border-radius: 11px;
+      border: 1.5px solid var(--slate-200);
+      background: var(--slate-50);
+      color: var(--slate-900);
+      font-size: 14px;
+      font-weight: 500;
+      outline: none;
+      transition: all 0.15s ease;
+    }
+
+    .search-input:focus {
+      background: #fff;
+      border-color: var(--slate-900);
+    }
+
+    /* =========================================================================
+       7. BADGES & BUTTONS
+       ========================================================================= */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      white-space: nowrap;
+    }
+
+    .badge-red {
+      background: var(--red-50);
+      color: var(--red-700);
+      border: 1px solid var(--red-border);
+    }
+
+    .badge-red-solid {
+      background: var(--red-600);
+      color: #fff;
+    }
+
+    .badge-emerald {
+      background: var(--emerald-50);
+      color: var(--emerald-700);
+      border: 1px solid var(--emerald-border);
+    }
+
+    .badge-amber {
+      background: var(--amber-50);
+      color: var(--amber-700);
+      border: 1px solid var(--amber-border);
+    }
+
+    .badge-slate {
+      background: var(--slate-100);
+      color: var(--slate-700);
+      border: 1px solid var(--slate-200);
+    }
+
+    .btn {
+      min-height: 40px;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn-slate {
+      background: var(--slate-900);
+      color: #fff;
+    }
+
+    .btn-slate:hover {
+      background: var(--slate-800);
+    }
+
+    .btn-outline {
+      background: #fff;
+      border-color: var(--slate-300);
+      color: var(--slate-800);
+    }
+
+    .btn-outline:hover {
+      background: var(--slate-100);
+      border-color: var(--slate-400);
+    }
+
+    .btn-emerald {
+      background: var(--emerald-600);
+      color: #fff;
+    }
+
+    .btn-emerald:hover {
+      background: var(--emerald-700);
+    }
+
+    .btn-red {
+      background: var(--red-600);
+      color: #fff;
+    }
+
+    .btn-red:hover {
+      background: var(--red-700);
+    }
+
+    .btn-red-soft {
+      background: var(--red-50);
+      border-color: var(--red-border);
+      color: var(--red-700);
+    }
+
+    .btn-red-soft:hover {
+      background: var(--red-100);
+    }
+
+    /* =========================================================================
+       8. REPORT CARDS (TAB 1)
+       ========================================================================= */
+    .reports-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .report-card {
+      background: #fff;
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .report-card.high-priority {
+      border-left: 5px solid var(--red-600);
+    }
+
+    .report-top {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .report-shop-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .report-shop-name {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--slate-900);
+    }
+
+    .report-note {
+      margin: 0;
+      padding: 12px 14px;
+      background: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-radius: 12px;
+      font-size: 14px;
+      color: var(--slate-800);
+      line-height: 1.5;
+    }
+
+    .report-meta {
+      font-size: 12px;
+      color: var(--slate-500);
+      font-weight: 600;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .report-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding-top: 10px;
+      border-top: 1px solid var(--slate-100);
+    }
+
+    /* =========================================================================
+       9. RESPONSIVE DATA TABLE (SHOPS & USERS)
+       ========================================================================= */
+    .table-card {
+      background: #fff;
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .desktop-table-wrap {
+      display: none;
+      overflow-x: auto;
+    }
+
+    @media (min-width: 900px) {
+      .desktop-table-wrap {
+        display: block;
+      }
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .data-table th {
+      text-align: left;
+      padding: 13px 16px;
+      background: var(--slate-50);
+      color: var(--slate-600);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-bottom: 1px solid var(--slate-200);
+      white-space: nowrap;
+    }
+
+    .data-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--slate-100);
+      vertical-align: middle;
+    }
+
+    .data-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .data-table tr:hover td {
+      background: #fcfdff;
+    }
+
+    .mobile-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 12px;
+    }
+
+    @media (min-width: 900px) {
+      .mobile-cards {
+        display: none;
+      }
+    }
+
+    .mobile-item-card {
+      border: 1px solid var(--slate-200);
+      border-radius: 14px;
+      padding: 14px;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .avatar-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: var(--slate-900);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .avatar-circle.owner {
+      background: #065f46;
+    }
+
+    .avatar-circle.admin {
+      background: var(--red-700);
+    }
+
+    .role-select {
+      min-height: 38px;
+      padding: 6px 10px;
+      border-radius: 10px;
+      border: 1.5px solid var(--slate-300);
+      background: #fff;
+      color: var(--slate-900);
+      font-size: 13px;
+      font-weight: 700;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .role-select:focus {
+      border-color: var(--slate-900);
+    }
+
+    /* =========================================================================
+       10. SLIDE-OVER DRAWERS & MODALS
+       ========================================================================= */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      background: rgba(15, 23, 42, 0.56);
+      backdrop-filter: blur(3px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+    }
+
+    .overlay.open {
+      display: flex;
+    }
+
+    .overlay.drawer-mode {
+      justify-content: flex-end;
+      padding: 0;
+    }
+
+    .drawer-panel {
+      background: #fff;
+      width: 100%;
+      max-width: 480px;
+      height: 100vh;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      flex-direction: column;
+      animation: slideInRight 0.22s ease-out;
+    }
+
+    @keyframes slideInRight {
+      from { transform: translateX(36px); opacity: 0.7; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .modal-panel {
+      background: #fff;
+      width: 100%;
+      max-width: 540px;
+      max-height: 92vh;
+      border-radius: 20px;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      animation: fadeUp 0.2s ease-out;
+    }
+
+    .panel-header {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--slate-200);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      background: #fff;
+    }
+
+    .panel-close {
+      border: 1px solid var(--slate-200);
+      background: var(--slate-50);
+      color: var(--slate-800);
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .panel-close:hover {
+      background: var(--slate-200);
+    }
+
+    .panel-body {
+      padding: 20px;
+      overflow-y: auto;
+      background: var(--slate-50);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .panel-footer {
+      padding: 14px 20px;
+      background: #fff;
+      border-top: 1px solid var(--slate-200);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .inspector-box {
+      background: #fff;
+      border: 1px solid var(--slate-200);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .gps-preview-map {
+      position: relative;
+      height: 140px;
+      border-radius: 12px;
+      border: 1px solid var(--slate-300);
+      background-color: #f1f5f9;
+      background-image:
+        linear-gradient(to right, rgba(15, 23, 42, 0.06) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(15, 23, 42, 0.06) 1px, transparent 1px);
+      background-size: 22px 22px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .audit-item {
+      background: #fff;
+      border: 1px solid var(--slate-200);
+      border-radius: 14px;
+      padding: 13px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .template-btn {
+      width: 100%;
+      text-align: left;
+      padding: 10px 13px;
+      border-radius: 11px;
+      border: 1px solid var(--slate-200);
+      background: #fff;
+      color: var(--slate-800);
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      transition: all 0.14s ease;
+    }
+
+    .template-btn:hover {
+      border-color: var(--slate-900);
+      background: var(--slate-100);
+    }
+
+    .form-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--slate-700);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-bottom: 6px;
+    }
+
+    .form-input, .form-textarea, .form-select {
+      width: 100%;
+      padding: 10px 13px;
+      border-radius: 11px;
+      border: 1.5px solid var(--slate-300);
+      background: #fff;
+      color: var(--slate-900);
+      font-size: 14px;
+      font-weight: 500;
+      outline: none;
+    }
+
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      border-color: var(--slate-900);
+    }
+
+    .empty-state {
+      background: #fff;
+      border: 1px dashed var(--slate-300);
+      border-radius: var(--radius);
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--slate-600);
+    }
+
+    /* =========================================================================
+       11. TOAST NOTIFICATIONS
+       ========================================================================= */
+    .toast-stack {
+      position: fixed;
+      bottom: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      width: 92%;
+      max-width: 440px;
+      pointer-events: none;
+    }
+
+    .toast {
+      pointer-events: auto;
+      background: var(--slate-900);
+      color: #fff;
+      padding: 12px 16px;
+      border-radius: 13px;
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      animation: fadeUp 0.2s ease-out;
+    }
+
+    .toast.red {
+      background: var(--red-700);
+    }
+
+    .toast.emerald {
+      background: var(--emerald-700);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .footer {
+      border-top: 1px solid var(--slate-200);
+      background: #fff;
+      padding: 16px 0;
+      font-size: 12px;
+      color: var(--slate-500);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== STICKY TOP NAVBAR ==================== -->
+  <header class="navbar">
+    <div class="container navbar-inner">
+      <div class="brand">
+        <div class="brand-logo">NB</div>
+        <div class="brand-title-wrap">
+          <span class="brand-name">NearBuzz</span>
+          <span class="admin-badge">Admin Control Center</span>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <button type="button" class="btn-nav btn-broadcast" onclick="openBroadcastModal()">
+          <span>📢</span>
+          <span>Campus Broadcast</span>
+        </button>
+
+        <button type="button" class="btn-nav btn-log" onclick="openAuditDrawer()">
+          <span>📋</span>
+          <span>Moderation Log</span>
+          <span id="navLogCount" class="log-count">3</span>
+        </button>
+
+        <div class="admin-user-pill">
+          <span>🛡️</span>
+          <span>Admin · Bholaram Marg</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN WORKSPACE ==================== -->
+  <main class="main-wrap">
+    <div class="container">
+
+      <!-- 5 LIVE OVERVIEW STAT CARDS -->
+      <section id="statsMount" class="stats-grid" aria-label="Platform overview statistics"></section>
+
+      <!-- ACTIVE CAMPUS BROADCAST BANNER -->
+      <section id="broadcastBanner" class="broadcast-banner hidden" aria-live="polite"></section>
+
+      <!-- 3 MAIN SEGMENTED TABS -->
+      <nav id="tabsMount" class="tabs-bar" aria-label="Moderation console tabs"></nav>
+
+      <!-- ACTIVE TAB CONTENT -->
+      <section id="tabContentMount"></section>
+
+    </div>
+  </main>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="footer">
+    <div class="container" style="display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px;">
+      <span><strong>NearBuzz Admin Control Center</strong> — Bholaram Ustad Marg, Indore Campus Moderation</span>
+      <span>All actions are recorded in the Moderation Audit Log</span>
+    </div>
+  </footer>
+
+  <!-- ==================== SHOP INSPECTOR SLIDE-OVER DRAWER ==================== -->
+  <div id="inspectorOverlay" class="overlay drawer-mode" onclick="if(event.target===this) closeInspector()">
+    <div class="drawer-panel" role="dialog" aria-modal="true" aria-label="Shop Inspector">
+      <div id="inspectorHeader" class="panel-header"></div>
+      <div id="inspectorBody" class="panel-body"></div>
+      <div id="inspectorFooter" class="panel-footer"></div>
+    </div>
+  </div>
+
+  <!-- ==================== MODERATION AUDIT LOG SLIDE-OVER DRAWER ==================== -->
+  <div id="auditOverlay" class="overlay drawer-mode" onclick="if(event.target===this) closeAuditDrawer()">
+    <div class="drawer-panel" role="dialog" aria-modal="true" aria-label="Moderation Audit Log">
+      <div class="panel-header">
+        <div>
+          <h2 style="margin:0; font-size:18px; font-weight:800;">📋 Recent Moderation Log</h2>
+          <p style="margin:3px 0 0; font-size:12px; color:var(--slate-500);">Live chronological audit trail of all admin actions</p>
+        </div>
+        <button class="panel-close" onclick="closeAuditDrawer()" aria-label="Close moderation log">✕</button>
+      </div>
+      <div id="auditBody" class="panel-body"></div>
+    </div>
+  </div>
+
+  <!-- ==================== SUSPEND SHOP CONFIRMATION MODAL ==================== -->
+  <div id="suspendOverlay" class="overlay" onclick="if(event.target===this) closeSuspendModal()">
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-label="Suspend Shop">
+      <div class="panel-header">
+        <div>
+          <span class="badge badge-red-solid" style="margin-bottom:6px;">Moderation Action</span>
+          <h2 id="suspendModalTitle" style="margin:0; font-size:18px; font-weight:800;">Suspend Shop</h2>
+          <p id="suspendModalSub" style="margin:3px 0 0; font-size:13px; color:var(--slate-500);"></p>
+        </div>
+        <button class="panel-close" onclick="closeSuspendModal()" aria-label="Close suspend modal">✕</button>
+      </div>
+      <div class="panel-body">
+        <div>
+          <label class="form-label">Select Suspension Reason</label>
+          <div id="suspendReasonsMount" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+        </div>
+        <div>
+          <label class="form-label" for="suspendNoteInput">Custom Note (Optional)</label>
+          <textarea id="suspendNoteInput" class="form-textarea" rows="3" placeholder="Add internal moderation note or owner instructions..."></textarea>
+        </div>
+      </div>
+      <div class="panel-footer">
+        <button type="button" class="btn btn-outline" onclick="closeSuspendModal()">Cancel</button>
+        <button type="button" class="btn btn-red" onclick="confirmSuspendShop()">Confirm Suspend Shop</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== CAMPUS BROADCAST NOTICE MODAL ==================== -->
+  <div id="broadcastOverlay" class="overlay" onclick="if(event.target===this) closeBroadcastModal()">
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-label="Campus Broadcast">
+      <div class="panel-header">
+        <div>
+          <h2 style="margin:0; font-size:18px; font-weight:800;">📢 Send Campus Broadcast Notice</h2>
+          <p style="margin:3px 0 0; font-size:13px; color:var(--slate-500);">Push an official NearBuzz announcement to students or shop owners</p>
+        </div>
+        <button class="panel-close" onclick="closeBroadcastModal()" aria-label="Close broadcast modal">✕</button>
+      </div>
+      <div class="panel-body">
+        <!-- Quick 1-Tap Templates -->
+        <div>
+          <label class="form-label">⚡ 1-Tap Quick Templates</label>
+          <div style="display:flex; flex-direction:column; gap:7px;">
+            <button type="button" class="template-btn" onclick="applyBroadcastTemplate(0)">
+              <span>Exam Week: 24x7 Study Libraries Updated</span>
+              <span class="badge badge-slate">Use</span>
+            </button>
+            <button type="button" class="template-btn" onclick="applyBroadcastTemplate(1)">
+              <span>Shop Owners: Please Verify Your GPS Pin</span>
+              <span class="badge badge-slate">Use</span>
+            </button>
+            <button type="button" class="template-btn" onclick="applyBroadcastTemplate(2)">
+              <span>Scheduled Maintenance Tonight 2–3 AM</span>
+              <span class="badge badge-slate">Use</span>
+            </button>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px;">
+          <div>
+            <label class="form-label" for="bcAudience">Audience</label>
+            <select id="bcAudience" class="form-select">
+              <option value="Students & Shop Owners">Both (Students &amp; Owners)</option>
+              <option value="Students Only">Students Only</option>
+              <option value="Shop Owners Only">Shop Owners Only</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label" for="bcCampus">Campus Area</label>
+            <select id="bcCampus" class="form-select">
+              <option value="Bholaram Ustad Marg, Indore">Bholaram Ustad Marg, Indore</option>
+              <option value="All Campuses">All Campuses</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="form-label">Priority</label>
+          <div style="display:flex; gap:8px;">
+            <button type="button" id="bcPrioInfo" class="filter-pill active" onclick="setBroadcastPriority('Info')">ℹ️ Info</button>
+            <button type="button" id="bcPrioUrgent" class="filter-pill" onclick="setBroadcastPriority('Urgent')">🚨 Urgent Alert</button>
+          </div>
+        </div>
+
+        <div>
+          <label class="form-label" for="bcTitle">Announcement Title</label>
+          <input id="bcTitle" type="text" class="form-input" placeholder="e.g. Exam Week 24x7 Study Libraries Updated" />
+        </div>
+
+        <div>
+          <label class="form-label" for="bcMessage">Message</label>
+          <textarea id="bcMessage" class="form-textarea" rows="3" placeholder="Write clear, short announcement text..."></textarea>
+        </div>
+      </div>
+      <div class="panel-footer">
+        <button type="button" class="btn btn-outline" onclick="closeBroadcastModal()">Cancel</button>
+        <button type="button" class="btn btn-slate" onclick="sendBroadcast()">📢 Send Broadcast Now</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== TOAST NOTIFICATION STACK ==================== -->
+  <div id="toastStack" class="toast-stack"></div>
+
+  <!-- ==================== APPLICATION LOGIC ==================== -->
+  <script>
+    /* =========================================================================
+       1. CONSTANTS & INITIAL REALISTIC DATA (BHOLARAM USTAD MARG, INDORE)
+       ========================================================================= */
+    const CATEGORIES = [
+      'All',
+      'Hostels & PGs',
+      'Mess & Tiffin',
+      'Printing & Xerox',
+      'Books & Stationery',
+      'Kirana & Essentials',
+      'Study Libraries'
+    ];
+
+    const CATEGORY_ICONS = {
+      'Hostels & PGs': '🏠',
+      'Mess & Tiffin': '🍛',
+      'Printing & Xerox': '🖨️',
+      'Books & Stationery': '📚',
+      'Kirana & Essentials': '🛒',
+      'Study Libraries': '📖'
+    };
+
+    const SUSPEND_REASONS = [
+      'Fake Pricing',
+      'Permanently Closed',
+      'Spam / Abuse',
+      'Unverified Location'
+    ];
+
+    const BROADCAST_TEMPLATES = [
+      {
+        title: 'Exam Week: 24x7 Study Libraries Updated',
+        message: 'Live vacant seats and 24x7 night shift timings for Saraswati & nearby libraries around Bholaram Ustad Marg are now updated for semester exams.',
+        audience: 'Students Only',
+        priority: 'Info'
+      },
+      {
+        title: 'Shop Owners: Please Verify Your GPS Pin',
+        message: 'To keep your Verified badge active, please check your shop GPS pin and opening hours inside the Vendor Portal this week.',
+        audience: 'Shop Owners Only',
+        priority: 'Info'
+      },
+      {
+        title: 'Scheduled Maintenance Tonight 2–3 AM',
+        message: 'NearBuzz will undergo brief server maintenance tonight from 2:00 AM to 3:00 AM IST. Listings will be read-only during this window.',
+        audience: 'Students & Shop Owners',
+        priority: 'Urgent'
+      }
+    ];
+
+    const INITIAL_SHOPS = [
+      {
+        id: 'shop_1',
+        name: 'Shree Ram Boys Hostel',
+        category: 'Hostels & PGs',
+        address: 'Plot 14, Lane 2, Bholaram Ustad Marg, Indore',
+        owner: 'Ramesh Patel',
+        phone: '+91 98261 44510',
+        gpsStatus: 'GPS Locked',
+        coords: '22.6914° N, 75.8676° E',
+        pinPos: { x: 46, y: 48 },
+        status: 'Verified', // Verified | Pending | Suspended
+        suspendReason: '',
+        items: [
+          { name: 'Single AC Room', price: '₹8,500/mo', note: '1 bed listed vacant' },
+          { name: 'Double Sharing Cooler', price: '₹5,500/mo', note: '2 beds listed vacant' }
+        ]
+      },
+      {
+        id: 'shop_2',
+        name: 'Lakshmi Girls PG',
+        category: 'Hostels & PGs',
+        address: 'House 8, Vishnupuri Cross, Bholaram Marg, Indore',
+        owner: 'Kavita Joshi',
+        phone: '+91 98262 88310',
+        gpsStatus: 'Needs Check',
+        coords: '22.6902° N, 75.8701° E',
+        pinPos: { x: 64, y: 62 },
+        status: 'Pending',
+        suspendReason: '',
+        items: [
+          { name: 'Double Sharing AC (With Food)', price: '₹8,200/mo', note: '3 meals included' },
+          { name: 'Single AC Suite', price: '₹10,800/mo', note: 'Attached bathroom' }
+        ]
+      },
+      {
+        id: 'shop_3',
+        name: 'Annapurna Veg Mess & Tiffin',
+        category: 'Mess & Tiffin',
+        address: 'Shop 4, Ground Floor, Bholaram Ustad Marg, Indore',
+        owner: 'Sunita Sharma',
+        phone: '+91 98265 77219',
+        gpsStatus: 'GPS Locked',
+        coords: '22.6912° N, 75.8680° E',
+        pinPos: { x: 52, y: 45 },
+        status: 'Verified',
+        suspendReason: '',
+        items: [
+          { name: 'Full Month (Lunch + Dinner)', price: '₹3,200/mo', note: 'Pure Veg · Unlimited Roti' },
+          { name: 'Single Trial Thali', price: '₹70/plate', note: 'Walk-in available' }
+        ]
+      },
+      {
+        id: 'shop_4',
+        name: 'Sharma Print & Stationery Hub',
+        category: 'Printing & Xerox',
+        address: 'Shop 7, Near Campus Gate 2, Bholaram Marg, Indore',
+        owner: 'Rajesh Sharma',
+        phone: '+91 94250 31890',
+        gpsStatus: 'GPS Locked',
+        coords: '22.6905° N, 75.8698° E',
+        pinPos: { x: 60, y: 38 },
+        status: 'Verified',
+        suspendReason: '',
+        items: [
+          { name: 'B&W Print / Xerox (Single)', price: '₹1/page', note: 'WhatsApp PDF accepted' },
+          { name: 'Hard Project Binding', price: '₹180/copy', note: 'Ready in 2 hours' }
+        ]
+      },
+      {
+        id: 'shop_5',
+        name: 'Vidya Book Depot & Stationery',
+        category: 'Books & Stationery',
+        address: 'Shop 3, Near Campus Gate 1, Bholaram Marg, Indore',
+        owner: 'Mahesh Agarwal',
+        phone: '+91 98931 60412',
+        gpsStatus: 'GPS Locked',
+        coords: '22.6915° N, 75.8674° E',
+        pinPos: { x: 34, y: 50 },
+        status: 'Verified',
+        suspendReason: '',
+        items: [
+          { name: 'Engg. Mathematics (Second-Hand)', price: '₹220', note: '50% Buyback' },
+          { name: 'Classmate Register Pack of 6', price: '₹320', note: 'In Stock' }
+        ]
+      },
+      {
+        id: 'shop_6',
+        name: 'Gupta Kirana & Daily Needs',
+        category: 'Kirana & Essentials',
+        address: 'Shop 2, Near Campus Gate 1, Bholaram Marg, Indore',
+        owner: 'Suresh Gupta',
+        phone: '+91 97542 11908',
+        gpsStatus: 'GPS Locked',
+        coords: '22.6916° N, 75.8672° E',
+        pinPos: { x: 38, y: 34 },
+        status: 'Pending',
+        suspendReason: '',
+        items: [
+          { name: '20L RO Water Can', price: '₹35/can', note: 'Free hostel delivery' },
+          { name: 'Maggi 4-Pack', price: '₹56', note: 'In Stock' }
+        ]
+      },
+      {
+        id: 'shop_7',
+        name: 'Mahakal Kirana Store',
+        category: 'Kirana & Essentials',
+        address: 'Old Corner Shop, Bhawarkua Lane, Indore',
+        owner: 'Deepak Verma',
+        phone: '+91 98260 55421',
+        gpsStatus: 'Needs Check',
+        coords: '22.6942° N, 75.8630° E',
+        pinPos: { x: 24, y: 28 },
+        status: 'Suspended',
+        suspendReason: 'Permanently Closed — Multiple student reports verified',
+        items: [
+          { name: '20L Water Can', price: '₹30/can', note: 'Listing frozen' }
+        ]
+      },
+      {
+        id: 'shop_8',
+        name: 'Saraswati 24x7 Study Library',
+        category: 'Study Libraries',
+        address: '2nd Floor, Above SBI ATM, Near Gate 2, Indore',
+        owner: 'Vinod Tiwari',
+        phone: '+91 98268 90341',
+        gpsStatus: 'GPS Locked',
+        coords: '22.6904° N, 75.8703° E',
+        pinPos: { x: 74, y: 40 },
+        status: 'Verified',
+        suspendReason: '',
+        items: [
+          { name: 'Full Day Reserved Seat (24x7)', price: '₹1,400/mo', note: '4 seats vacant' },
+          { name: 'Morning Shift (6 AM–2 PM)', price: '₹800/mo', note: '7 seats vacant' }
+        ]
+      }
+    ];
+
+    const INITIAL_REPORTS = [
+      {
+        id: 'rep_1',
+        shopId: 'shop_1',
+        reason: 'Fake Availability',
+        priority: 'High Priority',
+        reportCount: 2,
+        status: 'Open', // Open | Resolved | Dismissed
+        reporterName: 'Aarav Kulkarni',
+        reporterEmail: 'aarav.k@davv.edu.in',
+        time: '18 mins ago',
+        note: 'Fake bed availability — says 3 vacant but hostel is full when I visited with my parents today.'
+      },
+      {
+        id: 'rep_2',
+        shopId: 'shop_4',
+        reason: 'Wrong Price',
+        priority: 'Normal',
+        reportCount: 1,
+        status: 'Open',
+        reporterName: 'Priya Deshmukh',
+        reporterEmail: 'priya.d@sgsits.ac.in',
+        time: '45 mins ago',
+        note: 'Wrong B&W print price listed (charges ₹2 instead of ₹1 for single-side printout under 50 pages).'
+      },
+      {
+        id: 'rep_3',
+        shopId: 'shop_7',
+        reason: 'Permanently Closed',
+        priority: 'High Priority',
+        reportCount: 3,
+        status: 'Open',
+        reporterName: 'Rohan Chouhan',
+        reporterEmail: 'rohan.c@indorecollege.in',
+        time: '2 hours ago',
+        note: 'Shop permanently closed / shifted — shutter has a "Shop for Rent" board since last week.'
+      },
+      {
+        id: 'rep_4',
+        shopId: 'shop_3',
+        reason: 'Spam Notice',
+        priority: 'Normal',
+        reportCount: 1,
+        status: 'Open',
+        reporterName: 'Neha Patidar',
+        reporterEmail: 'neha.p@davv.edu.in',
+        time: '3 hours ago',
+        note: 'Spam promotional notice posted 4 times today in the Updates feed with identical text.'
+      },
+      {
+        id: 'rep_5',
+        shopId: 'shop_8',
+        reason: 'Facility Issue',
+        priority: 'Normal',
+        reportCount: 1,
+        status: 'Resolved',
+        reporterName: 'Siddharth Jain',
+        reporterEmail: 'sid.jain@medicaps.ac.in',
+        time: 'Yesterday',
+        note: 'Wi-Fi was down yesterday evening. Owner confirmed backup router was replaced today.'
+      },
+      {
+        id: 'rep_6',
+        shopId: 'shop_5',
+        reason: 'Policy Dispute',
+        priority: 'Normal',
+        reportCount: 1,
+        status: 'Dismissed',
+        reporterName: 'Karan Malviya',
+        reporterEmail: 'karan.m@davv.edu.in',
+        time: '2 days ago',
+        note: 'Shop refused 50% buyback on a torn 2018 edition textbook. Checked policy — buyback applies only to current syllabus.'
+      }
+    ];
+
+    const INITIAL_USERS = [
+      { id: 'u_1', name: 'Vinnie Verma', email: 'vinnie24092004@gmail.com', role: 'Admin', status: 'Active', activity: 'Campus Lead · Bholaram Marg', joined: 'Jan 2026' },
+      { id: 'u_2', name: 'Ramesh Patel', email: 'patel51724@gmail.com', role: 'Shop Owner', status: 'Active', activity: 'Owns: Shree Ram Boys Hostel', joined: 'Feb 2026' },
+      { id: 'u_3', name: 'Sunita Sharma', email: 'annapurnamess.indore@gmail.com', role: 'Shop Owner', status: 'Active', activity: 'Owns: Annapurna Veg Mess & Tiffin', joined: 'Feb 2026' },
+      { id: 'u_4', name: 'Rajesh Sharma', email: 'sharmaprint.gate2@gmail.com', role: 'Shop Owner', status: 'Active', activity: 'Owns: Sharma Print & Stationery Hub', joined: 'Mar 2026' },
+      { id: 'u_5', name: 'Vinod Tiwari', email: 'saraswatilib24x7@gmail.com', role: 'Shop Owner', status: 'Active', activity: 'Owns: Saraswati 24x7 Study Library', joined: 'Mar 2026' },
+      { id: 'u_6', name: 'Kavita Joshi', email: 'lakshmigirlspg@gmail.com', role: 'Shop Owner', status: 'Active', activity: 'Owns: Lakshmi Girls PG (Pending)', joined: 'Nov 2026' },
+      { id: 'u_7', name: 'Aarav Kulkarni', email: 'aarav.k@davv.edu.in', role: 'Student', status: 'Active', activity: 'Submitted 2 reports · Saved 4 shops', joined: 'Aug 2026' },
+      { id: 'u_8', name: 'Priya Deshmukh', email: 'priya.d@sgsits.ac.in', role: 'Student', status: 'Active', activity: 'Submitted 1 report · Following 3 shops', joined: 'Aug 2026' },
+      { id: 'u_9', name: 'Rohan Chouhan', email: 'rohan.c@indorecollege.in', role: 'Student', status: 'Active', activity: 'Submitted 1 report · Saved 6 shops', joined: 'Sep 2026' },
+      { id: 'u_10', name: 'Deepak Verma', email: 'mahakalkirana.old@gmail.com', role: 'Shop Owner', status: 'Suspended', activity: 'Owns: Mahakal Kirana Store (Suspended)', joined: 'Apr 2026' }
+    ];
+
+    const INITIAL_AUDIT_LOG = [
+      {
+        id: 'log_1',
+        type: 'suspend',
+        badge: 'Shop Suspended',
+        message: 'Suspended "Mahakal Kirana Store" (Reason: Permanently Closed).',
+        time: 'Yesterday, 6:40 PM'
+      },
+      {
+        id: 'log_2',
+        type: 'resolve',
+        badge: 'Report Resolved',
+        message: 'Resolved student report on "Saraswati 24x7 Study Library" after owner replaced Wi-Fi router.',
+        time: 'Yesterday, 4:15 PM'
+      },
+      {
+        id: 'log_3',
+        type: 'verify',
+        badge: 'Shop Verified',
+        message: 'Verified "Vidya Book Depot & Stationery" after GPS & rate check.',
+        time: '2 days ago'
+      }
+    ];
+
+    /* =========================================================================
+       2. APPLICATION STATE
+       ========================================================================= */
+    const state = {
+      activeTab: 'reports', // 'reports' | 'shops' | 'users'
+      shops: JSON.parse(JSON.stringify(INITIAL_SHOPS)),
+      reports: JSON.parse(JSON.stringify(INITIAL_REPORTS)),
+      users: JSON.parse(JSON.stringify(INITIAL_USERS)),
+      auditLog: JSON.parse(JSON.stringify(INITIAL_AUDIT_LOG)),
+
+      // Tab 1 filters
+      reportStatusFilter: 'Open', // 'Open' | 'Resolved' | 'Dismissed' | 'All'
+      reportSearch: '',
+
+      // Tab 2 filters
+      shopCategoryFilter: 'All',
+      shopStatusFilter: 'All', // 'All' | 'Pending' | 'Verified' | 'Suspended'
+      shopSearch: '',
+
+      // Tab 3 filters
+      userRoleFilter: 'All', // 'All' | 'Student' | 'Shop Owner' | 'Admin'
+      userStatusFilter: 'All', // 'All' | 'Active' | 'Suspended'
+      userSearch: '',
+
+      // Modals & Drawers state
+      inspectingShopId: null,
+      suspendingShopId: null,
+      suspendingReportId: null,
+      selectedSuspendReason: SUSPEND_REASONS[0],
+      broadcastPriority: 'Info',
+      activeBroadcast: null
+    };
+
+    /* =========================================================================
+       3. UTILITIES (ESCAPE, TIME, AUDIT LOGGING, TOASTS)
+       ========================================================================= */
+    function escapeHtml(str) {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function getNowTime() {
+      return 'Today, ' + new Date().toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true });
+    }
+
+    function getShop(id) {
+      return state.shops.find((s) => s.id === id);
+    }
+
+    function getInitials(name) {
+      return name
+        .split(' ')
+        .map((p) => p[0])
+        .join('')
+        .slice(0, 2)
+        .toUpperCase();
+    }
+
+    function addAuditEntry(type, badge, message) {
+      state.auditLog.unshift({
+        id: 'log_' + Date.now(),
+        type,
+        badge,
+        message,
+        time: getNowTime()
+      });
+      document.getElementById('navLogCount').textContent = state.auditLog.length;
+    }
+
+    function showToast(message, tone = 'default') {
+      const stack = document.getElementById('toastStack');
+      const el = document.createElement('div');
+      el.className = `toast ${tone}`;
+      const icon = tone === 'red' ? '🚫' : tone === 'emerald' ? '✓' : 'ℹ️';
+      el.innerHTML = `<span>${icon}</span><span>${escapeHtml(message)}</span>`;
+      stack.appendChild(el);
+      setTimeout(() => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(6px)';
+        el.style.transition = 'all 0.2s ease';
+        setTimeout(() => el.remove(), 220);
+      }, 2800);
+    }
+
+    /* =========================================================================
+       4. MASTER RENDER PIPELINE
+       ========================================================================= */
+    function renderAll() {
+      document.getElementById('navLogCount').textContent = state.auditLog.length;
+      renderStats();
+      renderBroadcastBanner();
+      renderTabs();
+      renderActiveTab();
+      if (state.inspectingShopId) {
+        renderInspectorDrawer();
+      }
+    }
+
+    /* ---------- 5 LIVE OVERVIEW STAT CARDS ---------- */
+    function renderStats() {
+      const openReports = state.reports.filter((r) => r.status === 'Open').length;
+      const totalShops = state.shops.length;
+      const pendingShops = state.shops.filter((s) => s.status === 'Pending').length;
+      const verifiedShops = state.shops.filter((s) => s.status === 'Verified').length;
+      const suspendedShops = state.shops.filter((s) => s.status === 'Suspended').length;
+      const totalUsers = state.users.length;
+      const studentCount = state.users.filter((u) => u.role === 'Student').length;
+      const ownerCount = state.users.filter((u) => u.role === 'Shop Owner').length;
+
+      document.getElementById('statsMount').innerHTML = `
+        <button type="button" class="stat-card ${openReports > 0 ? 'alert-red' : ''}" onclick="jumpToReports('Open')">
+          <div class="stat-top">
+            <span class="stat-label">Open Reports</span>
+            <span>🚨</span>
+          </div>
+          <div class="stat-value">${openReports}</div>
+          <div class="stat-sub">${openReports > 0 ? 'Needs review now' : 'All clear!'}</div>
+        </button>
+
+        <button type="button" class="stat-card" onclick="jumpToShops('All')">
+          <div class="stat-top">
+            <span class="stat-label">Total Shops</span>
+            <span>🏪</span>
+          </div>
+          <div class="stat-value">${totalShops}</div>
+          <div class="stat-sub">${pendingShops} pending review</div>
+        </button>
+
+        <button type="button" class="stat-card accent-emerald" onclick="jumpToShops('Verified')">
+          <div class="stat-top">
+            <span class="stat-label">Verified Shops</span>
+            <span>✓</span>
+          </div>
+          <div class="stat-value">${verifiedShops}</div>
+          <div class="stat-sub">Live on Student Map</div>
+        </button>
+
+        <button type="button" class="stat-card accent-amber" onclick="jumpToShops('Suspended')">
+          <div class="stat-top">
+            <span class="stat-label">Suspended</span>
+            <span>⏸️</span>
+          </div>
+          <div class="stat-value">${suspendedShops}</div>
+          <div class="stat-sub">Hidden from students</div>
+        </button>
+
+        <button type="button" class="stat-card" onclick="switchTab('users')">
+          <div class="stat-top">
+            <span class="stat-label">Total Users</span>
+            <span>👥</span>
+          </div>
+          <div class="stat-value">${totalUsers}</div>
+          <div class="stat-sub">${studentCount} Students · ${ownerCount} Owners</div>
+        </button>
+      `;
+    }
+
+    function jumpToReports(status) {
+      state.activeTab = 'reports';
+      state.reportStatusFilter = status;
+      renderAll();
+    }
+
+    function jumpToShops(status) {
+      state.activeTab = 'shops';
+      state.shopStatusFilter = status;
+      renderAll();
+    }
+
+    /* ---------- ACTIVE BROADCAST BANNER ---------- */
+    function renderBroadcastBanner() {
+      const el = document.getElementById('broadcastBanner');
+      const bc = state.activeBroadcast;
+      if (!bc) {
+        el.classList.add('hidden');
+        return;
+      }
+      el.classList.remove('hidden');
+      el.classList.toggle('info-mode', bc.priority === 'Info');
+      el.innerHTML = `
+        <div style="display:flex; flex-direction:column; gap:4px;">
+          <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px;">
+            <span class="badge ${bc.priority === 'Urgent' ? 'badge-red-solid' : 'badge-emerald'}">
+              ${bc.priority === 'Urgent' ? '🚨 Urgent Broadcast' : '📢 Active Broadcast'}
+            </span>
+            <span style="font-size:12px; color:#cbd5e1; font-weight:600;">
+              Sent to ${escapeHtml(bc.audience)} · ${escapeHtml(bc.campus)} · ${escapeHtml(bc.time)}
+            </span>
+          </div>
+          <strong style="font-size:15px;">${escapeHtml(bc.title)}</strong>
+          <span style="font-size:13px; color:#e2e8f0;">${escapeHtml(bc.message)}</span>
+        </div>
+        <button type="button" class="broadcast-dismiss" onclick="dismissBroadcast()" aria-label="Dismiss broadcast">✕</button>
+      `;
+    }
+
+    function dismissBroadcast() {
+      state.activeBroadcast = null;
+      renderBroadcastBanner();
+    }
+
+    /* ---------- 3 MAIN TABS ---------- */
+    function renderTabs() {
+      const openReports = state.reports.filter((r) => r.status === 'Open').length;
+      const pendingShops = state.shops.filter((s) => s.status === 'Pending').length;
+
+      document.getElementById('tabsMount').innerHTML = `
+        <button type="button" class="tab-btn ${state.activeTab === 'reports' ? 'active' : ''}" onclick="switchTab('reports')">
+          <span>🚨</span>
+          <span>Student Reports Queue</span>
+          ${openReports > 0 ? `<span class="tab-badge red">${openReports}</span>` : ''}
+        </button>
+
+        <button type="button" class="tab-btn ${state.activeTab === 'shops' ? 'active' : ''}" onclick="switchTab('shops')">
+          <span>🏪</span>
+          <span>All Shops &amp; Verification</span>
+          ${pendingShops > 0 ? `<span class="tab-badge amber">${pendingShops}</span>` : ''}
+        </button>
+
+        <button type="button" class="tab-btn ${state.activeTab === 'users' ? 'active' : ''}" onclick="switchTab('users')">
+          <span>👥</span>
+          <span>User &amp; Role Management</span>
+        </button>
+      `;
+    }
+
+    function switchTab(tab) {
+      state.activeTab = tab;
+      renderAll();
+    }
+
+    function renderActiveTab() {
+      const mount = document.getElementById('tabContentMount');
+      if (state.activeTab === 'reports') {
+        mount.innerHTML = renderReportsTab();
+      } else if (state.activeTab === 'shops') {
+        mount.innerHTML = renderShopsTab();
+      } else {
+        mount.innerHTML = renderUsersTab();
+      }
+    }
+
+    /* =========================================================================
+       5. TAB 1 — STUDENT REPORTS QUEUE
+       ========================================================================= */
+    function renderReportsTab() {
+      const q = state.reportSearch.trim().toLowerCase();
+      const filtered = state.reports.filter((rep) => {
+        const shop = getShop(rep.shopId);
+        const matchStatus = state.reportStatusFilter === 'All' || rep.status === state.reportStatusFilter;
+        const matchQuery =
+          !q ||
+          (shop && shop.name.toLowerCase().includes(q)) ||
+          rep.reason.toLowerCase().includes(q) ||
+          rep.note.toLowerCase().includes(q) ||
+          rep.reporterName.toLowerCase().includes(q);
+        return matchStatus && matchQuery;
+      });
+
+      const statusCounts = {
+        Open: state.reports.filter((r) => r.status === 'Open').length,
+        Resolved: state.reports.filter((r) => r.status === 'Resolved').length,
+        Dismissed: state.reports.filter((r) => r.status === 'Dismissed').length,
+        All: state.reports.length
+      };
+
+      return `
+        <div class="panel-card">
+          <div class="filter-row">
+            <div class="pill-group">
+              ${['Open', 'Resolved', 'Dismissed', 'All'].map((st) => {
+                const isActive = state.reportStatusFilter === st;
+                const activeCls = isActive ? (st === 'Open' ? 'active-red' : 'active') : '';
+                return `
+                  <button
+                    type="button"
+                    class="filter-pill ${activeCls}"
+                    onclick="state.reportStatusFilter='${st}'; renderActiveTab();"
+                  >
+                    ${st} (${statusCounts[st]})
+                  </button>
+                `;
+              }).join('')}
+            </div>
+
+            <input
+              type="text"
+              class="search-input"
+              value="${escapeHtml(state.reportSearch)}"
+              placeholder="🔍 Search shop, reason, or student..."
+              oninput="state.reportSearch = this.value; renderActiveTab();"
+            />
+          </div>
+        </div>
+
+        ${
+          filtered.length === 0
+            ? `
+              <div class="empty-state">
+                <div style="font-size:32px; margin-bottom:8px;">✅</div>
+                <strong style="font-size:16px; color:var(--slate-900);">No reports in this queue</strong>
+                <p style="margin:6px 0 0; font-size:13px;">Try switching status filter pills or clearing your search box.</p>
+              </div>
+            `
+            : `
+              <div class="reports-list">
+                ${filtered.map((rep) => {
+                  const shop = getShop(rep.shopId);
+                  if (!shop) return '';
+                  const isHigh = rep.priority === 'High Priority' && rep.status === 'Open';
+                  const statusBadge =
+                    rep.status === 'Open'
+                      ? '<span class="badge badge-red">● Open</span>'
+                      : rep.status === 'Resolved'
+                      ? '<span class="badge badge-emerald">✓ Resolved</span>'
+                      : '<span class="badge badge-slate">Dismissed</span>';
+
+                  return `
+                    <article class="report-card ${isHigh ? 'high-priority' : ''}">
+                      <div class="report-top">
+                        <div class="pill-group">
+                          ${isHigh ? `<span class="badge badge-red-solid">🔥 High Priority${rep.reportCount > 1 ? ` · ${rep.reportCount} Reports` : ''}</span>` : ''}
+                          <span class="badge badge-amber">${escapeHtml(rep.reason)}</span>
+                          ${statusBadge}
+                        </div>
+                        <span style="font-size:12px; font-weight:600; color:var(--slate-500);">🕒 ${escapeHtml(rep.time)}</span>
+                      </div>
+
+                      <div class="report-shop-row">
+                        <h3 class="report-shop-name">${escapeHtml(shop.name)}</h3>
+                        <span class="badge badge-slate">${CATEGORY_ICONS[shop.category] || '🏪'} ${escapeHtml(shop.category)}</span>
+                        ${
+                          shop.status === 'Suspended'
+                            ? '<span class="badge badge-red">Shop Suspended</span>'
+                            : shop.status === 'Verified'
+                            ? '<span class="badge badge-emerald">✓ Verified</span>'
+                            : '<span class="badge badge-amber">Pending</span>'
+                        }
+                      </div>
+
+                      <p class="report-note">"${escapeHtml(rep.note)}"</p>
+
+                      <div class="report-meta">
+                        <span>👤 Reported by: <strong>${escapeHtml(rep.reporterName)}</strong> (${escapeHtml(rep.reporterEmail)})</span>
+                        <span>📍 ${escapeHtml(shop.address)}</span>
+                      </div>
+
+                      <div class="report-actions">
+                        <button type="button" class="btn btn-outline" onclick="openInspector('${shop.id}')">
+                          🔍 Inspect Shop
+                        </button>
+
+                        ${
+                          rep.status === 'Open'
+                            ? `
+                              <button type="button" class="btn btn-emerald" onclick="updateReportStatus('${rep.id}', 'Resolved')">
+                                ✓ Mark Resolved
+                              </button>
+                              <button type="button" class="btn btn-outline" onclick="updateReportStatus('${rep.id}', 'Dismissed')">
+                                Dismiss
+                              </button>
+                              ${
+                                shop.status !== 'Suspended'
+                                  ? `<button type="button" class="btn btn-red-soft" onclick="openSuspendModal('${shop.id}', '${rep.id}')">🚫 Suspend Shop</button>`
+                                  : ''
+                              }
+                            `
+                            : `
+                              <button type="button" class="btn btn-outline" onclick="updateReportStatus('${rep.id}', 'Open')">
+                                ↺ Reopen Report
+                              </button>
+                            `
+                        }
+                      </div>
+                    </article>
+                  `;
+                }).join('')}
+              </div>
+            `
+        }
+      `;
+    }
+
+    function updateReportStatus(reportId, newStatus) {
+      const rep = state.reports.find((r) => r.id === reportId);
+      if (!rep) return;
+      const shop = getShop(rep.shopId);
+      rep.status = newStatus;
+
+      const labelMap = {
+        Resolved: ['resolve', 'Report Resolved', 'emerald'],
+        Dismissed: ['dismiss', 'Report Dismissed', 'default'],
+        Open: ['reopen', 'Report Reopened', 'default']
+      };
+      const [logType, badge, toastTone] = labelMap[newStatus];
+      addAuditEntry(logType, badge, `Marked report (${rep.reason}) on "${shop?.name || 'Shop'}" as ${newStatus}.`);
+      renderAll();
+      showToast(`Report marked as ${newStatus}`, toastTone);
+    }
+
+    /* =========================================================================
+       6. TAB 2 — ALL SHOPS & VERIFICATION
+       ========================================================================= */
+    function renderShopsTab() {
+      const q = state.shopSearch.trim().toLowerCase();
+      const filtered = state.shops.filter((s) => {
+        const matchCat = state.shopCategoryFilter === 'All' || s.category === state.shopCategoryFilter;
+        const matchStatus = state.shopStatusFilter === 'All' || s.status === state.shopStatusFilter;
+        const matchQ =
+          !q ||
+          s.name.toLowerCase().includes(q) ||
+          s.owner.toLowerCase().includes(q) ||
+          s.address.toLowerCase().includes(q);
+        return matchCat && matchStatus && matchQ;
+      });
+
+      const statusBadgeHtml = (status) => {
+        if (status === 'Verified') return '<span class="badge badge-emerald">✓ Verified</span>';
+        if (status === 'Pending') return '<span class="badge badge-amber">⏳ Pending Verification</span>';
+        return '<span class="badge badge-red">🚫 Suspended</span>';
+      };
+
+      const gpsBadgeHtml = (gps) =>
+        gps === 'GPS Locked'
+          ? '<span class="badge badge-emerald">📍 GPS Locked</span>'
+          : '<span class="badge badge-amber">⚠️ Needs Check</span>';
+
+      return `
+        <div class="panel-card" style="display:flex; flex-direction:column; gap:12px;">
+          <div class="filter-row">
+            <div class="pill-group">
+              ${['All', 'Pending', 'Verified', 'Suspended'].map((st) => {
+                const label = st === 'Pending' ? 'Pending Verification' : st;
+                const active = state.shopStatusFilter === st;
+                return `
+                  <button
+                    type="button"
+                    class="filter-pill ${active ? (st === 'Suspended' ? 'active-red' : 'active') : ''}"
+                    onclick="state.shopStatusFilter='${st}'; renderActiveTab();"
+                  >
+                    ${label}
+                  </button>
+                `;
+              }).join('')}
+            </div>
+
+            <input
+              type="text"
+              class="search-input"
+              value="${escapeHtml(state.shopSearch)}"
+              placeholder="🔍 Search shop name, owner, or street..."
+              oninput="state.shopSearch = this.value; renderActiveTab();"
+            />
+          </div>
+
+          <div class="pill-group" style="padding-top:8px; border-top:1px solid var(--slate-100);">
+            ${CATEGORIES.map((cat) => `
+              <button
+                type="button"
+                class="filter-pill ${state.shopCategoryFilter === cat ? 'active' : ''}"
+                onclick="state.shopCategoryFilter='${cat}'; renderActiveTab();"
+              >
+                ${cat === 'All' ? 'All Categories' : `${CATEGORY_ICONS[cat]} ${cat}`}
+              </button>
+            `).join('')}
+          </div>
+        </div>
+
+        ${
+          filtered.length === 0
+            ? `
+              <div class="empty-state">
+                <div style="font-size:32px; margin-bottom:8px;">🏪</div>
+                <strong style="font-size:16px; color:var(--slate-900);">No shops match these filters</strong>
+                <p style="margin:6px 0 0; font-size:13px;">Try selecting "All Categories" or clearing your search.</p>
+              </div>
+            `
+            : `
+              <div class="table-card">
+                <!-- DESKTOP TABLE -->
+                <div class="desktop-table-wrap">
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Shop &amp; Address</th>
+                        <th>Category</th>
+                        <th>Owner &amp; Phone</th>
+                        <th>GPS Pin</th>
+                        <th>Status</th>
+                        <th style="text-align:right;">Moderation Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${filtered.map((s) => `
+                        <tr>
+                          <td>
+                            <div style="font-weight:800; font-size:14px; color:var(--slate-900);">${escapeHtml(s.name)}</div>
+                            <div style="font-size:12px; color:var(--slate-500); margin-top:2px;">${escapeHtml(s.address)}</div>
+                          </td>
+                          <td>
+                            <span class="badge badge-slate">${CATEGORY_ICONS[s.category] || '🏪'} ${escapeHtml(s.category)}</span>
+                          </td>
+                          <td>
+                            <div style="font-weight:700; color:var(--slate-800);">${escapeHtml(s.owner)}</div>
+                            <div style="font-size:12px; color:var(--slate-500);">${escapeHtml(s.phone)}</div>
+                          </td>
+                          <td>${gpsBadgeHtml(s.gpsStatus)}</td>
+                          <td>${statusBadgeHtml(s.status)}</td>
+                          <td style="text-align:right; white-space:nowrap;">
+                            <div style="display:inline-flex; gap:6px;">
+                              <button type="button" class="btn btn-outline" onclick="openInspector('${s.id}')">Inspect</button>
+                              ${s.status === 'Pending' ? `<button type="button" class="btn btn-emerald" onclick="verifyShop('${s.id}')">✓ Verify</button>` : ''}
+                              ${
+                                s.status === 'Suspended'
+                                  ? `<button type="button" class="btn btn-emerald" onclick="reinstateShop('${s.id}')">↺ Reinstate</button>`
+                                  : `<button type="button" class="btn btn-red-soft" onclick="openSuspendModal('${s.id}')">Suspend</button>`
+                              }
+                            </div>
+                          </td>
+                        </tr>
+                      `).join('')}
+                    </tbody>
+                  </table>
+                </div>
+
+                <!-- MOBILE STACKED CARDS -->
+                <div class="mobile-cards">
+                  ${filtered.map((s) => `
+                    <div class="mobile-item-card">
+                      <div style="display:flex; flex-wrap:wrap; justify-content:space-between; gap:6px;">
+                        <span class="badge badge-slate">${CATEGORY_ICONS[s.category] || '🏪'} ${escapeHtml(s.category)}</span>
+                        ${statusBadgeHtml(s.status)}
+                      </div>
+                      <div>
+                        <div style="font-weight:800; font-size:16px;">${escapeHtml(s.name)}</div>
+                        <div style="font-size:12px; color:var(--slate-500); margin-top:2px;">📍 ${escapeHtml(s.address)}</div>
+                      </div>
+                      <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px; font-size:12px; color:var(--slate-600);">
+                        <span>👤 ${escapeHtml(s.owner)} · ${escapeHtml(s.phone)}</span>
+                        ${gpsBadgeHtml(s.gpsStatus)}
+                      </div>
+                      <div style="display:flex; flex-wrap:wrap; gap:8px; padding-top:8px; border-top:1px solid var(--slate-100);">
+                        <button type="button" class="btn btn-outline" onclick="openInspector('${s.id}')">Inspect</button>
+                        ${s.status === 'Pending' ? `<button type="button" class="btn btn-emerald" onclick="verifyShop('${s.id}')">✓ Verify</button>` : ''}
+                        ${
+                          s.status === 'Suspended'
+                            ? `<button type="button" class="btn btn-emerald" onclick="reinstateShop('${s.id}')">↺ Reinstate</button>`
+                            : `<button type="button" class="btn btn-red-soft" onclick="openSuspendModal('${s.id}')">Suspend</button>`
+                        }
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            `
+        }
+      `;
+    }
+
+    function verifyShop(shopId) {
+      const shop = getShop(shopId);
+      if (!shop) return;
+      shop.status = 'Verified';
+      shop.gpsStatus = 'GPS Locked';
+      shop.suspendReason = '';
+      addAuditEntry('verify', 'Shop Verified', `Verified "${shop.name}" (${shop.category}) — green badge active for students.`);
+      renderAll();
+      showToast(`"${shop.name}" is now Verified!`, 'emerald');
+    }
+
+    function reinstateShop(shopId) {
+      const shop = getShop(shopId);
+      if (!shop) return;
+      shop.status = 'Verified';
+      shop.suspendReason = '';
+      addAuditEntry('verify', 'Shop Reinstated', `Reinstated "${shop.name}" back to Verified status.`);
+      renderAll();
+      showToast(`"${shop.name}" reinstated & live again!`, 'emerald');
+    }
+
+    /* =========================================================================
+       7. TAB 3 — USER & ROLE MANAGEMENT
+       ========================================================================= */
+    function renderUsersTab() {
+      const q = state.userSearch.trim().toLowerCase();
+      const filtered = state.users.filter((u) => {
+        const matchRole = state.userRoleFilter === 'All' || u.role === state.userRoleFilter;
+        const matchStatus = state.userStatusFilter === 'All' || u.status === state.userStatusFilter;
+        const matchQ =
+          !q ||
+          u.name.toLowerCase().includes(q) ||
+          u.email.toLowerCase().includes(q) ||
+          u.activity.toLowerCase().includes(q);
+        return matchRole && matchStatus && matchQ;
+      });
+
+      const avatarClass = (role) =>
+        role === 'Admin' ? 'admin' : role === 'Shop Owner' ? 'owner' : '';
+
+      return `
+        <div class="panel-card" style="display:flex; flex-direction:column; gap:12px;">
+          <div class="filter-row">
+            <div class="pill-group">
+              ${['All', 'Student', 'Shop Owner', 'Admin'].map((r) => `
+                <button
+                  type="button"
+                  class="filter-pill ${state.userRoleFilter === r ? 'active' : ''}"
+                  onclick="state.userRoleFilter='${r}'; renderActiveTab();"
+                >
+                  ${r === 'All' ? 'All Roles' : r + 's'}
+                </button>
+              `).join('')}
+            </div>
+
+            <input
+              type="text"
+              class="search-input"
+              value="${escapeHtml(state.userSearch)}"
+              placeholder="🔍 Search user name, email, or shop..."
+              oninput="state.userSearch = this.value; renderActiveTab();"
+            />
+          </div>
+
+          <div class="pill-group" style="padding-top:8px; border-top:1px solid var(--slate-100);">
+            ${['All', 'Active', 'Suspended'].map((st) => `
+              <button
+                type="button"
+                class="filter-pill ${state.userStatusFilter === st ? (st === 'Suspended' ? 'active-red' : 'active') : ''}"
+                onclick="state.userStatusFilter='${st}'; renderActiveTab();"
+              >
+                Status: ${st}
+              </button>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="table-card">
+          <!-- DESKTOP TABLE -->
+          <div class="desktop-table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Activity &amp; Ownership</th>
+                  <th>Joined</th>
+                  <th>Status</th>
+                  <th>Role</th>
+                  <th style="text-align:right;">Account Control</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${filtered.map((u) => `
+                  <tr>
+                    <td>
+                      <div style="display:flex; align-items:center; gap:11px;">
+                        <div class="avatar-circle ${avatarClass(u.role)}">${getInitials(u.name)}</div>
+                        <div>
+                          <div style="font-weight:800; color:var(--slate-900);">${escapeHtml(u.name)}</div>
+                          <div style="font-size:12px; color:var(--slate-500);">${escapeHtml(u.email)}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td style="font-size:13px; color:var(--slate-700); font-weight:600;">${escapeHtml(u.activity)}</td>
+                    <td style="font-size:12px; color:var(--slate-500); font-weight:600; white-space:nowrap;">${escapeHtml(u.joined)}</td>
+                    <td>
+                      ${
+                        u.status === 'Active'
+                          ? '<span class="badge badge-emerald">● Active</span>'
+                          : '<span class="badge badge-red">🚫 Suspended</span>'
+                      }
+                    </td>
+                    <td>
+                      <select
+                        class="role-select"
+                        aria-label="Change role for ${escapeHtml(u.name)}"
+                        onchange="changeUserRole('${u.id}', this.value)"
+                      >
+                        ${['Student', 'Shop Owner', 'Admin']
+                          .map((r) => `<option value="${r}" ${u.role === r ? 'selected' : ''}>${r}</option>`)
+                          .join('')}
+                      </select>
+                    </td>
+                    <td style="text-align:right;">
+                      ${
+                        u.status === 'Active'
+                          ? `<button type="button" class="btn btn-red-soft" onclick="toggleUserStatus('${u.id}')">Suspend</button>`
+                          : `<button type="button" class="btn btn-emerald" onclick="toggleUserStatus('${u.id}')">Restore</button>`
+                      }
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+
+          <!-- MOBILE STACKED CARDS -->
+          <div class="mobile-cards">
+            ${filtered.map((u) => `
+              <div class="mobile-item-card">
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+                  <div style="display:flex; align-items:center; gap:10px; min-width:0;">
+                    <div class="avatar-circle ${avatarClass(u.role)}">${getInitials(u.name)}</div>
+                    <div style="min-width:0;">
+                      <div style="font-weight:800; font-size:15px;">${escapeHtml(u.name)}</div>
+                      <div style="font-size:12px; color:var(--slate-500); word-break:break-all;">${escapeHtml(u.email)}</div>
+                    </div>
+                  </div>
+                  ${
+                    u.status === 'Active'
+                      ? '<span class="badge badge-emerald">Active</span>'
+                      : '<span class="badge badge-red">Suspended</span>'
+                  }
+                </div>
+                <div style="font-size:12px; color:var(--slate-600); font-weight:600;">
+                  ${escapeHtml(u.activity)} · Joined ${escapeHtml(u.joined)}
+                </div>
+                <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px; padding-top:8px; border-top:1px solid var(--slate-100);">
+                  <select class="role-select" onchange="changeUserRole('${u.id}', this.value)">
+                    ${['Student', 'Shop Owner', 'Admin']
+                      .map((r) => `<option value="${r}" ${u.role === r ? 'selected' : ''}>${r}</option>`)
+                      .join('')}
+                  </select>
+                  ${
+                    u.status === 'Active'
+                      ? `<button type="button" class="btn btn-red-soft" onclick="toggleUserStatus('${u.id}')">Suspend Account</button>`
+                      : `<button type="button" class="btn btn-emerald" onclick="toggleUserStatus('${u.id}')">Restore Account</button>`
+                  }
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function changeUserRole(userId, newRole) {
+      const user = state.users.find((u) => u.id === userId);
+      if (!user) return;
+      const oldRole = user.role;
+      user.role = newRole;
+      addAuditEntry('role', 'Role Updated', `Changed ${user.name}'s role from ${oldRole} to ${newRole}.`);
+      renderAll();
+      showToast(`${user.name} is now a ${newRole}`);
+    }
+
+    function toggleUserStatus(userId) {
+      const user = state.users.find((u) => u.id === userId);
+      if (!user) return;
+      if (user.status === 'Active') {
+        user.status = 'Suspended';
+        addAuditEntry('suspend', 'User Suspended', `Suspended account for ${user.name} (${user.email}).`);
+        showToast(`Suspended ${user.name}`, 'red');
+      } else {
+        user.status = 'Active';
+        addAuditEntry('verify', 'User Restored', `Restored account for ${user.name} (${user.email}).`);
+        showToast(`Restored ${user.name}`, 'emerald');
+      }
+      renderAll();
+    }
+
+    /* =========================================================================
+       8. SHOP INSPECTOR SLIDE-OVER DRAWER
+       ========================================================================= */
+    function openInspector(shopId) {
+      state.inspectingShopId = shopId;
+      renderInspectorDrawer();
+      document.getElementById('inspectorOverlay').classList.add('open');
+    }
+
+    function closeInspector() {
+      state.inspectingShopId = null;
+      document.getElementById('inspectorOverlay').classList.remove('open');
+    }
+
+    function renderInspectorDrawer() {
+      const s = getShop(state.inspectingShopId);
+      if (!s) return;
+
+      const openReportsCount = state.reports.filter((r) => r.shopId === s.id && r.status === 'Open').length;
+
+      document.getElementById('inspectorHeader').innerHTML = `
+        <div>
+          <div style="display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-bottom:5px;">
+            <span class="badge badge-slate">${CATEGORY_ICONS[s.category] || '🏪'} ${escapeHtml(s.category)}</span>
+            ${
+              s.status === 'Verified'
+                ? '<span class="badge badge-emerald">✓ Verified</span>'
+                : s.status === 'Pending'
+                ? '<span class="badge badge-amber">⏳ Pending</span>'
+                : '<span class="badge badge-red">🚫 Suspended</span>'
+            }
+          </div>
+          <h2 style="margin:0; font-size:19px; font-weight:800;">${escapeHtml(s.name)}</h2>
+          <p style="margin:3px 0 0; font-size:12px; color:var(--slate-500);">📍 ${escapeHtml(s.address)}</p>
+        </div>
+        <button class="panel-close" onclick="closeInspector()" aria-label="Close inspector">✕</button>
+      `;
+
+      document.getElementById('inspectorBody').innerHTML = `
+        ${
+          s.status === 'Suspended' && s.suspendReason
+            ? `<div style="background:var(--red-50); border:1px solid var(--red-border); color:var(--red-700); padding:12px 14px; border-radius:12px; font-size:13px; font-weight:700;">
+                🚫 Suspension Reason: ${escapeHtml(s.suspendReason)}
+              </div>`
+            : ''
+        }
+
+        <div class="inspector-box" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div>
+            <div style="font-size:11px; font-weight:700; color:var(--slate-500); text-transform:uppercase;">Owner Contact</div>
+            <div style="font-weight:800; font-size:14px; margin-top:2px;">${escapeHtml(s.owner)}</div>
+            <div style="font-size:13px; color:var(--slate-600);">${escapeHtml(s.phone)}</div>
+          </div>
+          <div>
+            <div style="font-size:11px; font-weight:700; color:var(--slate-500); text-transform:uppercase;">Open Reports</div>
+            <div style="font-weight:800; font-size:20px; margin-top:2px; color:${openReportsCount > 0 ? 'var(--red-600)' : 'var(--emerald-700)'};">
+              ${openReportsCount} ${openReportsCount === 1 ? 'Report' : 'Reports'}
+            </div>
+          </div>
+        </div>
+
+        <div class="inspector-box">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+            <strong style="font-size:14px;">📍 GPS Coordinates Preview</strong>
+            <span class="badge ${s.gpsStatus === 'GPS Locked' ? 'badge-emerald' : 'badge-amber'}">${escapeHtml(s.gpsStatus)}</span>
+          </div>
+          <div style="font-size:12px; font-family:monospace; color:var(--slate-600); margin-top:4px;">${escapeHtml(s.coords)}</div>
+          <div class="gps-preview-map">
+            <svg style="position:absolute; inset:0; width:100%; height:100%;" viewBox="0 0 400 140" preserveAspectRatio="none">
+              <path d="M 0 74 Q 160 58 260 72 T 400 54" stroke="#fff" stroke-width="18" fill="none"/>
+              <path d="M 140 0 L 160 140" stroke="#fff" stroke-width="12" fill="none"/>
+            </svg>
+            <div style="position:absolute; left:${s.pinPos.x}%; top:${s.pinPos.y}%; transform:translate(-50%,-100%); background:var(--slate-900); color:#fff; padding:4px 9px; border-radius:9px; font-size:11px; font-weight:800; border:2px solid #fff; box-shadow:var(--shadow-sm); white-space:nowrap;">
+              ${CATEGORY_ICONS[s.category] || '📍'} ${escapeHtml(s.name.split(' ')[0])}
+            </div>
+          </div>
+        </div>
+
+        <div class="inspector-box">
+          <strong style="font-size:14px; display:block; margin-bottom:10px;">🏷️ Sample Listed Items &amp; Prices</strong>
+          ${s.items.map((item) => `
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px; padding:8px 0; border-bottom:1px solid var(--slate-100);">
+              <div>
+                <div style="font-weight:700; font-size:13px;">${escapeHtml(item.name)}</div>
+                <div style="font-size:11px; color:var(--slate-500);">${escapeHtml(item.note)}</div>
+              </div>
+              <strong style="font-size:13px; color:var(--slate-900); white-space:nowrap;">${escapeHtml(item.price)}</strong>
+            </div>
+          `).join('')}
+        </div>
+      `;
+
+      document.getElementById('inspectorFooter').innerHTML = `
+        ${s.status === 'Pending' ? `<button type="button" class="btn btn-emerald" onclick="verifyShop('${s.id}')">✓ Verify Shop</button>` : ''}
+        ${
+          s.status === 'Suspended'
+            ? `<button type="button" class="btn btn-emerald" onclick="reinstateShop('${s.id}')">↺ Reinstate Shop</button>`
+            : `<button type="button" class="btn btn-red" onclick="openSuspendModal('${s.id}')">🚫 Suspend Shop</button>`
+        }
+        <button type="button" class="btn btn-outline" onclick="closeInspector()">Close</button>
+      `;
+    }
+
+    /* =========================================================================
+       9. SUSPEND SHOP MODAL
+       ========================================================================= */
+    function openSuspendModal(shopId, linkedReportId = null) {
+      const shop = getShop(shopId);
+      if (!shop) return;
+      state.suspendingShopId = shopId;
+      state.suspendingReportId = linkedReportId;
+      state.selectedSuspendReason = SUSPEND_REASONS[0];
+
+      document.getElementById('suspendModalTitle').textContent = `Suspend "${shop.name}"?`;
+      document.getElementById('suspendModalSub').textContent = 'This hides the listing from students immediately until reinstated.';
+      document.getElementById('suspendNoteInput').value = '';
+      renderSuspendReasons();
+      document.getElementById('suspendOverlay').classList.add('open');
+    }
+
+    function closeSuspendModal() {
+      state.suspendingShopId = null;
+      state.suspendingReportId = null;
+      document.getElementById('suspendOverlay').classList.remove('open');
+    }
+
+    function renderSuspendReasons() {
+      document.getElementById('suspendReasonsMount').innerHTML = SUSPEND_REASONS.map((r) => `
+        <button
+          type="button"
+          class="filter-pill ${state.selectedSuspendReason === r ? 'active-red' : ''}"
+          onclick="state.selectedSuspendReason='${r}'; renderSuspendReasons();"
+        >
+          ${state.selectedSuspendReason === r ? '✓ ' : ''}${r}
+        </button>
+      `).join('');
+    }
+
+    function confirmSuspendShop() {
+      const shop = getShop(state.suspendingShopId);
+      if (!shop) return;
+      const customNote = document.getElementById('suspendNoteInput').value.trim();
+      const fullReason = customNote ? `${state.selectedSuspendReason} — ${customNote}` : state.selectedSuspendReason;
+
+      shop.status = 'Suspended';
+      shop.suspendReason = fullReason;
+
+      if (state.suspendingReportId) {
+        const rep = state.reports.find((r) => r.id === state.suspendingReportId);
+        if (rep) rep.status = 'Resolved';
+      }
+
+      addAuditEntry('suspend', 'Shop Suspended', `Suspended "${shop.name}" (${fullReason}).`);
+      closeSuspendModal();
+      renderAll();
+      showToast(`Suspended "${shop.name}"`, 'red');
+    }
+
+    /* =========================================================================
+       10. MODERATION AUDIT LOG DRAWER
+       ========================================================================= */
+    function openAuditDrawer() {
+      renderAuditDrawer();
+      document.getElementById('auditOverlay').classList.add('open');
+    }
+
+    function closeAuditDrawer() {
+      document.getElementById('auditOverlay').classList.remove('open');
+    }
+
+    function renderAuditDrawer() {
+      const badgeClass = (type) => {
+        if (type === 'suspend') return 'badge-red';
+        if (type === 'verify' || type === 'resolve') return 'badge-emerald';
+        if (type === 'broadcast') return 'badge-amber';
+        return 'badge-slate';
+      };
+
+      document.getElementById('auditBody').innerHTML = state.auditLog
+        .map(
+          (entry) => `
+            <div class="audit-item">
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+                <span class="badge ${badgeClass(entry.type)}">${escapeHtml(entry.badge)}</span>
+                <span style="font-size:11px; color:var(--slate-500); font-weight:600;">${escapeHtml(entry.time)}</span>
+              </div>
+              <div style="font-size:13px; font-weight:600; color:var(--slate-800);">${escapeHtml(entry.message)}</div>
+            </div>
+          `
+        )
+        .join('');
+    }
+
+    /* =========================================================================
+       11. CAMPUS BROADCAST MODAL
+       ========================================================================= */
+    function openBroadcastModal() {
+      document.getElementById('bcTitle').value = '';
+      document.getElementById('bcMessage').value = '';
+      setBroadcastPriority('Info');
+      document.getElementById('broadcastOverlay').classList.add('open');
+    }
+
+    function closeBroadcastModal() {
+      document.getElementById('broadcastOverlay').classList.remove('open');
+    }
+
+    function setBroadcastPriority(prio) {
+      state.broadcastPriority = prio;
+      document.getElementById('bcPrioInfo').className = `filter-pill ${prio === 'Info' ? 'active' : ''}`;
+      document.getElementById('bcPrioUrgent').className = `filter-pill ${prio === 'Urgent' ? 'active-red' : ''}`;
+    }
+
+    function applyBroadcastTemplate(idx) {
+      const tpl = BROADCAST_TEMPLATES[idx];
+      if (!tpl) return;
+      document.getElementById('bcTitle').value = tpl.title;
+      document.getElementById('bcMessage').value = tpl.message;
+      document.getElementById('bcAudience').value = tpl.audience;
+      setBroadcastPriority(tpl.priority);
+    }
+
+    function sendBroadcast() {
+      const title = document.getElementById('bcTitle').value.trim();
+      const message = document.getElementById('bcMessage').value.trim();
+      const audience = document.getElementById('bcAudience').value;
+      const campus = document.getElementById('bcCampus').value;
+
+      if (!title || !message) {
+        showToast('Please enter both a title and a message', 'red');
+        return;
+      }
+
+      state.activeBroadcast = {
+        title,
+        message,
+        audience,
+        campus,
+        priority: state.broadcastPriority,
+        time: getNowTime()
+      };
+
+      addAuditEntry('broadcast', 'Campus Broadcast', `Sent "${title}" (${state.broadcastPriority}) to ${audience} in ${campus}.`);
+      closeBroadcastModal();
+      renderAll();
+      showToast(`Broadcast sent to ${audience}!`, 'emerald');
+    }
+
+    /* =========================================================================
+       12. KEYBOARD ESC HANDLER & INITIAL BOOT
+       ========================================================================= */
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeSuspendModal();
+        closeBroadcastModal();
+        closeInspector();
+        closeAuditDrawer();
+      }
+    });
+
+    renderAll();
+  </script>
+</body>
+</html>

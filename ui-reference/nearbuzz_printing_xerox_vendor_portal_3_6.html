@@ -1,0 +1,2047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NearBuzz — Printing &amp; Xerox Vendor Portal (3/6)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: #F4FBF7;
+      color: #0F172A;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .campus-map-bg {
+      background-color: #E8F5EE;
+      background-image:
+        linear-gradient(to right, rgba(5, 150, 105, 0.09) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(5, 150, 105, 0.09) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+    .fade-in {
+      animation: fadeIn 0.2s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .mic-pulse {
+      animation: micPulse 1.2s infinite;
+    }
+    @keyframes micPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.45); }
+      50% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-emerald-200 selection:text-emerald-950">
+
+  <!-- ==================== TOP NAVIGATION BAR ==================== -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-emerald-100 shadow-xs">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+      <!-- Brand Identity -->
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-2xl bg-[#059669] text-white font-extrabold text-base flex items-center justify-center shadow-sm shrink-0">
+          NB
+        </div>
+        <div>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-lg sm:text-xl font-extrabold tracking-tight text-[#0F172A]">NearBuzz</span>
+            <span class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-[#ECFDF5] text-[#065F46] border border-emerald-200">
+              🖨️ Printing &amp; Xerox Portal (3/6)
+            </span>
+          </div>
+          <p class="text-xs text-slate-500 hidden sm:block mt-0.5">Simple manager for campus print, xerox &amp; stationery shops</p>
+        </div>
+      </div>
+
+      <!-- Right Controls: Live Rush Status Pill + Preview Button -->
+      <div class="flex items-center gap-2 sm:gap-2.5 flex-wrap">
+        <div
+          id="topRushBadge"
+          class="min-h-[44px] px-3.5 py-2 rounded-2xl text-xs sm:text-sm font-extrabold border-2 flex items-center gap-2"
+        >
+          <!-- Populated dynamically -->
+        </div>
+
+        <button
+          onclick="openStudentPreview()"
+          class="min-h-[46px] px-3.5 sm:px-5 py-2 rounded-2xl bg-[#059669] hover:bg-[#047857] active:scale-[0.99] text-white font-bold text-xs sm:text-sm shadow-sm transition flex items-center gap-2 cursor-pointer"
+        >
+          <span class="text-base">👀</span>
+          <span class="hidden sm:inline">Preview What Students See</span>
+          <span class="sm:hidden">Preview</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN WORKSPACE ==================== -->
+  <main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-5 sm:py-7 space-y-6">
+
+    <!-- ==================== SHOP SUMMARY STRIP ==================== -->
+    <section id="headerSummaryStrip" class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-6">
+      <!-- Populated dynamically -->
+    </section>
+
+    <!-- ==================== 5 CLEAR, LARGE NAVIGATION TABS ==================== -->
+    <nav class="bg-white rounded-2xl border border-emerald-100 shadow-xs p-2 overflow-x-auto no-scrollbar" aria-label="Printing shop dashboard tabs">
+      <div id="tabsBar" class="flex items-center gap-2 min-w-max lg:min-w-0 lg:grid lg:grid-cols-5">
+        <!-- Populated dynamically -->
+      </div>
+    </nav>
+
+    <!-- ==================== ACTIVE TAB CONTENT ==================== -->
+    <section id="tabContent" class="fade-in">
+      <!-- Populated dynamically -->
+    </section>
+
+  </main>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="mt-auto border-t border-emerald-100 bg-white py-5">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
+      <span><strong>NearBuzz Printing &amp; Xerox Portal (3/6)</strong> — Bholaram Ustad Marg, Indore</span>
+      <span class="text-[#065F46] font-semibold">Owner Helpdesk (WhatsApp): +91 98260 00112</span>
+    </div>
+  </footer>
+
+  <!-- ==================== QUICK ADD COMMON STATIONERY MODAL ==================== -->
+  <div id="quickAddModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/60 backdrop-blur-xs p-3 sm:p-6 overflow-y-auto">
+    <div class="bg-white w-full max-w-xl rounded-2xl shadow-2xl border border-emerald-100 overflow-hidden my-auto max-h-[90vh] flex flex-col fade-in">
+      <div class="bg-[#059669] text-white px-5 py-4 flex items-center justify-between gap-3">
+        <div>
+          <span class="text-[11px] font-bold uppercase tracking-wider bg-white/20 px-2.5 py-0.5 rounded-full">1-Tap Starter List</span>
+          <h2 class="text-lg sm:text-xl font-extrabold mt-1">⚡ Quick Add Common Stationery</h2>
+        </div>
+        <button
+          onclick="closeQuickAddModal()"
+          aria-label="Close quick add modal"
+          class="w-10 h-10 rounded-xl bg-white/15 hover:bg-white/25 text-white font-bold text-lg flex items-center justify-center cursor-pointer"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div class="p-4 sm:p-5 overflow-y-auto space-y-2.5 bg-slate-50" id="quickAddBody">
+        <!-- Populated dynamically -->
+      </div>
+
+      <div class="px-5 py-4 bg-white border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <span id="quickAddCountLabel" class="text-xs sm:text-sm font-bold text-slate-600">0 items selected</span>
+        <div class="flex items-center gap-2.5 w-full sm:w-auto">
+          <button
+            type="button"
+            onclick="closeQuickAddModal()"
+            class="flex-1 sm:flex-none min-h-[46px] px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm cursor-pointer"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onclick="confirmQuickAddStationery()"
+            class="flex-1 sm:flex-none min-h-[46px] px-6 py-2 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-extrabold text-sm shadow-sm cursor-pointer"
+          >
+            + Add Selected Items
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== LIVE STUDENT PREVIEW MODAL (INDIGO & BLUE #4F46E5) ==================== -->
+  <div id="studentPreviewModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/65 backdrop-blur-xs p-3 sm:p-6 overflow-y-auto">
+    <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl border border-indigo-100 overflow-hidden my-auto max-h-[92vh] flex flex-col fade-in">
+      <!-- Indigo Student App Header -->
+      <div class="bg-gradient-to-r from-[#4F46E5] to-blue-600 text-white px-5 py-4 flex items-center justify-between gap-3">
+        <div>
+          <span class="inline-block text-[11px] font-bold uppercase tracking-wider bg-white/20 px-2.5 py-0.5 rounded-full">
+            Student App View
+          </span>
+          <h2 class="text-lg sm:text-xl font-extrabold mt-1">How Students See Your Print Shop</h2>
+        </div>
+        <button
+          onclick="closeStudentPreview()"
+          aria-label="Close student preview"
+          class="w-11 h-11 rounded-xl bg-white/15 hover:bg-white/25 text-white font-bold text-lg flex items-center justify-center cursor-pointer"
+        >
+          ✕
+        </button>
+      </div>
+
+      <!-- Dynamic Student Preview Content -->
+      <div id="studentPreviewBody" class="p-4 sm:p-6 overflow-y-auto space-y-5 bg-slate-50">
+        <!-- Populated dynamically -->
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-5 py-3.5 bg-white border-t border-slate-200 flex items-center justify-between gap-3">
+        <span class="text-xs text-slate-500">Every rate, rush status &amp; stock edit updates this view live.</span>
+        <button
+          onclick="closeStudentPreview()"
+          class="min-h-[46px] px-5 py-2.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-sm cursor-pointer"
+        >
+          Back to Owner Portal
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== FLOATING TOAST CONTAINER ==================== -->
+  <div id="toastContainer" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none flex flex-col gap-2 items-center w-[92%] max-w-md"></div>
+
+  <!-- ==================== APPLICATION SCRIPT ==================== -->
+  <script>
+    /* =========================================================================
+       1. CONSTANTS, RUSH STATUSES, STARTER STATIONERY & LANDMARKS
+       ========================================================================= */
+    const RUSH_STATUSES = {
+      fast: {
+        key: 'fast',
+        label: 'No Waiting (Fast)',
+        shortLabel: 'No Waiting',
+        icon: '🟢',
+        desc: 'Printers free — walk in & get printouts immediately',
+        badgeClass: 'bg-[#ECFDF5] border-[#059669] text-[#065F46]',
+        cardActiveClass: 'bg-[#ECFDF5] border-[#059669] ring-2 ring-emerald-200 text-[#065F46]'
+      },
+      busy: {
+        key: 'busy',
+        label: 'Busy Right Now (10–15 min)',
+        shortLabel: 'Busy (10–15 min)',
+        icon: '🟡',
+        desc: 'Short queue — send PDF on WhatsApp to save time',
+        badgeClass: 'bg-amber-50 border-amber-400 text-amber-900',
+        cardActiveClass: 'bg-amber-50 border-amber-500 ring-2 ring-amber-200 text-amber-950'
+      },
+      repair: {
+        key: 'repair',
+        label: 'Machine Under Repair',
+        shortLabel: 'Machine Repair',
+        icon: '🔴',
+        desc: 'Temporarily paused — will resume shortly',
+        badgeClass: 'bg-red-50 border-red-400 text-red-800',
+        cardActiveClass: 'bg-red-50 border-red-500 ring-2 ring-red-200 text-red-900'
+      }
+    };
+
+    const PRINT_UNITS = ['Per Page', 'Per Copy', 'Per Sheet', 'Per Set'];
+    const SELL_AS_OPTIONS = [
+      { key: 'Single Item', label: 'Single Item' },
+      { key: 'Pack', label: 'Pack (e.g. Pack of 5)' },
+      { key: 'Combo Bundle', label: 'Combo Bundle' }
+    ];
+
+    const ALL_FEATURES = [
+      'WhatsApp Print',
+      'Pen Drive Support',
+      'College Project Formatting',
+      'Online Form Filling',
+      'Scan to PDF',
+      'UPI Accepted',
+      'Open Late for Exams',
+      'ID Card Printing'
+    ];
+
+    const NOTICE_TEMPLATES = [
+      'Exam Week: Open till 11 PM tonight for notes & printouts!',
+      'B.Tech Project Hard Binding ready in 2 hours — WhatsApp your PDF.',
+      'Color printer is working fast with no waiting right now.'
+    ];
+
+    const QUICK_ADD_STARTER = [
+      { id: 'qa1', name: 'Classmate Register 200pg', sellAs: 'Single Item', packSize: '1 Register', price: 65, checked: false },
+      { id: 'qa2', name: 'Practical Lab File', sellAs: 'Single Item', packSize: '1 File', price: 40, checked: false },
+      { id: 'qa3', name: 'Blue Ball Pen Pack', sellAs: 'Pack', packSize: 'Pack of 5', price: 45, checked: false },
+      { id: 'qa4', name: 'A4 Paper Rim 500 Sheets', sellAs: 'Pack', packSize: '500 Sheets', price: 290, checked: false },
+      { id: 'qa5', name: 'Stick File Folder', sellAs: 'Pack', packSize: 'Pack of 5', price: 50, checked: false },
+      { id: 'qa6', name: 'Highlighter Set', sellAs: 'Pack', packSize: 'Pack of 4', price: 80, checked: false },
+      { id: 'qa7', name: 'Transparent Exam Board', sellAs: 'Single Item', packSize: '1 Board', price: 90, checked: false },
+      { id: 'qa8', name: 'Graph Book', sellAs: 'Single Item', packSize: '1 Book', price: 30, checked: false }
+    ];
+
+    const CAMPUS_LANDMARKS = [
+      { name: 'Bholaram Ustad Marg Main Gate', x: 48, y: 48, lat: 22.6914, lng: 75.8676 },
+      { name: 'Campus Gate 2 (Main)', x: 64, y: 38, lat: 22.6901, lng: 75.8702 },
+      { name: 'Bhawarkua Square', x: 22, y: 28, lat: 22.6948, lng: 75.8622 },
+      { name: 'DAVV Takshashila Gate', x: 78, y: 32, lat: 22.6889, lng: 75.8734 },
+      { name: 'Holkar College Road', x: 28, y: 74, lat: 22.6961, lng: 75.8651 }
+    ];
+
+    const DAYS_LIST = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+    /* =========================================================================
+       2. APPLICATION STATE (PRE-LOADED WITH REALISTIC INDORE PRINT SHOP)
+       ========================================================================= */
+    const state = {
+      activeTab: 'rates', // 'rates' | 'stationery' | 'facilities' | 'hours' | 'info'
+      customPrintExpanded: false,
+      addStationeryExpanded: false,
+      stationerySearch: '',
+      stationeryOutOfStockOnly: false,
+      listeningField: null, // 'stationeryName' | 'noticeText' | null
+
+      shop: {
+        name: 'Sharma Print & Stationery Hub',
+        ownerName: 'Rajesh Sharma',
+        phone: '94250 31890',
+        address: 'Shop 7, Bholaram Ustad Marg, Near Campus Gate 2, Indore',
+        rushStatus: 'fast', // 'fast' | 'busy' | 'repair'
+        mapPin: {
+          x: 62,
+          y: 42,
+          lat: 22.6905,
+          lng: 75.8698,
+          landmark: 'Near Campus Gate 2 (Main)'
+        }
+      },
+
+      printRates: [
+        { id: 'pr_1', name: 'B&W Print / Xerox (Single Side)', price: 2, unit: 'Per Page', custom: false },
+        { id: 'pr_2', name: 'B&W Print / Xerox (Back-to-Back)', price: 3, unit: 'Per Page', custom: false },
+        { id: 'pr_3', name: 'Color Print (A4)', price: 10, unit: 'Per Page', custom: false },
+        { id: 'pr_4', name: 'Spiral Binding', price: 35, unit: 'Per Copy', custom: false },
+        { id: 'pr_5', name: 'Hard Binding (Thesis / Project Report)', price: 180, unit: 'Per Copy', custom: false },
+        { id: 'pr_6', name: 'Lamination (A4)', price: 20, unit: 'Per Sheet', custom: false },
+        { id: 'pr_7', name: 'Passport Size Photos (Set of 8)', price: 50, unit: 'Per Set', custom: false }
+      ],
+
+      newCustomPrint: {
+        name: '',
+        price: '',
+        unit: 'Per Page'
+      },
+
+      rateCardPhoto: {
+        url: 'https://placehold.co/640x360/ECFDF5/065F46?text=Sharma+Print+Shop+Rate+Board',
+        uploadedAt: 'Uploaded Yesterday'
+      },
+
+      stationery: [
+        {
+          id: 'st_1',
+          name: 'Classmate Spiral Register (200 Pages)',
+          sellAs: 'Single Item',
+          packSize: '1 Register',
+          price: 75,
+          stockQty: 24,
+          inStock: true
+        },
+        {
+          id: 'st_2',
+          name: 'Practical Lab File with Sheets',
+          sellAs: 'Single Item',
+          packSize: '1 File + 20 Sheets',
+          price: 45,
+          stockQty: 40,
+          inStock: true
+        },
+        {
+          id: 'st_3',
+          name: 'Cello Gripper Ball Pens (Blue)',
+          sellAs: 'Pack',
+          packSize: 'Pack of 10',
+          price: 90,
+          stockQty: 15,
+          inStock: true
+        },
+        {
+          id: 'st_4',
+          name: 'JK Copier A4 Printing Paper Rim',
+          sellAs: 'Pack',
+          packSize: '500 Sheets',
+          price: 295,
+          stockQty: 8,
+          inStock: true
+        },
+        {
+          id: 'st_5',
+          name: 'Exam Kit Combo (Board + 2 Pens + Pouch)',
+          sellAs: 'Combo Bundle',
+          packSize: '4-Piece Bundle',
+          price: 130,
+          stockQty: 0,
+          inStock: false
+        }
+      ],
+
+      newStationery: {
+        name: '',
+        sellAs: 'Single Item',
+        packSize: '',
+        price: '',
+        stockQty: 10
+      },
+
+      quickAddItems: JSON.parse(JSON.stringify(QUICK_ADD_STARTER)),
+
+      services: {
+        whatsappFiles: 'Yes — Show WhatsApp Button',
+        bulkDiscount: 'Yes — Discount Available',
+        minWhatsappOrder: '₹20',
+        features: [
+          'WhatsApp Print',
+          'Pen Drive Support',
+          'College Project Formatting',
+          'Online Form Filling',
+          'Scan to PDF',
+          'UPI Accepted',
+          'Open Late for Exams'
+        ]
+      },
+
+      hours: DAYS_LIST.map((day, idx) => ({
+        day,
+        open: idx === 6 ? false : true,
+        from: '08:30',
+        to: '21:30'
+      })),
+
+      notices: [
+        {
+          id: 'not_1',
+          text: 'B.Tech Project Hard Binding ready in 2 hours — WhatsApp your PDF.',
+          time: 'Today, 11:00 AM'
+        }
+      ],
+      noticeDraft: '',
+
+      shopPhotos: [
+        { id: 'sp_1', label: 'Shop Front & Counter', url: 'https://placehold.co/600x400/ECFDF5/065F46?text=Sharma+Print+Shop+Front' },
+        { id: 'sp_2', label: 'High-Speed Xerox Machines', url: 'https://placehold.co/600x400/D1FAE5/065F46?text=Xerox+%26+Color+Printers' }
+      ]
+    };
+
+    /* =========================================================================
+       3. UTILITIES (ESCAPE, TIME FORMAT, TOASTS)
+       ========================================================================= */
+    function escapeHtml(str) {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function getCurrentTimeLabel() {
+      return new Date().toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit', hour12: true });
+    }
+
+    function formatTime24To12(t24) {
+      if (!t24) return '';
+      const [hStr, mStr] = t24.split(':');
+      let h = parseInt(hStr, 10);
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      h = h % 12 || 12;
+      return `${h}:${mStr} ${ampm}`;
+    }
+
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const el = document.createElement('div');
+      const palette =
+        type === 'error'
+          ? 'bg-red-700 text-white border-red-800'
+          : type === 'info'
+          ? 'bg-slate-900 text-white border-slate-700'
+          : 'bg-[#065F46] text-white border-emerald-900';
+
+      el.className = `pointer-events-auto px-4 py-3 rounded-2xl shadow-lg border text-sm font-semibold flex items-center gap-2.5 fade-in ${palette}`;
+      el.innerHTML = `<span>${type === 'error' ? '⚠️' : type === 'info' ? 'ℹ️' : '✅'}</span><span>${escapeHtml(message)}</span>`;
+      container.appendChild(el);
+
+      setTimeout(() => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(8px)';
+        el.style.transition = 'all 0.25s ease';
+        setTimeout(() => el.remove(), 260);
+      }, 2800);
+    }
+
+    /* =========================================================================
+       4. WEB SPEECH API — VOICE TO TEXT (WITH TOAST FALLBACK)
+       ========================================================================= */
+    function startVoiceInput(targetField) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        showToast('Voice typing is not supported in this browser. Please type normally.', 'info');
+        return;
+      }
+
+      try {
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'en-IN';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        state.listeningField = targetField;
+        renderTabContent();
+        showToast('Listening... Speak clearly now', 'info');
+
+        recognition.onresult = (event) => {
+          const spoken = event.results[0][0].transcript;
+          if (targetField === 'stationeryName') {
+            state.newStationery.name = state.newStationery.name
+              ? `${state.newStationery.name} ${spoken}`
+              : spoken;
+          } else if (targetField === 'noticeText') {
+            state.noticeDraft = state.noticeDraft
+              ? `${state.noticeDraft} ${spoken}`
+              : spoken;
+          }
+          state.listeningField = null;
+          renderTabContent();
+          showToast('Voice text added!');
+        };
+
+        recognition.onerror = () => {
+          state.listeningField = null;
+          renderTabContent();
+          showToast('Could not hear clearly. Tap mic again or type normally.', 'error');
+        };
+
+        recognition.onend = () => {
+          if (state.listeningField === targetField) {
+            state.listeningField = null;
+            renderTabContent();
+          }
+        };
+
+        recognition.start();
+      } catch (e) {
+        state.listeningField = null;
+        renderTabContent();
+        showToast('Microphone unavailable. Please type instead.', 'info');
+      }
+    }
+
+    /* =========================================================================
+       5. MASTER RENDER FUNCTIONS
+       ========================================================================= */
+    function renderAll() {
+      renderTopRushBadge();
+      renderHeaderSummary();
+      renderTabsBar();
+      renderTabContent();
+    }
+
+    function renderTopRushBadge() {
+      const rush = RUSH_STATUSES[state.shop.rushStatus];
+      const badge = document.getElementById('topRushBadge');
+      badge.className = `min-h-[44px] px-3.5 py-2 rounded-2xl text-xs sm:text-sm font-extrabold border-2 flex items-center gap-2 ${rush.badgeClass}`;
+      badge.innerHTML = `<span>${rush.icon}</span><span>${rush.shortLabel}</span>`;
+    }
+
+    function renderHeaderSummary() {
+      const rush = RUSH_STATUSES[state.shop.rushStatus];
+      const inStockCount = state.stationery.filter((i) => i.inStock).length;
+
+      document.getElementById('headerSummaryStrip').innerHTML = `
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div class="flex items-start gap-4">
+            <div class="w-16 h-16 rounded-2xl bg-[#ECFDF5] border border-emerald-200 flex items-center justify-center text-3xl shrink-0">
+              🖨️
+            </div>
+            <div class="min-w-0">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold border ${rush.badgeClass}">
+                  ${rush.icon} ${rush.label}
+                </span>
+                ${
+                  state.services.whatsappFiles.startsWith('Yes')
+                    ? `<span class="px-2.5 py-0.5 rounded-full bg-emerald-600/10 text-[#065F46] text-xs font-bold">💬 WhatsApp Print On</span>`
+                    : ''
+                }
+              </div>
+              <h1 class="text-xl sm:text-2xl font-extrabold text-[#0F172A] mt-1.5 break-words">
+                ${escapeHtml(state.shop.name)}
+              </h1>
+              <p class="text-sm text-slate-600 mt-0.5 flex items-center gap-1.5">
+                <span>📍</span>
+                <span>${escapeHtml(state.shop.address)}</span>
+              </p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 shrink-0">
+            <div class="rounded-2xl bg-[#ECFDF5] border border-emerald-200 px-4 py-3 text-center min-w-[132px]">
+              <div class="text-xl font-extrabold text-[#065F46]">${state.printRates.length}</div>
+              <div class="text-xs font-bold text-[#065F46] mt-0.5">Print Services</div>
+            </div>
+            <div class="rounded-2xl bg-slate-50 border border-slate-200 px-4 py-3 text-center min-w-[132px]">
+              <div class="text-xl font-extrabold text-[#0F172A]">${inStockCount}/${state.stationery.length}</div>
+              <div class="text-xs font-bold text-slate-600 mt-0.5">Stationery In Stock</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderTabsBar() {
+      const tabs = [
+        { id: 'rates', icon: '🖨️', label: 'Print Rates & Rush' },
+        { id: 'stationery', icon: '✏️', label: 'Stationery & Supplies' },
+        { id: 'facilities', icon: '⚙️', label: 'Services & Facilities' },
+        { id: 'hours', icon: '🕒', label: 'Opening Hours & Notices' },
+        { id: 'info', icon: '📍', label: 'Shop Info, Photos & GPS' }
+      ];
+
+      document.getElementById('tabsBar').innerHTML = tabs
+        .map((t) => {
+          const active = state.activeTab === t.id;
+          return `
+            <button
+              onclick="switchTab('${t.id}')"
+              class="min-h-[52px] px-3.5 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap ${
+                active
+                  ? 'bg-[#059669] text-white shadow-sm'
+                  : 'bg-white text-slate-700 hover:bg-[#ECFDF5] hover:text-[#065F46]'
+              }"
+            >
+              <span class="text-base">${t.icon}</span>
+              <span>${t.label}</span>
+            </button>
+          `;
+        })
+        .join('');
+    }
+
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+      renderTabsBar();
+      renderTabContent();
+    }
+
+    function renderTabContent() {
+      const container = document.getElementById('tabContent');
+      if (state.activeTab === 'rates') {
+        container.innerHTML = renderRatesAndRushTab();
+      } else if (state.activeTab === 'stationery') {
+        container.innerHTML = renderStationeryTab();
+      } else if (state.activeTab === 'facilities') {
+        container.innerHTML = renderFacilitiesTab();
+      } else if (state.activeTab === 'hours') {
+        container.innerHTML = renderHoursAndNoticesTab();
+      } else if (state.activeTab === 'info') {
+        container.innerHTML = renderShopInfoTab();
+        attachMapInteractions();
+      }
+    }
+
+    /* =========================================================================
+       6. TAB 1 — PRINT RATES & RUSH (DEFAULT TAB)
+       ========================================================================= */
+    function renderRatesAndRushTab() {
+      const np = state.newCustomPrint;
+
+      return `
+        <div class="space-y-6">
+          <!-- 1-Tap Live Rush / Machine Status Bar -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-6 space-y-4">
+            <div>
+              <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">⚡ Live Shop Rush &amp; Machine Status</h2>
+              <p class="text-sm text-slate-600 mt-0.5">Tap one button so students know waiting time before walking over.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              ${Object.values(RUSH_STATUSES)
+                .map((rs) => {
+                  const active = state.shop.rushStatus === rs.key;
+                  return `
+                    <button
+                      type="button"
+                      onclick="setRushStatus('${rs.key}')"
+                      class="text-left p-4 rounded-2xl border-2 transition cursor-pointer min-h-[82px] flex flex-col justify-center ${
+                        active
+                          ? rs.cardActiveClass + ' shadow-sm'
+                          : 'bg-white border-slate-200 hover:border-emerald-300 text-slate-800'
+                      }"
+                    >
+                      <div class="flex items-center justify-between gap-2">
+                        <span class="font-extrabold text-sm sm:text-base">${rs.icon} ${rs.label}</span>
+                        ${active ? `<span class="text-xs font-extrabold px-2 py-0.5 rounded-full bg-white/80">Active</span>` : ''}
+                      </div>
+                      <p class="text-xs opacity-85 mt-1">${rs.desc}</p>
+                    </button>
+                  `;
+                })
+                .join('')}
+            </div>
+          </div>
+
+          <!-- Quick Print Rate Card -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-6 space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">🖨️ Quick Print &amp; Binding Rate Card</h2>
+                <p class="text-sm text-slate-600 mt-0.5">Just tap any ₹ box to change the rate — saved automatically.</p>
+              </div>
+              <button
+                type="button"
+                onclick="showToast('All print rates saved & live for students!')"
+                class="min-h-[46px] px-5 py-2.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-sm shadow-sm cursor-pointer"
+              >
+                ✓ Save Rate Card
+              </button>
+            </div>
+
+            <div class="divide-y divide-slate-100 border border-slate-200 rounded-2xl overflow-hidden">
+              ${state.printRates
+                .map(
+                  (rate) => `
+                    <div class="p-4 bg-white hover:bg-[#ECFDF5]/35 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div class="min-w-0 flex-1">
+                        <div class="flex items-center gap-2 flex-wrap">
+                          <span class="font-bold text-sm sm:text-base text-[#0F172A]">${escapeHtml(rate.name)}</span>
+                          ${rate.custom ? `<span class="px-2 py-0.5 rounded-full bg-emerald-50 text-[#065F46] text-[10px] font-extrabold border border-emerald-200">Custom</span>` : ''}
+                        </div>
+                        <span class="text-xs text-slate-500 font-medium">${escapeHtml(rate.unit)}</span>
+                      </div>
+
+                      <div class="flex items-center gap-2.5 shrink-0">
+                        <div class="flex items-center">
+                          <span class="min-h-[46px] px-3.5 flex items-center rounded-l-xl bg-slate-100 border-2 border-r-0 border-slate-200 font-extrabold text-slate-700">₹</span>
+                          <input
+                            type="number"
+                            step="0.5"
+                            min="0"
+                            value="${rate.price}"
+                            onchange="updatePrintRate('${rate.id}', this.value)"
+                            aria-label="Price for ${escapeHtml(rate.name)}"
+                            class="w-24 min-h-[46px] px-3 py-2 rounded-r-xl bg-white border-2 border-slate-200 font-extrabold text-base text-[#065F46] focus:outline-none focus:border-[#059669]"
+                          />
+                        </div>
+                        ${
+                          rate.custom
+                            ? `
+                              <button
+                                type="button"
+                                onclick="deleteCustomPrintRate('${rate.id}')"
+                                aria-label="Delete custom service"
+                                class="w-11 h-[46px] rounded-xl bg-red-50 hover:bg-red-100 text-red-700 font-bold text-sm flex items-center justify-center cursor-pointer"
+                              >
+                                🗑️
+                              </button>
+                            `
+                            : ''
+                        }
+                      </div>
+                    </div>
+                  `
+                )
+                .join('')}
+            </div>
+
+            <!-- Expandable "+ Add Custom Print Service" -->
+            <div class="rounded-2xl border-2 border-emerald-100 overflow-hidden">
+              <button
+                type="button"
+                onclick="state.customPrintExpanded = !state.customPrintExpanded; renderTabContent();"
+                class="w-full px-4 sm:px-5 py-3.5 bg-[#ECFDF5]/70 hover:bg-[#ECFDF5] flex items-center justify-between gap-2 text-left cursor-pointer"
+              >
+                <span class="font-extrabold text-sm sm:text-base text-[#065F46]">➕ Add Custom Print Service</span>
+                <span class="text-xs font-bold text-[#065F46] bg-white px-3 py-1 rounded-lg border border-emerald-200">
+                  ${state.customPrintExpanded ? 'Hide ▲' : 'Open ▼'}
+                </span>
+              </button>
+
+              ${
+                state.customPrintExpanded
+                  ? `
+                    <div class="p-4 sm:p-5 bg-white grid grid-cols-1 sm:grid-cols-4 gap-3 items-end">
+                      <div class="sm:col-span-2 space-y-1.5">
+                        <label class="block text-xs font-bold text-slate-700">Service Name</label>
+                        <input
+                          type="text"
+                          value="${escapeHtml(np.name)}"
+                          placeholder="e.g. A3 Drawing Sheet Print"
+                          oninput="state.newCustomPrint.name = this.value"
+                          class="w-full min-h-[48px] px-3.5 py-2 rounded-xl border-2 border-slate-200 font-semibold text-sm focus:outline-none focus:border-[#059669]"
+                        />
+                      </div>
+                      <div class="space-y-1.5">
+                        <label class="block text-xs font-bold text-slate-700">Price (₹)</label>
+                        <input
+                          type="number"
+                          step="0.5"
+                          min="0"
+                          value="${escapeHtml(np.price)}"
+                          placeholder="e.g. 25"
+                          oninput="state.newCustomPrint.price = this.value"
+                          class="w-full min-h-[48px] px-3.5 py-2 rounded-xl border-2 border-slate-200 font-bold text-sm focus:outline-none focus:border-[#059669]"
+                        />
+                      </div>
+                      <div class="space-y-1.5">
+                        <label class="block text-xs font-bold text-slate-700">Unit</label>
+                        <select
+                          onchange="state.newCustomPrint.unit = this.value"
+                          class="w-full min-h-[48px] px-3 py-2 rounded-xl border-2 border-slate-200 bg-slate-50 font-semibold text-sm focus:outline-none focus:border-[#059669]"
+                        >
+                          ${PRINT_UNITS.map((u) => `<option value="${u}" ${np.unit === u ? 'selected' : ''}>${u}</option>`).join('')}
+                        </select>
+                      </div>
+                      <div class="sm:col-span-4 pt-1">
+                        <button
+                          type="button"
+                          onclick="addCustomPrintService()"
+                          class="w-full sm:w-auto min-h-[48px] px-6 py-2.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-extrabold text-sm cursor-pointer"
+                        >
+                          + Add Service to Rate Card
+                        </button>
+                      </div>
+                    </div>
+                  `
+                  : ''
+              }
+            </div>
+          </div>
+
+          <!-- Snap Photo of Paper Rate Card -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-6 space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">📸 Snap Photo of Paper Rate Card</h2>
+                <p class="text-sm text-slate-600 mt-0.5">Have a printed rate board on your wall? Upload a clear photo here so students can read all rates.</p>
+              </div>
+              <label class="min-h-[48px] px-5 py-2.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-sm shadow-sm cursor-pointer inline-flex items-center justify-center gap-2 shrink-0">
+                <span>📷 Upload Rate Card Photo</span>
+                <input type="file" accept="image/*" class="hidden" onchange="handleRateCardPhotoUpload(event)" />
+              </label>
+            </div>
+
+            ${
+              state.rateCardPhoto.url
+                ? `
+                  <div class="rounded-2xl border-2 border-emerald-200 overflow-hidden bg-slate-50 max-w-lg">
+                    <img
+                      src="${state.rateCardPhoto.url}"
+                      alt="Shop paper rate card"
+                      onerror="this.src='https://placehold.co/640x360/ECFDF5/065F46?text=Rate+Card+Photo'"
+                      class="w-full h-52 object-cover"
+                    />
+                    <div class="px-4 py-2.5 bg-white flex items-center justify-between gap-2 text-xs">
+                      <span class="font-bold text-[#065F46]">✓ ${escapeHtml(state.rateCardPhoto.uploadedAt)}</span>
+                      <button
+                        type="button"
+                        onclick="removeRateCardPhoto()"
+                        class="min-h-[36px] px-3 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 font-bold cursor-pointer"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                `
+                : `<p class="text-xs text-slate-500">No paper rate card uploaded yet.</p>`
+            }
+          </div>
+        </div>
+      `;
+    }
+
+    function setRushStatus(key) {
+      state.shop.rushStatus = key;
+      renderAll();
+      showToast(`Rush status updated: ${RUSH_STATUSES[key].label}`);
+    }
+
+    function updatePrintRate(id, newVal) {
+      const rate = state.printRates.find((r) => r.id === id);
+      const parsed = parseFloat(newVal);
+      if (!rate || isNaN(parsed) || parsed < 0) return;
+      rate.price = parsed;
+      showToast(`Updated "${rate.name}" to ₹${parsed}`);
+    }
+
+    function addCustomPrintService() {
+      const np = state.newCustomPrint;
+      const priceNum = parseFloat(np.price);
+      if (!np.name.trim()) {
+        showToast('Please enter a Service Name', 'error');
+        return;
+      }
+      if (isNaN(priceNum) || priceNum <= 0) {
+        showToast('Please enter a valid Price in ₹', 'error');
+        return;
+      }
+      state.printRates.push({
+        id: 'pr_' + Date.now(),
+        name: np.name.trim(),
+        price: priceNum,
+        unit: np.unit,
+        custom: true
+      });
+      state.newCustomPrint = { name: '', price: '', unit: 'Per Page' };
+      renderHeaderSummary();
+      renderTabContent();
+      showToast('Custom print service added!');
+    }
+
+    function deleteCustomPrintRate(id) {
+      state.printRates = state.printRates.filter((r) => r.id !== id);
+      renderHeaderSummary();
+      renderTabContent();
+      showToast('Custom service removed', 'info');
+    }
+
+    function handleRateCardPhotoUpload(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        state.rateCardPhoto = {
+          url: e.target.result,
+          uploadedAt: `Uploaded Today, ${getCurrentTimeLabel()}`
+        };
+        renderTabContent();
+        showToast('Paper Rate Card photo uploaded!');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removeRateCardPhoto() {
+      state.rateCardPhoto = { url: '', uploadedAt: '' };
+      renderTabContent();
+      showToast('Rate card photo removed', 'info');
+    }
+
+    /* =========================================================================
+       7. TAB 2 — STATIONERY & SUPPLIES
+       ========================================================================= */
+    function renderStationeryTab() {
+      const ns = state.newStationery;
+      const isMicActive = state.listeningField === 'stationeryName';
+
+      const q = state.stationerySearch.trim().toLowerCase();
+      const filteredItems = state.stationery.filter((item) => {
+        const matchesSearch = !q || item.name.toLowerCase().includes(q) || item.packSize.toLowerCase().includes(q);
+        const matchesStock = !state.stationeryOutOfStockOnly || !item.inStock;
+        return matchesSearch && matchesStock;
+      });
+
+      return `
+        <div class="space-y-6">
+          <!-- Top Utility Bar: Search + Out of Stock Filter + Quick Add Button -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-4 sm:p-5 flex flex-col lg:flex-row items-stretch lg:items-center gap-3">
+            <div class="relative flex-1">
+              <input
+                type="text"
+                value="${escapeHtml(state.stationerySearch)}"
+                placeholder="🔍 Search your stationery items (e.g. Register, Pen, A4)..."
+                oninput="state.stationerySearch = this.value; renderTabContent();"
+                class="w-full min-h-[48px] px-4 py-2.5 rounded-xl bg-slate-50 border-2 border-slate-200 text-sm sm:text-base font-medium focus:outline-none focus:border-[#059669]"
+              />
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2.5">
+              <button
+                type="button"
+                onclick="state.stationeryOutOfStockOnly = !state.stationeryOutOfStockOnly; renderTabContent();"
+                class="min-h-[48px] px-4 py-2 rounded-xl border-2 font-bold text-xs sm:text-sm transition cursor-pointer ${
+                  state.stationeryOutOfStockOnly
+                    ? 'bg-red-600 border-red-600 text-white'
+                    : 'bg-white border-slate-200 text-slate-700 hover:border-red-300'
+                }"
+              >
+                ${state.stationeryOutOfStockOnly ? '✓ Out of Stock Only' : 'Filter: Out of Stock Only'}
+              </button>
+
+              <button
+                type="button"
+                onclick="openQuickAddModal()"
+                class="min-h-[48px] px-5 py-2.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-extrabold text-xs sm:text-sm shadow-sm cursor-pointer flex items-center gap-1.5"
+              >
+                <span>⚡</span>
+                <span>Quick Add Common Stationery</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Expandable "+ Add Stationery Item" Card -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm overflow-hidden">
+            <button
+              type="button"
+              onclick="state.addStationeryExpanded = !state.addStationeryExpanded; renderTabContent();"
+              class="w-full px-5 sm:px-6 py-4 bg-[#ECFDF5]/80 hover:bg-[#ECFDF5] flex items-center justify-between gap-3 text-left cursor-pointer border-b border-emerald-100"
+            >
+              <div>
+                <h2 class="text-lg font-extrabold text-[#0F172A]">➕ Add Stationery Item</h2>
+                <p class="text-xs sm:text-sm text-slate-600">Add single items, packs (e.g. Pack of 5), or exam combo bundles</p>
+              </div>
+              <span class="min-h-[40px] px-3.5 rounded-xl bg-white border border-emerald-200 text-[#065F46] font-bold text-sm flex items-center">
+                ${state.addStationeryExpanded ? 'Hide ▲' : 'Open ▼'}
+              </span>
+            </button>
+
+            ${
+              state.addStationeryExpanded
+                ? `
+                  <div class="p-5 sm:p-6 space-y-5">
+                    <!-- Item Name + Voice Mic -->
+                    <div class="space-y-2">
+                      <label class="block text-sm font-bold text-[#0F172A]">1. Item Name</label>
+                      <div class="flex items-center gap-2.5">
+                        <input
+                          type="text"
+                          value="${escapeHtml(ns.name)}"
+                          placeholder="e.g. Classmate Register, Blue Pen Pack, Lab File"
+                          oninput="state.newStationery.name = this.value"
+                          class="flex-1 min-h-[50px] px-4 py-2.5 rounded-xl bg-white border-2 border-slate-200 font-bold text-sm sm:text-base focus:outline-none focus:border-[#059669]"
+                        />
+                        <button
+                          type="button"
+                          onclick="startVoiceInput('stationeryName')"
+                          aria-label="Speak item name"
+                          class="min-w-[52px] h-[50px] px-3.5 rounded-xl border-2 font-bold text-sm flex items-center justify-center gap-1.5 cursor-pointer transition ${
+                            isMicActive
+                              ? 'bg-red-600 border-red-600 text-white mic-pulse'
+                              : 'bg-[#ECFDF5] hover:bg-emerald-100 border-emerald-300 text-[#065F46]'
+                          }"
+                        >
+                          <span class="text-lg">🎙️</span>
+                          <span class="hidden sm:inline">${isMicActive ? 'Listening' : 'Speak'}</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Sell As 3 Big Tappable Pills -->
+                    <div class="space-y-2">
+                      <label class="block text-sm font-bold text-[#0F172A]">2. Sell As</label>
+                      <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                        ${SELL_AS_OPTIONS.map((opt) => {
+                          const active = ns.sellAs === opt.key;
+                          return `
+                            <button
+                              type="button"
+                              onclick="state.newStationery.sellAs = '${opt.key}'; renderTabContent();"
+                              class="min-h-[50px] px-4 py-2.5 rounded-xl border-2 font-bold text-sm transition cursor-pointer ${
+                                active
+                                  ? 'bg-[#059669] border-[#059669] text-white shadow-xs'
+                                  : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-400 hover:bg-[#ECFDF5]/60'
+                              }"
+                            >
+                              ${active ? '✓ ' : ''}${opt.label}
+                            </button>
+                          `;
+                        }).join('')}
+                      </div>
+                    </div>
+
+                    <!-- Pack Size + Price + Stock Qty Stepper -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <div class="space-y-1.5">
+                        <label class="block text-sm font-bold text-[#0F172A]">3. Pack Size / Quantity</label>
+                        <input
+                          type="text"
+                          value="${escapeHtml(ns.packSize)}"
+                          placeholder="e.g. Pack of 5, 10 Pens"
+                          oninput="state.newStationery.packSize = this.value"
+                          class="w-full min-h-[50px] px-3.5 py-2.5 rounded-xl bg-white border-2 border-slate-200 font-semibold text-sm sm:text-base focus:outline-none focus:border-[#059669]"
+                        />
+                      </div>
+
+                      <div class="space-y-1.5">
+                        <label class="block text-sm font-bold text-[#0F172A]">4. Price (₹)</label>
+                        <div class="flex items-center">
+                          <span class="min-h-[50px] px-3.5 flex items-center rounded-l-xl bg-slate-100 border-2 border-r-0 border-slate-200 font-extrabold text-slate-700">₹</span>
+                          <input
+                            type="number"
+                            min="0"
+                            value="${escapeHtml(ns.price)}"
+                            placeholder="e.g. 60"
+                            oninput="state.newStationery.price = this.value"
+                            class="w-full min-h-[50px] px-3.5 py-2.5 rounded-r-xl bg-white border-2 border-slate-200 font-extrabold text-base focus:outline-none focus:border-[#059669]"
+                          />
+                        </div>
+                      </div>
+
+                      <div class="space-y-1.5">
+                        <label class="block text-sm font-bold text-[#0F172A]">5. Stock Qty (Optional)</label>
+                        <div class="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onclick="state.newStationery.stockQty = Math.max(0, state.newStationery.stockQty - 1); renderTabContent();"
+                            class="w-12 h-[50px] rounded-xl bg-slate-100 hover:bg-slate-200 border-2 border-slate-200 text-xl font-extrabold cursor-pointer"
+                          >−</button>
+                          <div class="flex-1 h-[50px] rounded-xl bg-[#ECFDF5] border-2 border-emerald-200 flex items-center justify-center text-lg font-extrabold text-[#065F46]">
+                            ${ns.stockQty}
+                          </div>
+                          <button
+                            type="button"
+                            onclick="state.newStationery.stockQty += 1; renderTabContent();"
+                            class="w-12 h-[50px] rounded-xl bg-emerald-100 hover:bg-emerald-200 border-2 border-emerald-300 text-xl font-extrabold text-[#065F46] cursor-pointer"
+                          >+</button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onclick="addNewStationeryItem()"
+                      class="w-full sm:w-auto min-h-[52px] px-8 py-3 rounded-2xl bg-[#059669] hover:bg-[#047857] text-white font-extrabold text-base shadow-sm cursor-pointer"
+                    >
+                      + Add Stationery Item
+                    </button>
+                  </div>
+                `
+                : ''
+            }
+          </div>
+
+          <!-- Stationery Items List -->
+          <div class="space-y-3.5">
+            <div class="flex items-center justify-between px-1">
+              <h3 class="text-lg font-extrabold text-[#0F172A]">Your Stationery Items (${filteredItems.length})</h3>
+              <span class="text-xs text-slate-500">Tap green button to mark In Stock / Out of Stock</span>
+            </div>
+
+            ${
+              filteredItems.length === 0
+                ? `
+                  <div class="bg-white rounded-2xl border border-dashed border-emerald-300 p-10 text-center">
+                    <p class="text-3xl mb-2">✏️</p>
+                    <p class="font-bold text-slate-800">No matching stationery items</p>
+                    <p class="text-sm text-slate-500 mt-1">Clear your search filter or tap "Quick Add Common Stationery".</p>
+                  </div>
+                `
+                : filteredItems
+                    .map(
+                      (item) => `
+                        <div class="bg-white rounded-2xl border-2 ${
+                          item.inStock ? 'border-emerald-100' : 'border-red-200 bg-red-50/20'
+                        } shadow-xs p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                          <div class="space-y-1.5 flex-1 min-w-0">
+                            <div class="flex flex-wrap items-center gap-2">
+                              <span class="px-2.5 py-0.5 rounded-full text-xs font-extrabold ${
+                                item.sellAs === 'Combo Bundle'
+                                  ? 'bg-purple-100 text-purple-800'
+                                  : item.sellAs === 'Pack'
+                                  ? 'bg-sky-100 text-sky-800'
+                                  : 'bg-slate-100 text-slate-700'
+                              }">
+                                ${escapeHtml(item.sellAs)}
+                              </span>
+                              <span class="text-xs font-semibold text-slate-500">${escapeHtml(item.packSize)}</span>
+                              ${
+                                item.stockQty > 0
+                                  ? `<span class="text-xs font-semibold text-slate-500">• Qty: ${item.stockQty}</span>`
+                                  : ''
+                              }
+                            </div>
+                            <h4 class="text-base sm:text-lg font-extrabold text-[#0F172A]">${escapeHtml(item.name)}</h4>
+                            <div class="text-xl font-extrabold text-[#065F46]">₹${item.price}</div>
+                          </div>
+
+                          <div class="flex flex-wrap items-center gap-2 shrink-0">
+                            <button
+                              type="button"
+                              onclick="toggleStationeryStock('${item.id}')"
+                              class="min-h-[46px] px-4 py-2 rounded-xl border-2 font-bold text-sm transition cursor-pointer ${
+                                item.inStock
+                                  ? 'bg-[#059669] hover:bg-[#047857] border-[#059669] text-white'
+                                  : 'bg-red-100 hover:bg-red-200 border-red-400 text-red-800'
+                              }"
+                            >
+                              ${item.inStock ? '✓ In Stock' : '✕ Out of Stock'}
+                            </button>
+                            <button
+                              type="button"
+                              onclick="copyStationeryItem('${item.id}')"
+                              class="min-h-[46px] px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-emerald-50 hover:text-[#065F46] text-slate-700 font-bold text-sm cursor-pointer"
+                            >
+                              📋 Copy
+                            </button>
+                            <button
+                              type="button"
+                              onclick="deleteStationeryItem('${item.id}')"
+                              aria-label="Delete item"
+                              class="min-h-[46px] px-3.5 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 font-bold text-sm cursor-pointer"
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                        </div>
+                      `
+                    )
+                    .join('')
+            }
+          </div>
+        </div>
+      `;
+    }
+
+    function addNewStationeryItem() {
+      const ns = state.newStationery;
+      const priceNum = parseFloat(ns.price);
+      if (!ns.name.trim()) {
+        showToast('Please enter the Item Name', 'error');
+        return;
+      }
+      if (isNaN(priceNum) || priceNum <= 0) {
+        showToast('Please enter a valid Price in ₹', 'error');
+        return;
+      }
+
+      state.stationery.unshift({
+        id: 'st_' + Date.now(),
+        name: ns.name.trim(),
+        sellAs: ns.sellAs,
+        packSize: ns.packSize.trim() || (ns.sellAs === 'Single Item' ? '1 Piece' : ns.sellAs),
+        price: priceNum,
+        stockQty: ns.stockQty,
+        inStock: true
+      });
+
+      state.newStationery = { name: '', sellAs: 'Single Item', packSize: '', price: '', stockQty: 10 };
+      renderHeaderSummary();
+      renderTabContent();
+      showToast('Stationery item added!');
+    }
+
+    function toggleStationeryStock(id) {
+      const item = state.stationery.find((i) => i.id === id);
+      if (!item) return;
+      item.inStock = !item.inStock;
+      renderHeaderSummary();
+      renderTabContent();
+      showToast(item.inStock ? `"${item.name}" marked In Stock` : `"${item.name}" marked Out of Stock`, 'info');
+    }
+
+    function copyStationeryItem(id) {
+      const item = state.stationery.find((i) => i.id === id);
+      if (!item) return;
+      state.stationery.unshift({
+        ...item,
+        id: 'st_' + Date.now(),
+        name: item.name + ' (Copy)'
+      });
+      renderHeaderSummary();
+      renderTabContent();
+      showToast('Item copied!');
+    }
+
+    function deleteStationeryItem(id) {
+      state.stationery = state.stationery.filter((i) => i.id !== id);
+      renderHeaderSummary();
+      renderTabContent();
+      showToast('Item deleted', 'info');
+    }
+
+    /* ---------- QUICK ADD COMMON STATIONERY MODAL ---------- */
+    function openQuickAddModal() {
+      renderQuickAddModalBody();
+      const modal = document.getElementById('quickAddModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeQuickAddModal() {
+      const modal = document.getElementById('quickAddModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function renderQuickAddModalBody() {
+      const body = document.getElementById('quickAddBody');
+      const selectedCount = state.quickAddItems.filter((i) => i.checked).length;
+      document.getElementById('quickAddCountLabel').textContent = `${selectedCount} item${selectedCount === 1 ? '' : 's'} selected`;
+
+      body.innerHTML = state.quickAddItems
+        .map(
+          (qa, idx) => `
+            <div class="p-3.5 rounded-2xl border-2 ${
+              qa.checked ? 'border-[#059669] bg-[#ECFDF5]/60' : 'border-slate-200 bg-white'
+            } flex items-center justify-between gap-3">
+              <label class="flex items-center gap-3 flex-1 cursor-pointer min-w-0">
+                <input
+                  type="checkbox"
+                  ${qa.checked ? 'checked' : ''}
+                  onchange="state.quickAddItems[${idx}].checked = this.checked; renderQuickAddModalBody();"
+                  class="w-5 h-5 accent-[#059669] rounded cursor-pointer shrink-0"
+                />
+                <div class="min-w-0">
+                  <div class="font-bold text-sm text-[#0F172A] truncate">${escapeHtml(qa.name)}</div>
+                  <div class="text-xs text-slate-500">${escapeHtml(qa.sellAs)} • ${escapeHtml(qa.packSize)}</div>
+                </div>
+              </label>
+              <div class="flex items-center shrink-0">
+                <span class="min-h-[40px] px-2.5 flex items-center rounded-l-xl bg-slate-100 border border-r-0 border-slate-300 font-bold text-xs text-slate-700">₹</span>
+                <input
+                  type="number"
+                  value="${qa.price}"
+                  oninput="state.quickAddItems[${idx}].price = parseFloat(this.value) || 0"
+                  class="w-20 min-h-[40px] px-2.5 py-1 rounded-r-xl bg-white border border-slate-300 font-extrabold text-sm text-[#065F46]"
+                />
+              </div>
+            </div>
+          `
+        )
+        .join('');
+    }
+
+    function confirmQuickAddStationery() {
+      const chosen = state.quickAddItems.filter((i) => i.checked);
+      if (chosen.length === 0) {
+        showToast('Please tick at least 1 item to add', 'error');
+        return;
+      }
+      chosen.forEach((c) => {
+        state.stationery.unshift({
+          id: 'st_' + Date.now() + Math.random().toString(36).slice(2, 5),
+          name: c.name,
+          sellAs: c.sellAs,
+          packSize: c.packSize,
+          price: c.price || 10,
+          stockQty: 15,
+          inStock: true
+        });
+        c.checked = false;
+      });
+      closeQuickAddModal();
+      renderHeaderSummary();
+      renderTabContent();
+      showToast(`Added ${chosen.length} stationery item${chosen.length === 1 ? '' : 's'}!`);
+    }
+
+    /* =========================================================================
+       8. TAB 3 — SERVICES & FACILITIES
+       ========================================================================= */
+    function renderFacilitiesTab() {
+      const sv = state.services;
+
+      const renderGroup = (label, options, currentVal, fnName) => `
+        <div class="space-y-2.5">
+          <label class="block text-sm sm:text-base font-bold text-[#0F172A]">${label}</label>
+          <div class="flex flex-wrap gap-2.5">
+            ${options
+              .map((opt) => {
+                const active = currentVal === opt;
+                return `
+                  <button
+                    type="button"
+                    onclick="${fnName}('${escapeHtml(opt)}')"
+                    class="min-h-[48px] px-4 py-2.5 rounded-xl border-2 font-bold text-sm sm:text-base transition cursor-pointer ${
+                      active
+                        ? 'bg-[#059669] border-[#059669] text-white shadow-xs'
+                        : 'bg-white border-slate-200 text-slate-700 hover:border-emerald-400 hover:bg-[#ECFDF5]/60'
+                    }"
+                  >
+                    ${active ? '✓ ' : ''}${opt}
+                  </button>
+                `;
+              })
+              .join('')}
+          </div>
+        </div>
+      `;
+
+      return `
+        <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-7 space-y-7">
+          <div>
+            <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">⚙️ Services &amp; Shop Facilities</h2>
+            <p class="text-sm text-slate-600 mt-0.5">Tap the options that apply to your print &amp; xerox shop.</p>
+          </div>
+
+          ${renderGroup('1. Accept Files on WhatsApp?', ['Yes — Show WhatsApp Button', 'No'], sv.whatsappFiles, 'setWhatsappFiles')}
+          ${renderGroup('2. Bulk / Project Report Discount?', ['Yes — Discount Available', 'No'], sv.bulkDiscount, 'setBulkDiscount')}
+          ${renderGroup('3. Minimum Order for WhatsApp Print?', ['No Minimum', '₹20', '₹50'], sv.minWhatsappOrder, 'setMinWhatsappOrder')}
+
+          <div class="space-y-3 pt-3 border-t border-slate-100">
+            <label class="block text-sm sm:text-base font-bold text-[#0F172A]">4. Tap Facilities Available at Your Shop</label>
+            <div class="flex flex-wrap gap-2.5">
+              ${ALL_FEATURES.map((feat) => {
+                const selected = sv.features.includes(feat);
+                return `
+                  <button
+                    type="button"
+                    onclick="toggleShopFeature('${escapeHtml(feat)}')"
+                    class="min-h-[48px] px-4 py-2.5 rounded-full border-2 font-bold text-sm transition cursor-pointer flex items-center gap-2 ${
+                      selected
+                        ? 'bg-[#ECFDF5] border-[#059669] text-[#065F46]'
+                        : 'bg-white border-slate-200 text-slate-600 hover:border-emerald-300'
+                    }"
+                  >
+                    <span class="text-base leading-none">${selected ? '✓' : '+'}</span>
+                    <span>${feat}</span>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-slate-100">
+            <button
+              type="button"
+              onclick="showToast('Services & Facilities saved!')"
+              class="w-full sm:w-auto min-h-[52px] px-8 py-3 rounded-2xl bg-[#059669] hover:bg-[#047857] text-white font-extrabold text-base shadow-sm cursor-pointer"
+            >
+              ✓ Save Settings
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function setWhatsappFiles(v) { state.services.whatsappFiles = v; renderHeaderSummary(); renderTabContent(); }
+    function setBulkDiscount(v) { state.services.bulkDiscount = v; renderTabContent(); }
+    function setMinWhatsappOrder(v) { state.services.minWhatsappOrder = v; renderTabContent(); }
+
+    function toggleShopFeature(feat) {
+      const idx = state.services.features.indexOf(feat);
+      if (idx >= 0) state.services.features.splice(idx, 1);
+      else state.services.features.push(feat);
+      renderTabContent();
+    }
+
+    /* =========================================================================
+       9. TAB 4 — OPENING HOURS & NOTICES
+       ========================================================================= */
+    function renderHoursAndNoticesTab() {
+      const isMicActive = state.listeningField === 'noticeText';
+
+      return `
+        <div class="space-y-6">
+          <!-- Weekly Opening Hours -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-6 space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">🕒 Weekly Opening Hours</h2>
+                <p class="text-sm text-slate-600 mt-0.5">Let students know when your shop is open for printouts &amp; binding.</p>
+              </div>
+              <button
+                type="button"
+                onclick="copyMondayHoursToAll()"
+                class="min-h-[46px] px-4 py-2.5 rounded-xl bg-[#ECFDF5] hover:bg-emerald-100 text-[#065F46] border border-emerald-200 font-bold text-sm cursor-pointer"
+              >
+                📋 Copy Monday to All Days
+              </button>
+            </div>
+
+            <div class="space-y-2.5">
+              ${state.hours
+                .map(
+                  (h, idx) => `
+                    <div class="p-3.5 sm:p-4 rounded-2xl border-2 ${
+                      h.open ? 'border-emerald-100 bg-white' : 'border-slate-200 bg-slate-50'
+                    } flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div class="flex items-center justify-between sm:justify-start gap-4 min-w-[190px]">
+                        <span class="font-extrabold text-base text-[#0F172A] w-28">${h.day}</span>
+                        <button
+                          type="button"
+                          onclick="toggleDayOpen(${idx})"
+                          class="min-h-[40px] px-4 py-1.5 rounded-full font-bold text-xs sm:text-sm cursor-pointer ${
+                            h.open ? 'bg-[#059669] text-white' : 'bg-slate-200 text-slate-700'
+                          }"
+                        >
+                          ${h.open ? '✓ Open' : 'Closed'}
+                        </button>
+                      </div>
+
+                      ${
+                        h.open
+                          ? `
+                            <div class="flex items-center gap-2.5 flex-wrap">
+                              <input
+                                type="time"
+                                value="${h.from}"
+                                onchange="state.hours[${idx}].from = this.value; showToast('Hours saved');"
+                                class="min-h-[44px] px-3 py-2 rounded-xl bg-slate-50 border border-slate-300 font-bold text-sm"
+                              />
+                              <span class="text-sm font-bold text-slate-400">to</span>
+                              <input
+                                type="time"
+                                value="${h.to}"
+                                onchange="state.hours[${idx}].to = this.value; showToast('Hours saved');"
+                                class="min-h-[44px] px-3 py-2 rounded-xl bg-slate-50 border border-slate-300 font-bold text-sm"
+                              />
+                            </div>
+                          `
+                          : `<span class="text-sm font-semibold text-slate-400">Shop closed on ${h.day}</span>`
+                      }
+                    </div>
+                  `
+                )
+                .join('')}
+            </div>
+          </div>
+
+          <!-- Post Notice Composer -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-6 space-y-5">
+            <div>
+              <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">📢 Post Notice to Students</h2>
+              <p class="text-sm text-slate-600 mt-0.5">Tap a ready-made notice or speak using the mic button.</p>
+            </div>
+
+            <div class="space-y-2">
+              <p class="text-xs font-extrabold uppercase tracking-wider text-[#065F46]">⚡ 1-Tap Ready Templates:</p>
+              <div class="grid grid-cols-1 gap-2.5">
+                ${NOTICE_TEMPLATES.map(
+                  (tpl, idx) => `
+                    <button
+                      type="button"
+                      onclick="applyNoticeTemplate(${idx})"
+                      class="text-left p-3.5 rounded-xl bg-[#ECFDF5]/80 hover:bg-emerald-100 border border-emerald-200 text-sm font-bold text-[#0F172A] flex items-center justify-between gap-3 cursor-pointer"
+                    >
+                      <span>"${tpl}"</span>
+                      <span class="px-2.5 py-1 rounded-lg bg-white text-[#065F46] text-xs font-extrabold border border-emerald-200 shrink-0">Tap to Use</span>
+                    </button>
+                  `
+                ).join('')}
+              </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-2.5">
+              <textarea
+                rows="3"
+                placeholder="Type or speak your notice..."
+                oninput="state.noticeDraft = this.value"
+                class="flex-1 p-4 rounded-xl bg-white border-2 border-slate-200 text-base text-[#0F172A] focus:outline-none focus:border-[#059669]"
+              >${escapeHtml(state.noticeDraft)}</textarea>
+              <button
+                type="button"
+                onclick="startVoiceInput('noticeText')"
+                class="min-h-[52px] sm:w-28 rounded-xl border-2 font-bold text-sm flex items-center justify-center gap-1.5 cursor-pointer transition ${
+                  isMicActive
+                    ? 'bg-red-600 border-red-600 text-white mic-pulse'
+                    : 'bg-[#ECFDF5] hover:bg-emerald-100 border-emerald-300 text-[#065F46]'
+                }"
+              >
+                <span class="text-lg">🎙️</span>
+                <span>${isMicActive ? 'Listening' : 'Speak'}</span>
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onclick="postNotice()"
+              class="w-full sm:w-auto min-h-[52px] px-7 py-3 rounded-2xl bg-[#059669] hover:bg-[#047857] text-white font-extrabold text-base shadow-sm cursor-pointer"
+            >
+              📢 Post Notice Now
+            </button>
+
+            <div class="pt-4 border-t border-slate-100 space-y-3">
+              <h3 class="text-sm font-extrabold uppercase tracking-wider text-slate-500">Posted Notices (${state.notices.length})</h3>
+              ${
+                state.notices.length === 0
+                  ? `<p class="text-sm text-slate-500">No notices posted yet.</p>`
+                  : state.notices
+                      .map(
+                        (n) => `
+                          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-start justify-between gap-3">
+                            <div>
+                              <p class="text-sm sm:text-base font-bold text-[#0F172A]">${escapeHtml(n.text)}</p>
+                              <p class="text-xs text-slate-500 mt-1">🕒 ${escapeHtml(n.time)}</p>
+                            </div>
+                            <button
+                              type="button"
+                              onclick="deleteNotice('${n.id}')"
+                              class="min-h-[40px] px-3 py-1.5 rounded-xl bg-white hover:bg-red-50 hover:text-red-700 border border-slate-200 text-xs font-bold text-slate-600 cursor-pointer shrink-0"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        `
+                      )
+                      .join('')
+              }
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function toggleDayOpen(idx) {
+      state.hours[idx].open = !state.hours[idx].open;
+      renderTabContent();
+    }
+
+    function copyMondayHoursToAll() {
+      const mon = state.hours[0];
+      state.hours = state.hours.map((d) => ({ ...d, open: mon.open, from: mon.from, to: mon.to }));
+      renderTabContent();
+      showToast('Monday timings copied to all 7 days!');
+    }
+
+    function applyNoticeTemplate(idx) {
+      state.noticeDraft = NOTICE_TEMPLATES[idx];
+      renderTabContent();
+      showToast('Template filled! Tap "Post Notice Now" to publish.', 'info');
+    }
+
+    function postNotice() {
+      const text = state.noticeDraft.trim();
+      if (!text) {
+        showToast('Please tap a template or type a notice first', 'error');
+        return;
+      }
+      state.notices.unshift({
+        id: 'not_' + Date.now(),
+        text,
+        time: `Today, ${getCurrentTimeLabel()}`
+      });
+      state.noticeDraft = '';
+      renderTabContent();
+      showToast('Notice posted to nearby students!');
+    }
+
+    function deleteNotice(id) {
+      state.notices = state.notices.filter((n) => n.id !== id);
+      renderTabContent();
+      showToast('Notice deleted', 'info');
+    }
+
+    /* =========================================================================
+       10. TAB 5 — SHOP INFO, PHOTOS & INTERACTIVE GPS MAP
+       ========================================================================= */
+    function renderShopInfoTab() {
+      const s = state.shop;
+      const pin = s.mapPin;
+
+      return `
+        <div class="space-y-6">
+          <!-- Shop Basic Details -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-7 space-y-5">
+            <div>
+              <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">Shop Details &amp; Contact</h2>
+              <p class="text-sm text-slate-600 mt-0.5">Students use this phone number to WhatsApp PDFs for printing.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="space-y-1.5">
+                <label class="block text-sm font-bold text-[#0F172A]">Shop Name</label>
+                <input
+                  type="text"
+                  value="${escapeHtml(s.name)}"
+                  oninput="state.shop.name = this.value; renderHeaderSummary();"
+                  class="w-full min-h-[50px] px-4 py-2.5 rounded-xl bg-white border-2 border-slate-200 font-bold text-base focus:outline-none focus:border-[#059669]"
+                />
+              </div>
+              <div class="space-y-1.5">
+                <label class="block text-sm font-bold text-[#0F172A]">Owner Name</label>
+                <input
+                  type="text"
+                  value="${escapeHtml(s.ownerName)}"
+                  oninput="state.shop.ownerName = this.value"
+                  class="w-full min-h-[50px] px-4 py-2.5 rounded-xl bg-white border-2 border-slate-200 font-bold text-base focus:outline-none focus:border-[#059669]"
+                />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="space-y-1.5">
+                <label class="block text-sm font-bold text-[#0F172A]">Phone / WhatsApp Number</label>
+                <div class="flex items-center">
+                  <span class="min-h-[50px] px-3.5 flex items-center rounded-l-xl bg-slate-100 border-2 border-r-0 border-slate-200 font-extrabold text-slate-600">+91</span>
+                  <input
+                    type="tel"
+                    value="${escapeHtml(s.phone)}"
+                    oninput="state.shop.phone = this.value"
+                    class="w-full min-h-[50px] px-4 py-2.5 rounded-r-xl bg-white border-2 border-slate-200 font-bold text-base focus:outline-none focus:border-[#059669]"
+                  />
+                </div>
+              </div>
+              <div class="space-y-1.5">
+                <label class="block text-sm font-bold text-[#0F172A]">Landmark &amp; Full Address</label>
+                <input
+                  type="text"
+                  value="${escapeHtml(s.address)}"
+                  oninput="state.shop.address = this.value; renderHeaderSummary();"
+                  class="w-full min-h-[50px] px-4 py-2.5 rounded-xl bg-white border-2 border-slate-200 font-bold text-base focus:outline-none focus:border-[#059669]"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Shop Exterior & Machine Photos -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-7 space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">📷 Shop Exterior &amp; Machine Photos</h2>
+                <p class="text-sm text-slate-600 mt-0.5">Clear photos of your shop board help students spot you quickly.</p>
+              </div>
+              <label class="min-h-[48px] px-5 py-2.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-sm shadow-sm cursor-pointer inline-flex items-center justify-center gap-2 shrink-0">
+                <span>+ Upload Shop Photos</span>
+                <input type="file" accept="image/*" multiple class="hidden" onchange="handleShopPhotoUpload(event)" />
+              </label>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              ${state.shopPhotos
+                .map(
+                  (p) => `
+                    <div class="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-2xs">
+                      <img
+                        src="${p.url}"
+                        alt="${escapeHtml(p.label)}"
+                        onerror="this.src='https://placehold.co/600x400/ECFDF5/065F46?text=Shop+Photo'"
+                        class="w-full h-44 object-cover bg-emerald-50"
+                      />
+                      <div class="p-3 flex items-center justify-between gap-2">
+                        <span class="text-sm font-bold text-slate-800 truncate">${escapeHtml(p.label)}</span>
+                        <button
+                          type="button"
+                          onclick="deleteShopPhoto('${p.id}')"
+                          class="min-h-[38px] px-3 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 font-bold text-xs cursor-pointer"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  `
+                )
+                .join('')}
+            </div>
+          </div>
+
+          <!-- Interactive Draggable Pin Map -->
+          <div class="bg-white rounded-2xl border border-emerald-100 shadow-sm p-5 sm:p-7 space-y-5">
+            <div>
+              <h2 class="text-lg sm:text-xl font-extrabold text-[#0F172A]">📍 Shop GPS Location</h2>
+              <p class="text-sm text-slate-600 mt-0.5">Tap GPS, pick a nearby landmark, or drag the green pin onto your shop.</p>
+            </div>
+
+            <div class="space-y-3">
+              <button
+                type="button"
+                onclick="useCurrentGps()"
+                class="min-h-[50px] px-5 py-3 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-sm sm:text-base shadow-sm inline-flex items-center gap-2 cursor-pointer"
+              >
+                <span>📍</span>
+                <span>Use My Current GPS Location</span>
+              </button>
+
+              <div class="flex flex-wrap gap-2">
+                ${CAMPUS_LANDMARKS.map(
+                  (lm, i) => `
+                    <button
+                      type="button"
+                      onclick="jumpToLandmark(${i})"
+                      class="min-h-[40px] px-3 py-1.5 rounded-xl bg-[#ECFDF5] hover:bg-emerald-100 border border-emerald-200 text-[#065F46] text-xs font-bold cursor-pointer"
+                    >
+                      📍 ${lm.name}
+                    </button>
+                  `
+                ).join('')}
+              </div>
+            </div>
+
+            <div class="rounded-2xl border-2 border-emerald-200 overflow-hidden bg-white">
+              <div class="px-4 py-2.5 bg-[#ECFDF5] border-b border-emerald-100 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
+                <span class="font-bold text-[#065F46]">🗺️ Bholaram Ustad Marg, Indore</span>
+                <span id="mapCoordsLabel" class="font-mono text-xs font-bold text-[#065F46]">${pin.lat.toFixed(4)}° N, ${pin.lng.toFixed(4)}° E</span>
+              </div>
+
+              <div id="printMapCanvas" class="relative w-full h-72 sm:h-80 campus-map-bg select-none touch-none overflow-hidden cursor-crosshair">
+                <svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 800 360" preserveAspectRatio="none">
+                  <path d="M 0 175 Q 250 155 460 172 T 800 142" stroke="#FFFFFF" stroke-width="26" fill="none" />
+                  <path d="M 0 175 Q 250 155 460 172 T 800 142" stroke="#CBD5E1" stroke-width="2" stroke-dasharray="8 8" fill="none" />
+                  <path d="M 185 0 L 230 360" stroke="#FFFFFF" stroke-width="20" fill="none" />
+                  <path d="M 550 158 L 580 360" stroke="#FFFFFF" stroke-width="14" fill="none" />
+                  <path d="M 620 0 L 605 155" stroke="#FFFFFF" stroke-width="16" fill="none" />
+                  <rect x="640" y="22" width="135" height="90" rx="18" fill="#BBF7D0" opacity="0.65" />
+                </svg>
+
+                ${CAMPUS_LANDMARKS.map(
+                  (lm) => `
+                    <div class="absolute -translate-x-1/2 -translate-y-1/2 pointer-events-none flex flex-col items-center" style="left: ${lm.x}%; top: ${lm.y}%;">
+                      <span class="w-2.5 h-2.5 rounded-full bg-slate-500/80 ring-2 ring-white"></span>
+                      <span class="mt-1 px-2 py-0.5 rounded-md bg-white/95 text-[10px] sm:text-[11px] font-bold text-slate-700 shadow-2xs whitespace-nowrap border border-slate-200">${lm.name}</span>
+                    </div>
+                  `
+                ).join('')}
+
+                <div id="printMapPin" class="absolute z-20 -translate-x-1/2 -translate-y-full cursor-grab active:cursor-grabbing" style="left: ${pin.x}%; top: ${pin.y}%;">
+                  <div class="flex flex-col items-center">
+                    <div class="px-3 py-1 rounded-xl bg-[#065F46] text-white text-xs font-extrabold shadow-lg whitespace-nowrap border-2 border-white">
+                      🖨️ Your Print Shop
+                    </div>
+                    <div class="w-3.5 h-3.5 bg-[#065F46] rotate-45 -mt-2 border-r-2 border-b-2 border-white"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="px-4 py-3 bg-slate-50 border-t border-emerald-100 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
+                <span id="mapLandmarkLabel" class="font-semibold text-slate-700">📍 ${escapeHtml(pin.landmark)}</span>
+                <button
+                  type="button"
+                  onclick="showToast('Shop Info & GPS Location saved!')"
+                  class="min-h-[42px] px-4 py-2 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs sm:text-sm cursor-pointer"
+                >
+                  ✓ Save Info &amp; GPS
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function handleShopPhotoUpload(event) {
+      const files = Array.from(event.target.files || []);
+      files.forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          state.shopPhotos.unshift({
+            id: 'sp_' + Date.now() + Math.random().toString(36).slice(2, 5),
+            label: file.name.replace(/\.[^/.]+$/, '').slice(0, 26) || 'Shop Photo',
+            url: e.target.result
+          });
+          renderTabContent();
+          showToast('Shop photo uploaded!');
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function deleteShopPhoto(id) {
+      state.shopPhotos = state.shopPhotos.filter((p) => p.id !== id);
+      renderTabContent();
+      showToast('Photo removed', 'info');
+    }
+
+    function attachMapInteractions() {
+      const canvas = document.getElementById('printMapCanvas');
+      const pinEl = document.getElementById('printMapPin');
+      if (!canvas || !pinEl) return;
+
+      let dragging = false;
+
+      const movePin = (clientX, clientY) => {
+        const rect = canvas.getBoundingClientRect();
+        const xPct = Math.max(8, Math.min(92, ((clientX - rect.left) / rect.width) * 100));
+        const yPct = Math.max(14, Math.min(92, ((clientY - rect.top) / rect.height) * 100));
+
+        const lat = 22.6975 - (yPct / 100) * 0.012;
+        const lng = 75.8590 + (xPct / 100) * 0.018;
+
+        let nearest = CAMPUS_LANDMARKS[0];
+        let minDist = Infinity;
+        CAMPUS_LANDMARKS.forEach((lm) => {
+          const d = Math.hypot(lm.x - xPct, lm.y - yPct);
+          if (d < minDist) { minDist = d; nearest = lm; }
+        });
+
+        state.shop.mapPin = {
+          x: Math.round(xPct),
+          y: Math.round(yPct),
+          lat,
+          lng,
+          landmark: `Near ${nearest.name}`
+        };
+
+        pinEl.style.left = state.shop.mapPin.x + '%';
+        pinEl.style.top = state.shop.mapPin.y + '%';
+
+        const coordsEl = document.getElementById('mapCoordsLabel');
+        if (coordsEl) coordsEl.textContent = `${lat.toFixed(4)}° N, ${lng.toFixed(4)}° E`;
+        const lmEl = document.getElementById('mapLandmarkLabel');
+        if (lmEl) lmEl.textContent = `📍 ${state.shop.mapPin.landmark}`;
+      };
+
+      canvas.addEventListener('pointerdown', (e) => {
+        dragging = true;
+        canvas.setPointerCapture(e.pointerId);
+        movePin(e.clientX, e.clientY);
+      });
+      canvas.addEventListener('pointermove', (e) => {
+        if (dragging) movePin(e.clientX, e.clientY);
+      });
+      canvas.addEventListener('pointerup', () => { dragging = false; });
+      canvas.addEventListener('pointercancel', () => { dragging = false; });
+    }
+
+    function useCurrentGps() {
+      state.shop.mapPin = {
+        x: 62,
+        y: 42,
+        lat: 22.6905,
+        lng: 75.8698,
+        landmark: 'Near Campus Gate 2, Bholaram Ustad Marg (GPS Locked)'
+      };
+      renderTabContent();
+      showToast('GPS location locked near Campus Gate 2, Indore!', 'info');
+    }
+
+    function jumpToLandmark(idx) {
+      const lm = CAMPUS_LANDMARKS[idx];
+      if (!lm) return;
+      state.shop.mapPin = {
+        x: lm.x,
+        y: lm.y,
+        lat: lm.lat,
+        lng: lm.lng,
+        landmark: `Near ${lm.name}`
+      };
+      renderTabContent();
+      showToast(`Pin moved to ${lm.name}`, 'info');
+    }
+
+    /* =========================================================================
+       11. LIVE STUDENT PREVIEW MODAL (INDIGO & BLUE #4F46E5)
+       ========================================================================= */
+    function openStudentPreview() {
+      const s = state.shop;
+      const rush = RUSH_STATUSES[s.rushStatus];
+      const showWhatsapp = state.services.whatsappFiles.startsWith('Yes');
+      const mon = state.hours[0];
+
+      document.getElementById('studentPreviewBody').innerHTML = `
+        <!-- Shop Overview Card -->
+        <div class="bg-white rounded-2xl border border-indigo-100 shadow-sm p-5 space-y-4">
+          <div class="flex items-start gap-3.5">
+            <div class="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-3xl shrink-0">
+              🖨️
+            </div>
+            <div class="min-w-0">
+              <div class="flex flex-wrap items-center gap-1.5">
+                <span class="px-2.5 py-0.5 rounded-full bg-indigo-50 text-[#4F46E5] text-xs font-extrabold">Printing &amp; Xerox</span>
+                <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-extrabold">✓ Verified</span>
+                <span class="text-xs font-semibold text-slate-500">• 180 m away</span>
+              </div>
+              <h3 class="text-xl font-extrabold text-slate-900 mt-1">${escapeHtml(s.name)}</h3>
+              <p class="text-sm text-slate-600">📍 ${escapeHtml(s.address)}</p>
+            </div>
+          </div>
+
+          <!-- Live Rush Status + Bulk Discount Badge -->
+          <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100">
+            <span class="px-3 py-1 rounded-xl text-xs font-extrabold border ${rush.badgeClass}">
+              ${rush.icon} ${rush.label}
+            </span>
+            ${
+              state.services.bulkDiscount.startsWith('Yes')
+                ? `<span class="px-3 py-1 rounded-xl bg-blue-50 text-blue-800 text-xs font-bold">🎓 Bulk / Project Discount Available</span>`
+                : ''
+            }
+          </div>
+
+          <!-- Action Buttons (respecting WhatsApp toggle) -->
+          <div class="grid ${showWhatsapp ? 'grid-cols-3' : 'grid-cols-2'} gap-2.5">
+            <div class="min-h-[46px] rounded-xl bg-[#4F46E5] text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5">
+              📞 Call
+            </div>
+            ${
+              showWhatsapp
+                ? `
+                  <div class="min-h-[46px] rounded-xl bg-emerald-600 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5">
+                    💬 WhatsApp PDF
+                  </div>
+                `
+                : ''
+            }
+            <div class="min-h-[46px] rounded-xl bg-blue-50 text-blue-800 border border-blue-200 font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5">
+              🗺️ Directions
+            </div>
+          </div>
+
+          <!-- Feature Chips -->
+          <div class="flex flex-wrap gap-1.5">
+            ${state.services.features
+              .map((f) => `<span class="px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold">✓ ${escapeHtml(f)}</span>`)
+              .join('')}
+          </div>
+        </div>
+
+        <!-- Active Notice -->
+        ${
+          state.notices.length
+            ? `
+              <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 space-y-1">
+                <span class="text-[11px] font-extrabold uppercase tracking-wider text-amber-800">📢 Latest Shop Notice</span>
+                <p class="text-sm font-bold text-slate-900">${escapeHtml(state.notices[0].text)}</p>
+              </div>
+            `
+            : ''
+        }
+
+        <!-- Print Rate Card Table -->
+        <div class="bg-white rounded-2xl border border-indigo-100 p-4 space-y-3">
+          <h4 class="font-extrabold text-slate-900 text-base">🖨️ Print &amp; Binding Rates</h4>
+          <div class="divide-y divide-slate-100">
+            ${state.printRates
+              .map(
+                (r) => `
+                  <div class="py-2.5 first:pt-0 last:pb-0 flex items-center justify-between gap-3">
+                    <div>
+                      <p class="font-bold text-slate-900 text-sm">${escapeHtml(r.name)}</p>
+                      <p class="text-[11px] text-slate-500">${escapeHtml(r.unit)}</p>
+                    </div>
+                    <span class="text-base font-extrabold text-[#4F46E5] shrink-0">₹${r.price}</span>
+                  </div>
+                `
+              )
+              .join('')}
+          </div>
+        </div>
+
+        <!-- Stationery & Supplies -->
+        <div class="bg-white rounded-2xl border border-indigo-100 p-4 space-y-3">
+          <h4 class="font-extrabold text-slate-900 text-base">✏️ Stationery &amp; Supplies</h4>
+          <div class="divide-y divide-slate-100">
+            ${state.stationery
+              .map(
+                (item) => `
+                  <div class="py-2.5 first:pt-0 last:pb-0 flex items-center justify-between gap-3 ${item.inStock ? '' : 'opacity-60'}">
+                    <div>
+                      <p class="font-bold text-slate-900 text-sm">${escapeHtml(item.name)}</p>
+                      <p class="text-xs text-slate-500">${escapeHtml(item.sellAs)} • ${escapeHtml(item.packSize)}</p>
+                    </div>
+                    <div class="text-right shrink-0">
+                      <span class="text-base font-extrabold text-[#4F46E5]">₹${item.price}</span>
+                      <span class="block text-[10px] font-extrabold ${item.inStock ? 'text-emerald-700' : 'text-red-600'}">
+                        ${item.inStock ? 'In Stock' : 'Out of Stock'}
+                      </span>
+                    </div>
+                  </div>
+                `
+              )
+              .join('')}
+          </div>
+        </div>
+
+        <!-- Opening Hours Summary -->
+        <div class="bg-white rounded-2xl border border-indigo-100 p-4 flex items-center justify-between text-xs sm:text-sm">
+          <span class="font-bold text-slate-700">🕒 Regular Hours (Mon–Sat)</span>
+          <span class="font-bold text-slate-900">${mon.open ? `${formatTime24To12(mon.from)} – ${formatTime24To12(mon.to)}` : 'Closed'}</span>
+        </div>
+      `;
+
+      const modal = document.getElementById('studentPreviewModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeStudentPreview() {
+      const modal = document.getElementById('studentPreviewModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    /* =========================================================================
+       12. INITIALIZE
+       ========================================================================= */
+    renderAll();
+  </script>
+</body>
+</html>

@@ -1,14 +1,16 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/axios';
-import LocationPickerMap from './LocationPickerMap';
+import {
+  LocationPickerMap,
+  WeeklyOpeningHoursEditor,
+  NoticeComposer,
+} from './vendor';
 import {
   CATEGORIES,
   OFFERING_TYPES,
   OFFERING_STATUSES,
   OFFERING_STATUS_COLORS,
-  DAY_NAMES,
-  UPDATE_TYPE_LABELS,
   formatPrice,
   formatTimeAgo,
 } from '../utils/constants';
@@ -40,14 +42,6 @@ const QUICK_FEATURE_TAGS = [
   { key: '24x7', label: '⏰ Open 24x7' },
 ];
 
-const EXPIRY_OPTIONS = [
-  { value: '12', label: 'Show for 12 hours' },
-  { value: '24', label: 'Show for 24 hours (Today)' },
-  { value: '72', label: 'Show for 3 days' },
-  { value: '168', label: 'Show for 1 week' },
-  { value: '0', label: 'Keep until I delete it' },
-];
-
 export default function VendorStudio({ business, onBusinessUpdated }) {
   const [activeTab, setActiveTab] = useState('offerings');
   const [feedback, setFeedback] = useState('');
@@ -66,15 +60,7 @@ export default function VendorStudio({ business, onBusinessUpdated }) {
 
   const [offerings, setOfferings] = useState([]);
   const [photos, setPhotos] = useState([]);
-  const [updates, setUpdates] = useState([]);
-  const [schedule, setSchedule] = useState(() =>
-    DAY_NAMES.map((_, dayOfWeek) => ({
-      dayOfWeek,
-      opensAt: '08:00',
-      closesAt: '21:00',
-      isClosed: dayOfWeek === 0,
-    }))
-  );
+  const [updatesCount, setUpdatesCount] = useState(0);
 
   // Add Offering state (no key=value jargon!)
   const [offeringType, setOfferingType] = useState('HOSTEL_ROOM');
@@ -89,40 +75,16 @@ export default function VendorStudio({ business, onBusinessUpdated }) {
   const [photoCaption, setPhotoCaption] = useState('');
   const [uploading, setUploading] = useState(false);
 
-  // Update Publish state
-  const [updateType, setUpdateType] = useState('ANNOUNCEMENT');
-  const [linkedOfferingId, setLinkedOfferingId] = useState('');
-  const [updateTitle, setUpdateTitle] = useState('');
-  const [updateContent, setUpdateContent] = useState('');
-  const [expiresHours, setExpiresHours] = useState('24');
-
   const loadStudioData = useCallback(async () => {
     try {
-      const [offRes, hrsRes, phoRes, updRes] = await Promise.all([
+      const [offRes, phoRes, updRes] = await Promise.all([
         api.get(`/businesses/${business.id}/offerings`),
-        api.get(`/businesses/${business.id}/hours`),
         api.get(`/businesses/${business.id}/photos`),
         api.get(`/businesses/${business.id}/updates`),
       ]);
       setOfferings(offRes.data);
       setPhotos(phoRes.data);
-      setUpdates(updRes.data);
-
-      if (hrsRes.data.schedule?.length > 0) {
-        const byDay = Object.fromEntries(hrsRes.data.schedule.map((d) => [d.dayOfWeek, d]));
-        setSchedule(
-          DAY_NAMES.map((_, idx) => {
-            const found = byDay[idx];
-            if (!found) return { dayOfWeek: idx, opensAt: '08:00', closesAt: '21:00', isClosed: true };
-            return {
-              dayOfWeek: idx,
-              opensAt: found.opensAt ? found.opensAt.slice(0, 5) : '08:00',
-              closesAt: found.closesAt ? found.closesAt.slice(0, 5) : '21:00',
-              isClosed: found.isClosed,
-            };
-          })
-        );
-      }
+      setUpdatesCount(updRes.data.length);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to load your shop data.');
     }
@@ -214,24 +176,6 @@ export default function VendorStudio({ business, onBusinessUpdated }) {
     }
   }
 
-  async function handleSaveHours(e) {
-    e.preventDefault();
-    setError('');
-    try {
-      const payload = schedule.map((d) => ({
-        dayOfWeek: d.dayOfWeek,
-        opensAt: d.isClosed ? null : `${d.opensAt}:00`,
-        closesAt: d.isClosed ? null : `${d.closesAt}:00`,
-        isClosed: d.isClosed,
-      }));
-      await api.put(`/businesses/${business.id}/hours`, { schedule: payload });
-      notifySuccess('Opening hours saved!');
-      loadStudioData();
-    } catch (err) {
-      setError(err.response?.data?.message || 'Failed to save opening hours.');
-    }
-  }
-
   async function handleUploadPhoto(e) {
     e.preventDefault();
     if (!photoFile) return;
@@ -266,39 +210,6 @@ export default function VendorStudio({ business, onBusinessUpdated }) {
     }
   }
 
-  async function handlePublishUpdate(e) {
-    e.preventDefault();
-    setError('');
-    try {
-      const hrs = Number(expiresHours);
-      const expiresAt = hrs > 0 ? new Date(Date.now() + hrs * 3600 * 1000).toISOString() : null;
-      await api.post(`/businesses/${business.id}/updates`, {
-        offeringId: linkedOfferingId || null,
-        updateType,
-        title: updateTitle,
-        content: updateContent,
-        expiresAt,
-      });
-      setUpdateTitle('');
-      setUpdateContent('');
-      notifySuccess('Notice posted! All nearby students can see it now.');
-      loadStudioData();
-    } catch (err) {
-      setError(err.response?.data?.message || 'Could not post notice.');
-    }
-  }
-
-  async function handleDeleteUpdate(updateId) {
-    setError('');
-    try {
-      await api.delete(`/updates/${updateId}`);
-      notifySuccess('Notice deleted.');
-      loadStudioData();
-    } catch (err) {
-      setError(err.response?.data?.message || 'Could not delete notice.');
-    }
-  }
-
   async function handleSaveShopInfo(e) {
     e.preventDefault();
     setSavingShop(true);
@@ -327,7 +238,7 @@ export default function VendorStudio({ business, onBusinessUpdated }) {
     { id: 'offerings', label: `🏷️ Items & Prices (${offerings.length})` },
     { id: 'hours', label: '⏰ Opening Hours' },
     { id: 'photos', label: `📸 Photos (${photos.length})` },
-    { id: 'updates', label: `📢 Post Notice (${updates.length})` },
+    { id: 'updates', label: `📢 Post Notice (${updatesCount})` },
     { id: 'info', label: '⚙️ Shop Info & GPS' },
   ];
 
@@ -542,68 +453,9 @@ export default function VendorStudio({ business, onBusinessUpdated }) {
         </div>
       )}
 
-      {/* TAB 2: OPENING HOURS */}
+      {/* TAB 2: SHARED WEEKLY OPENING HOURS EDITOR */}
       {activeTab === 'hours' && (
-        <form onSubmit={handleSaveHours} className="space-y-3">
-          <p className="text-sm text-gray-600 mb-2">
-            Set when your shop or mess is open so students know before walking over.
-          </p>
-          {schedule.map((entry, idx) => (
-            <div
-              key={entry.dayOfWeek}
-              className="flex flex-wrap items-center justify-between gap-3 p-3.5 border border-gray-200 rounded-xl"
-            >
-              <span className="w-28 font-semibold text-sm text-gray-800">
-                {DAY_NAMES[entry.dayOfWeek]}
-              </span>
-
-              <label className="inline-flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={entry.isClosed}
-                  onChange={(e) => {
-                    const next = [...schedule];
-                    next[idx] = { ...entry, isClosed: e.target.checked };
-                    setSchedule(next);
-                  }}
-                />
-                Closed all day
-              </label>
-
-              {!entry.isClosed && (
-                <div className="flex items-center gap-2 text-sm">
-                  <input
-                    type="time"
-                    value={entry.opensAt}
-                    onChange={(e) => {
-                      const next = [...schedule];
-                      next[idx] = { ...entry, opensAt: e.target.value };
-                      setSchedule(next);
-                    }}
-                    className="px-2.5 py-1.5 border border-gray-300 rounded-lg"
-                  />
-                  <span className="text-gray-500">to</span>
-                  <input
-                    type="time"
-                    value={entry.closesAt}
-                    onChange={(e) => {
-                      const next = [...schedule];
-                      next[idx] = { ...entry, closesAt: e.target.value };
-                      setSchedule(next);
-                    }}
-                    className="px-2.5 py-1.5 border border-gray-300 rounded-lg"
-                  />
-                </div>
-              )}
-            </div>
-          ))}
-          <button
-            type="submit"
-            className="px-6 py-3 bg-emerald-600 text-white rounded-xl text-sm font-semibold hover:bg-emerald-700 cursor-pointer"
-          >
-            Save Opening Hours
-          </button>
-        </form>
+        <WeeklyOpeningHoursEditor businessId={business.id} />
       )}
 
       {/* TAB 3: PHOTOS */}
@@ -659,93 +511,13 @@ export default function VendorStudio({ business, onBusinessUpdated }) {
         </div>
       )}
 
-      {/* TAB 4: TODAY'S NOTICE / UPDATE */}
+      {/* TAB 4: SHARED NOTICE COMPOSER */}
       {activeTab === 'updates' && (
-        <div className="space-y-6">
-          <form onSubmit={handlePublishUpdate} className="bg-emerald-50/50 p-4 sm:p-5 rounded-xl border border-emerald-200 space-y-3">
-            <div>
-              <h3 className="text-base font-bold text-gray-900">Send a Notice to Students</h3>
-              <p className="text-xs text-gray-600">
-                Announce today&apos;s lunch menu, a vacant room, or special holiday hours.
-              </p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <select
-                value={updateType}
-                onChange={(e) => setUpdateType(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
-              >
-                {Object.entries(UPDATE_TYPE_LABELS).map(([k, lbl]) => (
-                  <option key={k} value={k}>{lbl}</option>
-                ))}
-              </select>
-              <select
-                value={linkedOfferingId}
-                onChange={(e) => setLinkedOfferingId(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
-              >
-                <option value="">General shop notice</option>
-                {offerings.map((o) => (
-                  <option key={o.id} value={o.id}>About: {o.title}</option>
-                ))}
-              </select>
-              <select
-                value={expiresHours}
-                onChange={(e) => setExpiresHours(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white"
-              >
-                {EXPIRY_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
-                ))}
-              </select>
-            </div>
-            <input
-              type="text"
-              value={updateTitle}
-              onChange={(e) => setUpdateTitle(e.target.value)}
-              placeholder="Title (e.g. Today's Lunch: Rajma Chawal & Paneer)"
-              required
-              className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm bg-white"
-            />
-            <textarea
-              value={updateContent}
-              onChange={(e) => setUpdateContent(e.target.value)}
-              placeholder="Write your message here..."
-              rows={2}
-              required
-              className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm bg-white"
-            />
-            <button
-              type="submit"
-              className="px-5 py-2.5 bg-emerald-600 text-white rounded-lg text-sm font-semibold hover:bg-emerald-700 cursor-pointer"
-            >
-              📢 Post Notice Now
-            </button>
-          </form>
-
-          <div className="space-y-3">
-            {updates.map((u) => (
-              <div
-                key={u.id}
-                className="p-4 border border-gray-200 rounded-xl flex items-start justify-between gap-4"
-              >
-                <div>
-                  <span className="text-xs font-semibold text-emerald-700">
-                    {UPDATE_TYPE_LABELS[u.updateType] || u.updateType}
-                  </span>
-                  <h4 className="font-semibold text-gray-900">{u.title}</h4>
-                  <p className="text-xs text-gray-600 mt-1">{u.content}</p>
-                </div>
-                <button
-                  onClick={() => handleDeleteUpdate(u.id)}
-                  className="text-xs text-red-600 font-semibold hover:underline cursor-pointer shrink-0"
-                >
-                  Remove
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
+        <NoticeComposer
+          businessId={business.id}
+          offerings={offerings}
+          onUpdatesChanged={(list) => setUpdatesCount(list.length)}
+        />
       )}
 
       {/* TAB 5: SHOP INFO & GPS */}

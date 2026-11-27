@@ -1,3 +1,4 @@
+
 package com.studentseva.auth;
 
 import com.studentseva.users.User;
@@ -9,8 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class JwtServiceTest {
 
-    private static final String TEST_SECRET =
-            "unit_test_secret_key_for_nearbuzz_jwt_verification_must_be_long_enough_2026";
+    private static final String TEST_SECRET = "unit_test_secret_key_for_nearbuzz_jwt_verification_must_be_long_enough_2026";
 
     private User buildUser(String email, User.Role role) {
         User user = new User();
@@ -53,7 +53,8 @@ class JwtServiceTest {
         User user = buildUser("student@college.edu", User.Role.STUDENT);
 
         String token = jwtService.generateToken(user.getEmail(), "STUDENT", UUID.randomUUID());
-        // Flip a middle character of the signature (the final char can have unused base64url padding bits)
+        // Flip a middle character of the signature (the final char can have unused
+        // base64url padding bits)
         int sigIdx = token.length() - 6;
         char targetChar = token.charAt(sigIdx);
         String tampered = token.substring(0, sigIdx) + (targetChar == 'a' ? 'b' : 'a') + token.substring(sigIdx + 1);
