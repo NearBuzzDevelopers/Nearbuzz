@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { useLocationContext } from '../context/LocationContext';
 import Navbar from '../components/Navbar';
 import VendorStudio from '../components/VendorStudio';
+import HostelDashboard from '../components/vendor/dashboards/HostelDashboard';
 import { LocationPickerMap, StudentPreviewModal } from '../components/vendor';
 import {
   CATEGORY_TO_BUSINESS_TYPE,
@@ -196,36 +197,45 @@ export default function VendorPortalPage() {
         {loadingBiz ? (
           <div className="h-44 bg-white rounded-2xl border border-emerald-100 animate-pulse" />
         ) : myBusiness ? (
-          <>
-            <div className="bg-white rounded-2xl border border-emerald-100 p-4 flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm">
-              <span className="font-bold text-[#047857]">
-                ✓ Routed to /vendor/{myBusinessType} — Shop Profile Active
-              </span>
-              <span className="text-slate-600">
-                Shared Emerald tools ready below: Weekly Hours, Notice Composer (Voice + Templates), GPS Pin &amp; Student Preview.
-              </span>
-            </div>
-
-            <VendorStudio business={myBusiness} onBusinessUpdated={setMyBusiness} />
-
-            <StudentPreviewModal
-              open={previewOpen}
-              onClose={() => setPreviewOpen(false)}
+          myBusinessType === 'hostel' ? (
+            <HostelDashboard
               business={myBusiness}
-            >
-              <div className="bg-white rounded-2xl border border-indigo-100 p-5 text-center space-y-2">
-                <p className="text-sm font-bold text-slate-800">
-                  Live Student Page Preview for {myBusiness.name}
-                </p>
-                <Link
-                  to={`/businesses/${myBusiness.id}`}
-                  className="inline-block px-4 py-2 rounded-xl bg-indigo-50 text-indigo-700 font-bold text-xs hover:bg-indigo-100"
-                >
-                  Open Full Public Listing →
-                </Link>
+              onBusinessUpdated={setMyBusiness}
+              previewOpen={previewOpen}
+              onClosePreview={() => setPreviewOpen(false)}
+            />
+          ) : (
+            <>
+              <div className="bg-white rounded-2xl border border-emerald-100 p-4 flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm">
+                <span className="font-bold text-[#047857]">
+                  ✓ Routed to /vendor/{myBusinessType} — Shop Profile Active
+                </span>
+                <span className="text-slate-600">
+                  Shared Emerald tools ready below: Weekly Hours, Notice Composer (Voice + Templates), GPS Pin &amp; Student Preview.
+                </span>
               </div>
-            </StudentPreviewModal>
-          </>
+
+              <VendorStudio business={myBusiness} onBusinessUpdated={setMyBusiness} />
+
+              <StudentPreviewModal
+                open={previewOpen}
+                onClose={() => setPreviewOpen(false)}
+                business={myBusiness}
+              >
+                <div className="bg-white rounded-2xl border border-indigo-100 p-5 text-center space-y-2">
+                  <p className="text-sm font-bold text-slate-800">
+                    Live Student Page Preview for {myBusiness.name}
+                  </p>
+                  <Link
+                    to={`/businesses/${myBusiness.id}`}
+                    className="inline-block px-4 py-2 rounded-xl bg-indigo-50 text-indigo-700 font-bold text-xs hover:bg-indigo-100"
+                  >
+                    Open Full Public Listing →
+                  </Link>
+                </div>
+              </StudentPreviewModal>
+            </>
+          )
         ) : (
           /* 3-STEP CATEGORY-FIRST VENDOR ONBOARDING */
           <section className="bg-white rounded-2xl shadow-sm border border-emerald-100 p-6 sm:p-8">

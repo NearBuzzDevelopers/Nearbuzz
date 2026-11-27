@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import api from '../../api/axios';
+import VoiceMicButton from './VoiceMicButton';
 import { UPDATE_TYPE_LABELS, formatTimeAgo } from '../../utils/constants';
 
 const DEFAULT_NOTICE_TEMPLATES = [
@@ -20,7 +21,7 @@ const EXPIRY_OPTIONS = [
  * NoticeComposer — Shared Emerald Green announcement publisher for all 6 vendor portals.
  * Features:
  *   - 1-Tap Ready Message Templates
- *   - Voice-to-Text Microphone button (Web Speech API `en-IN` with graceful fallback)
+ *   - Shared VoiceMicButton (Web Speech API `en-IN` with graceful fallback)
  *   - Live posted notices feed with Delete button
  */
 export default function NoticeComposer({
@@ -37,10 +38,8 @@ export default function NoticeComposer({
   const [content, setContent] = useState('');
   const [expiresHours, setExpiresHours] = useState('24');
   const [publishing, setPublishing] = useState(false);
-  const [listening, setListening] = useState(false);
   const [feedback, setFeedback] = useState('');
   const [error, setError] = useState('');
-  const recognitionRef = useRef(null);
 
   const loadNotices = useCallback(async () => {
     if (!businessId) return;
@@ -60,14 +59,6 @@ export default function NoticeComposer({
     loadNotices();
   }, [loadNotices]);
 
-  useEffect(() => {
-    return () => {
-      if (recognitionRef.current) {
-        recognitionRef.current.abort();
-      }
-    };
-  }, []);
-
   function applyTemplate(tplText) {
     setError('');
     setTitle(tplText);
@@ -75,58 +66,6 @@ export default function NoticeComposer({
       setContent(tplText);
     }
     setFeedback('Template filled! Edit if needed or tap "Post Notice".');
-  }
-
-  function handleVoiceInput() {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      setError('Voice typing is not supported in this browser. Please type normally.');
-      return;
-    }
-
-    if (listening && recognitionRef.current) {
-      recognitionRef.current.stop();
-      setListening(false);
-      return;
-    }
-
-    try {
-      const recognition = new SpeechRecognition();
-      recognition.lang = 'en-IN';
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
-      recognitionRef.current = recognition;
-
-      setError('');
-      setFeedback('');
-      setListening(true);
-
-      recognition.onresult = (event) => {
-        const spoken = event.results?.[0]?.[0]?.transcript?.trim();
-        if (spoken) {
-          setContent((prev) => (prev.trim() ? `${prev.trim()} ${spoken}` : spoken));
-          if (!title.trim()) {
-            setTitle(spoken.slice(0, 120));
-          }
-          setFeedback('Voice text added!');
-        }
-        setListening(false);
-      };
-
-      recognition.onerror = () => {
-        setListening(false);
-        setError('Could not hear clearly. Please tap Speak again or type.');
-      };
-
-      recognition.onend = () => {
-        setListening(false);
-      };
-
-      recognition.start();
-    } catch {
-      setListening(false);
-      setError('Microphone access unavailable. Please type your notice instead.');
-    }
   }
 
   async function handlePublishNotice(e) {
@@ -270,19 +209,17 @@ export default function NoticeComposer({
               placeholder="Type or speak your announcement..."
               className="flex-1 p-4 rounded-xl bg-white border-2 border-slate-200 text-base text-[#0F172A] focus:outline-none focus:border-[#059669]"
             />
-            <button
-              type="button"
-              onClick={handleVoiceInput}
-              aria-label="Speak to type notice"
-              className={`min-h-[52px] sm:w-32 px-4 rounded-xl border-2 font-bold text-sm flex items-center justify-center gap-1.5 cursor-pointer transition ${
-                listening
-                  ? 'bg-red-600 border-red-600 text-white mic-pulse'
-                  : 'bg-[#ECFDF5] hover:bg-emerald-100 border-emerald-300 text-[#047857]'
-              }`}
-            >
-              <span className="text-lg">🎙️</span>
-              <span>{listening ? 'Listening...' : 'Speak'}</span>
-            </button>
+            <VoiceMicButton
+              ariaLabel="Speak to type notice"
+              className="sm:w-32"
+              onTranscript={(spoken) => {
+                setError('');
+                setContent((prev) => (prev.trim() ? `${prev.trim()} ${spoken}` : spoken));
+                if (!title.trim()) setTitle(spoken.slice(0, 120));
+                setFeedback('Voice text added!');
+              }}
+              onError={(msg) => setError(msg)}
+            />
           </div>
         </div>
 
